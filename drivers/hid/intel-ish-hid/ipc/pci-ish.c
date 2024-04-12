@@ -463,7 +463,7 @@ static struct pci_driver ish_driver = {
 	.remove = ish_remove,
 	.shutdown = ish_shutdown,
 	.driver.pm = &ish_pm_ops,
-	.dev_groups = ish_firmware_groups,
+	.driver.dev_groups = ish_firmware_groups,
 };
 
 module_pci_driver(ish_driver);

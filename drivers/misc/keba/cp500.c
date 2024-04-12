@@ -980,7 +980,7 @@ static struct pci_driver cp500_driver = {
 	.id_table = cp500_ids,
 	.probe = cp500_probe,
 	.remove = cp500_remove,
-	.dev_groups = cp500_groups,
+	.driver.dev_groups = cp500_groups,
 };
 module_pci_driver(cp500_driver);
 

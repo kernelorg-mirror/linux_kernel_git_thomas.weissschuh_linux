@@ -546,13 +546,13 @@ static const struct pci_device_id amd_mp2_pci_tbl[] = {
 MODULE_DEVICE_TABLE(pci, amd_mp2_pci_tbl);
 
 static struct pci_driver amd_mp2_pci_driver = {
-	.name		= DRIVER_NAME,
-	.id_table	= amd_mp2_pci_tbl,
-	.probe		= amd_mp2_pci_probe,
-	.driver.pm	= &amd_mp2_pm_ops,
-	.shutdown	= amd_sfh_shutdown,
-	.remove		= amd_sfh_remove,
-	.dev_groups	= amd_sfh_groups,
+	.name			= DRIVER_NAME,
+	.id_table		= amd_mp2_pci_tbl,
+	.probe			= amd_mp2_pci_probe,
+	.driver.pm		= &amd_mp2_pm_ops,
+	.shutdown		= amd_sfh_shutdown,
+	.remove			= amd_sfh_remove,
+	.driver.dev_groups	= amd_sfh_groups,
 };
 module_pci_driver(amd_mp2_pci_driver);
 

@@ -488,11 +488,11 @@ static const struct pci_device_id vbg_pci_ids[] = {
 MODULE_DEVICE_TABLE(pci,  vbg_pci_ids);
 
 static struct pci_driver vbg_pci_driver = {
-	.name		= DEVICE_NAME,
-	.dev_groups	= vbg_pci_groups,
-	.id_table	= vbg_pci_ids,
-	.probe		= vbg_pci_probe,
-	.remove		= vbg_pci_remove,
+	.name			= DEVICE_NAME,
+	.driver.dev_groups	= vbg_pci_groups,
+	.id_table		= vbg_pci_ids,
+	.probe			= vbg_pci_probe,
+	.remove			= vbg_pci_remove,
 };
 
 module_pci_driver(vbg_pci_driver);

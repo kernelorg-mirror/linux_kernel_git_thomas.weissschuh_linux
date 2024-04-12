@@ -586,7 +586,7 @@ static struct pci_driver sp_pci_driver = {
 	.remove = sp_pci_remove,
 	.shutdown = sp_pci_shutdown,
 	.driver.pm = &sp_pci_pm_ops,
-	.dev_groups = psp_groups,
+	.driver.dev_groups = psp_groups,
 };
 
 int sp_pci_init(void)

@@ -179,7 +179,7 @@ static const struct attribute_group *uio_pci_sva_attr_groups[] = {
 
 static struct pci_driver uio_pci_generic_sva_driver = {
 	.name = "uio_pci_sva",
-	.dev_groups = uio_pci_sva_attr_groups,
+	.driver.dev_groups = uio_pci_sva_attr_groups,
 	.id_table = NULL,
 	.probe = probe,
 	.remove = remove,
