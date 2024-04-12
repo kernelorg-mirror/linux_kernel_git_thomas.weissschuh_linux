@@ -1284,8 +1284,6 @@ struct usb_driver {
  * @choose_configuration: If non-NULL, called instead of the default
  *	usb_choose_configuration(). If this returns an error then we'll go
  *	on to call the normal usb_choose_configuration().
- * @dev_groups: Attributes attached to the device that will be created once it
- *	is bound to the driver.
  * @driver: The driver-model core driver structure.
  * @id_table: used with @match() to select better matching driver at
  * 	probe() time.
@@ -1309,7 +1307,6 @@ struct usb_device_driver {
 
 	int (*choose_configuration) (struct usb_device *udev);
 
-	const struct attribute_group **dev_groups;
 	struct device_driver driver;
 	const struct usb_device_id *id_table;
 	unsigned int supports_autosuspend:1;

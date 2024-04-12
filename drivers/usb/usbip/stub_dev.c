@@ -533,5 +533,5 @@ struct usb_device_driver stub_driver = {
 	.resume		= stub_resume,
 #endif
 	.supports_autosuspend	=	0,
-	.dev_groups	= usbip_groups,
+	.driver.dev_groups	= usbip_groups,
 };
