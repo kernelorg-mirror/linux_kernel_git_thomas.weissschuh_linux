@@ -2591,15 +2591,15 @@ static int usbtmc_post_reset(struct usb_interface *intf)
 }
 
 static struct usb_driver usbtmc_driver = {
-	.name		= "usbtmc",
-	.id_table	= usbtmc_devices,
-	.probe		= usbtmc_probe,
-	.disconnect	= usbtmc_disconnect,
-	.suspend	= usbtmc_suspend,
-	.resume		= usbtmc_resume,
-	.pre_reset	= usbtmc_pre_reset,
-	.post_reset	= usbtmc_post_reset,
-	.dev_groups	= usbtmc_groups,
+	.name			= "usbtmc",
+	.id_table		= usbtmc_devices,
+	.probe			= usbtmc_probe,
+	.disconnect		= usbtmc_disconnect,
+	.suspend		= usbtmc_suspend,
+	.resume			= usbtmc_resume,
+	.pre_reset		= usbtmc_pre_reset,
+	.post_reset		= usbtmc_post_reset,
+	.driver.dev_groups	= usbtmc_groups,
 };
 
 module_usb_driver(usbtmc_driver);

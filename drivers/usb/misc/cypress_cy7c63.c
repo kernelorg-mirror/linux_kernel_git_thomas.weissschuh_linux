@@ -252,7 +252,7 @@ static struct usb_driver cypress_driver = {
 	.probe = cypress_probe,
 	.disconnect = cypress_disconnect,
 	.id_table = cypress_table,
-	.dev_groups = cypress_groups,
+	.driver.dev_groups = cypress_groups,
 };
 
 module_usb_driver(cypress_driver);

@@ -464,10 +464,10 @@ static void lvs_rh_disconnect(struct usb_interface *intf)
 }
 
 static struct usb_driver lvs_driver = {
-	.name =		"lvs",
-	.probe =	lvs_rh_probe,
-	.disconnect =	lvs_rh_disconnect,
-	.dev_groups =	lvs_groups,
+	.name =			"lvs",
+	.probe =		lvs_rh_probe,
+	.disconnect =		lvs_rh_disconnect,
+	.driver.dev_groups =	lvs_groups,
 };
 
 module_usb_driver(lvs_driver);

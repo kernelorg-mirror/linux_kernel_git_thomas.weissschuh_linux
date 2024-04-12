@@ -943,11 +943,11 @@ static int usb_probe(struct usb_interface *intf, const struct usb_device_id *id)
 }
 
 static struct usb_driver yealink_driver = {
-	.name		= "yealink",
-	.probe		= usb_probe,
-	.disconnect	= usb_disconnect,
-	.id_table	= usb_table,
-	.dev_groups	= yld_groups,
+	.name			= "yealink",
+	.probe			= usb_probe,
+	.disconnect		= usb_disconnect,
+	.id_table		= usb_table,
+	.driver.dev_groups	= yld_groups,
 };
 
 module_usb_driver(yealink_driver);

@@ -1887,7 +1887,7 @@ static struct usb_driver aiptek_driver = {
 	.probe = aiptek_probe,
 	.disconnect = aiptek_disconnect,
 	.id_table = aiptek_ids,
-	.dev_groups = aiptek_dev_groups,
+	.driver.dev_groups = aiptek_dev_groups,
 };
 
 module_usb_driver(aiptek_driver);

@@ -385,7 +385,7 @@ static struct usb_driver sevseg_driver = {
 	.resume =	sevseg_resume,
 	.reset_resume =	sevseg_reset_resume,
 	.id_table =	id_table,
-	.dev_groups =	sevseg_groups,
+	.driver.dev_groups = sevseg_groups,
 	.supports_autosuspend = 1,
 };
 

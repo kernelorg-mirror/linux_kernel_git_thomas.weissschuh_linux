@@ -114,11 +114,11 @@ static void tv_disconnect(struct usb_interface *interface)
 
 /* USB subsystem object */
 static struct usb_driver tv_driver = {
-	.name =		"trancevibrator",
-	.probe =	tv_probe,
-	.disconnect =	tv_disconnect,
-	.id_table =	id_table,
-	.dev_groups =	tv_groups,
+	.name =			"trancevibrator",
+	.probe =		tv_probe,
+	.disconnect =		tv_disconnect,
+	.id_table =		id_table,
+	.driver.dev_groups =	tv_groups,
 };
 
 module_usb_driver(tv_driver);

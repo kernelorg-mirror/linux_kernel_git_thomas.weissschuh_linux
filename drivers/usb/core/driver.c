@@ -1071,7 +1071,6 @@ int usb_register_driver(struct usb_driver *new_driver, struct module *owner,
 	new_driver->driver.shutdown = usb_shutdown_interface;
 	new_driver->driver.owner = owner;
 	new_driver->driver.mod_name = mod_name;
-	new_driver->driver.dev_groups = new_driver->dev_groups;
 	INIT_LIST_HEAD(&new_driver->dynids.list);
 
 	retval = driver_register(&new_driver->driver);

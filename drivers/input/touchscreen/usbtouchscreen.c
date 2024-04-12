@@ -1791,7 +1791,7 @@ static struct usb_driver usbtouch_driver = {
 	.resume		= usbtouch_resume,
 	.reset_resume	= usbtouch_reset_resume,
 	.id_table	= usbtouch_devices,
-	.dev_groups	= usbtouch_groups,
+	.driver.dev_groups = usbtouch_groups,
 	.supports_autosuspend = 1,
 };
 

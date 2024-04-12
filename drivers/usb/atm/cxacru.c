@@ -1371,11 +1371,11 @@ static int cxacru_usb_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver cxacru_usb_driver = {
-	.name		= cxacru_driver_name,
-	.probe		= cxacru_usb_probe,
-	.disconnect	= usbatm_usb_disconnect,
-	.id_table	= cxacru_usb_ids,
-	.dev_groups	= cxacru_groups,
+	.name			= cxacru_driver_name,
+	.probe			= cxacru_usb_probe,
+	.disconnect		= usbatm_usb_disconnect,
+	.id_table		= cxacru_usb_ids,
+	.driver.dev_groups	= cxacru_groups,
 };
 
 module_usb_driver(cxacru_usb_driver);

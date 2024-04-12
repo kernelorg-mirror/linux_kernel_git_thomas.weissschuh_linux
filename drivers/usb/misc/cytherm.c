@@ -343,11 +343,11 @@ static void cytherm_disconnect(struct usb_interface *interface)
 
 /* usb specific object needed to register this driver with the usb subsystem */
 static struct usb_driver cytherm_driver = {
-	.name =		"cytherm",
-	.probe =	cytherm_probe,
-	.disconnect =	cytherm_disconnect,
-	.id_table =	id_table,
-	.dev_groups =	cytherm_groups,
+	.name =			"cytherm",
+	.probe =		cytherm_probe,
+	.disconnect =		cytherm_disconnect,
+	.id_table =		id_table,
+	.driver.dev_groups =	cytherm_groups,
 };
 
 module_usb_driver(cytherm_driver);

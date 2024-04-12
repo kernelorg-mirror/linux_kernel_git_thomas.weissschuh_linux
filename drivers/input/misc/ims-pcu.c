@@ -2129,7 +2129,7 @@ static const struct attribute_group *ims_pcu_sysfs_groups[] = {
 static struct usb_driver ims_pcu_driver = {
 	.name			= "ims_pcu",
 	.id_table		= ims_pcu_id_table,
-	.dev_groups		= ims_pcu_sysfs_groups,
+	.driver.dev_groups	= ims_pcu_sysfs_groups,
 	.probe			= ims_pcu_probe,
 	.disconnect		= ims_pcu_disconnect,
 #ifdef CONFIG_PM

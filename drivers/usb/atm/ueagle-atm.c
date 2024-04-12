@@ -2718,7 +2718,7 @@ static struct usb_driver uea_driver = {
 	.id_table = uea_ids,
 	.probe = uea_probe,
 	.disconnect = uea_disconnect,
-	.dev_groups = uea_groups,
+	.driver.dev_groups = uea_groups,
 };
 
 MODULE_DEVICE_TABLE(usb, uea_ids);
