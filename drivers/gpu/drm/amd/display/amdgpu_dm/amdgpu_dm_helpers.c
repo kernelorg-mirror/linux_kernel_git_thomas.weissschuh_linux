@@ -49,14 +49,14 @@
 #include "ddc_service_types.h"
 #include "clk_mgr.h"
 
-static u32 edid_extract_panel_id(struct edid *edid)
+static u32 edid_extract_panel_id(const struct edid *edid)
 {
 	return (u32)edid->mfg_id[0] << 24   |
 	       (u32)edid->mfg_id[1] << 16   |
 	       (u32)EDID_PRODUCT_ID(edid);
 }
 
-static void apply_edid_quirks(struct drm_device *dev, struct edid *edid, struct dc_edid_caps *edid_caps)
+static void apply_edid_quirks(struct drm_device *dev, const struct edid *edid, struct dc_edid_caps *edid_caps)
 {
 	uint32_t panel_id = edid_extract_panel_id(edid);
 
@@ -96,20 +96,20 @@ static void apply_edid_quirks(struct drm_device *dev, struct edid *edid, struct 
  * dm_helpers_parse_edid_caps() - Parse edid caps
  *
  * @link: current detected link
- * @edid:	[in] pointer to edid
+ * @drm_edid:	[in] pointer to edid
  * @edid_caps:	[in] pointer to edid caps
  *
  * Return: void
  */
 enum dc_edid_status dm_helpers_parse_edid_caps(
 		struct dc_link *link,
-		const struct dc_edid *edid,
+		const struct drm_edid *drm_edid,
 		struct dc_edid_caps *edid_caps)
 {
 	struct amdgpu_dm_connector *aconnector = link->priv;
 	struct drm_connector *connector = &aconnector->base;
 	struct drm_device *dev = connector->dev;
-	struct edid *edid_buf = edid ? (struct edid *) edid->raw_edid : NULL;
+	const struct edid *edid_buf = drm_edid_raw(drm_edid);
 	struct cea_sad *sads;
 	int sad_count = -1;
 	int sadb_count = -1;
@@ -118,10 +118,10 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
 
 	enum dc_edid_status result = EDID_OK;
 
-	if (!edid_caps || !edid)
+	if (!edid_caps || !drm_edid)
 		return EDID_BAD_INPUT;
 
-	if (!drm_edid_is_valid(edid_buf))
+	if (!drm_edid_valid(drm_edid))
 		result = EDID_BAD_CHECKSUM;
 
 	edid_caps->manufacturer_id = (uint16_t) edid_buf->mfg_id[0] |
@@ -144,7 +144,7 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
 
 	apply_edid_quirks(dev, edid_buf, edid_caps);
 
-	sad_count = drm_edid_to_sad((struct edid *) edid->raw_edid, &sads);
+	sad_count = drm_edid_to_sad(edid_buf, &sads);
 	if (sad_count <= 0)
 		return result;
 
@@ -158,7 +158,7 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
 		edid_caps->audio_modes[i].sample_size = sad->byte2;
 	}
 
-	sadb_count = drm_edid_to_speaker_allocation((struct edid *) edid->raw_edid, &sadb);
+	sadb_count = drm_edid_to_speaker_allocation(edid_buf, &sadb);
 
 	if (sadb_count < 0) {
 		DRM_ERROR("Couldn't read Speaker Allocation Data Block: %d\n", sadb_count);
@@ -1009,7 +1009,6 @@ enum dc_edid_status dm_helpers_read_local_edid(
 	int retry = 25;
 	enum dc_edid_status edid_status = EDID_NO_RESPONSE;
 	const struct drm_edid *drm_edid;
-	const struct edid *edid;
 
 	if (link->aux_mode)
 		ddc = &aconnector->dm_dp_aux.aux.ddc;
@@ -1039,20 +1038,14 @@ enum dc_edid_status dm_helpers_read_local_edid(
 		if (!drm_edid)
 			continue;
 
-		edid = drm_edid_raw(drm_edid); // FIXME: Get rid of drm_edid_raw()
-		if (!edid ||
-		    edid->extensions >= sizeof(sink->dc_edid.raw_edid) / EDID_LENGTH)
-			return EDID_BAD_INPUT;
-
-		sink->dc_edid.length = EDID_LENGTH * (edid->extensions + 1);
-		memmove(sink->dc_edid.raw_edid, (uint8_t *)edid, sink->dc_edid.length);
+		sink->drm_edid = drm_edid_dup(drm_edid);
 
 		/* We don't need the original edid anymore */
 		drm_edid_free(drm_edid);
 
 		edid_status = dm_helpers_parse_edid_caps(
 						link,
-						&sink->dc_edid,
+						sink->drm_edid,
 						&sink->edid_caps);
 
 	} while ((edid_status == EDID_BAD_CHECKSUM || edid_status == EDID_NO_RESPONSE) && --retry > 0);
@@ -1079,7 +1072,7 @@ enum dc_edid_status dm_helpers_read_local_edid(
 		dm_helpers_dp_write_dpcd(ctx,
 					link,
 					DP_TEST_EDID_CHECKSUM,
-					&sink->dc_edid.raw_edid[sink->dc_edid.length-1],
+					&drm_edid_raw(sink->drm_edid)->checksum,
 					1);
 
 		dm_helpers_dp_write_dpcd(ctx,
@@ -1421,4 +1414,15 @@ bool dm_helpers_is_hdr_on(struct dc_context *ctx, struct dc_stream_state *stream
 {
 	// TODO
 	return false;
+}
+
+bool dm_helpers_is_drm_equal(const struct drm_edid *a, const struct drm_edid *b)
+{
+	const struct edid *ra = drm_edid_raw(a);
+	const struct edid *rb = drm_edid_raw(b);
+
+	if (ra->extensions != rb->extensions)
+		return false;
+
+	return 0 == memcmp(ra, rb, (ra->extensions + 1) * EDID_LENGTH);
 }

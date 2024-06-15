@@ -61,7 +61,7 @@ void dm_helpers_free_gpu_mem(
 
 enum dc_edid_status dm_helpers_parse_edid_caps(
 	struct dc_link *link,
-	const struct dc_edid *edid,
+	const struct drm_edid *drm_edid,
 	struct dc_edid_caps *edid_caps);
 
 
@@ -223,5 +223,6 @@ enum adaptive_sync_type dm_get_adaptive_sync_support_type(struct dc_link *link);
 
 bool dm_helpers_is_fullscreen(struct dc_context *ctx, struct dc_stream_state *stream);
 bool dm_helpers_is_hdr_on(struct dc_context *ctx, struct dc_stream_state *stream);
+bool dm_helpers_is_drm_equal(const struct drm_edid *a, const struct drm_edid *b);
 
 #endif /* __DM_HELPERS__ */
