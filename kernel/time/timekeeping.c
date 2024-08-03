@@ -2659,6 +2659,23 @@ EXPORT_SYMBOL(hardpps);
 /* Bitmap for the activated auxiliary timekeepers */
 static unsigned long aux_timekeepers;
 
+static inline bool aux_valid_clockid(clockid_t id)
+{
+	return id >= CLOCK_AUX && id <= CLOCK_AUX_LAST;
+}
+
+static inline unsigned int clockid_to_tkid(unsigned int id)
+{
+	return TIMEKEEPER_AUX + id - CLOCK_AUX;
+}
+
+static inline struct tk_data *aux_get_tk_data(clockid_t id)
+{
+	if (!aux_valid_clockid(id))
+		return NULL;
+	return &timekeeper_data[clockid_to_tkid(id)];
+}
+
 /* Invoked from timekeeping after a clocksource change */
 static void tk_aux_update_clocksource(void)
 {
@@ -2677,6 +2694,51 @@ static void tk_aux_update_clocksource(void)
 		tk_setup_internals(tks, tk_core.timekeeper.tkr_mono.clock);
 		timekeeping_update_from_shadow(tkd, TK_UPDATE_ALL);
 	}
+}
+
+/**
+ * ktime_get_aux - Get TAI time for a AUX clock
+ * @id:	ID of the clock to read (CLOCK_AUX...)
+ * @kt:	Pointer to ktime_t to store the time stamp
+ *
+ * Returns: True if the timestamp is valid, false otherwise
+ */
+bool ktime_get_aux(clockid_t id, ktime_t *kt)
+{
+	struct tk_data *tkd = aux_get_tk_data(id);
+	struct timekeeper *tk;
+	unsigned int seq;
+	ktime_t base;
+	u64 nsecs;
+
+	WARN_ON(timekeeping_suspended);
+
+	if (!tkd)
+		return false;
+
+	tk = &tkd->timekeeper;
+	do {
+		seq = read_seqcount_begin(&tkd->seq);
+		if (!tk->clock_valid)
+			return false;
+
+		base = ktime_add(tk->tkr_mono.base, tk->offs_aux);
+		nsecs = timekeeping_get_ns(&tk->tkr_mono);
+	} while (read_seqcount_retry(&tkd->seq, seq));
+
+	*kt = ktime_add_ns(base, nsecs);
+	return true;
+}
+EXPORT_SYMBOL_GPL(ktime_get_aux);
+
+bool ktime_get_aux_ts64(clockid_t id, struct timespec64 *ts)
+{
+	ktime_t now;
+
+	if (!ktime_get_aux(id, &now))
+		return false;
+	*ts = ktime_to_timespec64(now);
+	return true;
 }
 
 static __init void tk_aux_setup(void)
