@@ -344,7 +344,7 @@ struct cea_sad {
 };
 
 int drm_edid_to_sad(const struct edid *edid, struct cea_sad **sads);
-int drm_edid_to_speaker_allocation(const struct edid *edid, u8 **sadb);
+int drm_edid_to_speaker_allocation(const struct drm_edid *drm_edid, u8 **sadb);
 int drm_av_sync_delay(struct drm_connector *connector,
 		      const struct drm_display_mode *mode);
 

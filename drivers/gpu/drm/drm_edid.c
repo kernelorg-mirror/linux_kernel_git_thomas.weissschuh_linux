@@ -5768,8 +5768,19 @@ int drm_edid_to_sad(const struct edid *edid, struct cea_sad **sads)
 }
 EXPORT_SYMBOL(drm_edid_to_sad);
 
-static int _drm_edid_to_speaker_allocation(const struct drm_edid *drm_edid,
-					   u8 **sadb)
+/**
+ * drm_edid_to_speaker_allocation - extracts Speaker Allocation Data Blocks from EDID
+ * @drm_edid: EDID to parse
+ * @sadb: pointer to the speaker block
+ *
+ * Looks for CEA EDID block and extracts the Speaker Allocation Data Block from it.
+ *
+ * Note: The returned pointer needs to be freed using kfree().
+ *
+ * Return: The number of found Speaker Allocation Blocks or negative number on
+ * error.
+ */
+int drm_edid_to_speaker_allocation(const struct drm_edid *drm_edid, u8 **sadb)
 {
 	const struct cea_db *db;
 	struct cea_db_iter iter;
@@ -5792,26 +5803,6 @@ static int _drm_edid_to_speaker_allocation(const struct drm_edid *drm_edid,
 	DRM_DEBUG_KMS("Found %d Speaker Allocation Data Blocks\n", count);
 
 	return count;
-}
-
-/**
- * drm_edid_to_speaker_allocation - extracts Speaker Allocation Data Blocks from EDID
- * @edid: EDID to parse
- * @sadb: pointer to the speaker block
- *
- * Looks for CEA EDID block and extracts the Speaker Allocation Data Block from it.
- *
- * Note: The returned pointer needs to be freed using kfree().
- *
- * Return: The number of found Speaker Allocation Blocks or negative number on
- * error.
- */
-int drm_edid_to_speaker_allocation(const struct edid *edid, u8 **sadb)
-{
-	struct drm_edid drm_edid;
-
-	return _drm_edid_to_speaker_allocation(drm_edid_legacy_init(&drm_edid, edid),
-					       sadb);
 }
 EXPORT_SYMBOL(drm_edid_to_speaker_allocation);
 

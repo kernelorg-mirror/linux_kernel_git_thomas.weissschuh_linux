@@ -1272,7 +1272,7 @@ static void dce_v8_0_audio_write_speaker_allocation(struct drm_encoder *encoder)
 		return;
 	}
 
-	sad_count = drm_edid_to_speaker_allocation(drm_edid_raw(amdgpu_connector->drm_edid), &sadb);
+	sad_count = drm_edid_to_speaker_allocation(amdgpu_connector->drm_edid, &sadb);
 	if (sad_count < 0) {
 		DRM_ERROR("Couldn't read Speaker Allocation Data Block: %d\n", sad_count);
 		sad_count = 0;

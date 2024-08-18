@@ -139,7 +139,7 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
 		edid_caps->audio_modes[i].sample_size = sad->byte2;
 	}
 
-	sadb_count = drm_edid_to_speaker_allocation(edid_buf, &sadb);
+	sadb_count = drm_edid_to_speaker_allocation(drm_edid, &sadb);
 
 	if (sadb_count < 0) {
 		DRM_ERROR("Couldn't read Speaker Allocation Data Block: %d\n", sadb_count);
