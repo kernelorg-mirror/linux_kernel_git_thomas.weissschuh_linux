@@ -1401,7 +1401,7 @@ static void dce_v11_0_audio_write_sad_regs(struct drm_encoder *encoder)
 		return;
 	}
 
-	sad_count = drm_edid_to_sad(drm_edid_raw(amdgpu_connector->drm_edid), &sads);
+	sad_count = drm_edid_to_sad(amdgpu_connector->drm_edid, &sads);
 	if (sad_count < 0)
 		DRM_ERROR("Couldn't read SADs: %d\n", sad_count);
 	if (sad_count <= 0)

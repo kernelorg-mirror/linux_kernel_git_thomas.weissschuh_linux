@@ -125,7 +125,7 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
 
 	apply_edid_quirks(drm_edid, edid_caps);
 
-	sad_count = drm_edid_to_sad(edid_buf, &sads);
+	sad_count = drm_edid_to_sad(drm_edid, &sads);
 	if (sad_count <= 0)
 		return result;
 

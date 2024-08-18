@@ -2158,7 +2158,7 @@ static const struct drm_edid *mtk_dp_edid_read(struct drm_bridge *bridge,
 		struct cea_sad *sads;
 		int ret;
 
-		ret = drm_edid_to_sad(edid, &sads);
+		ret = drm_edid_to_sad(drm_edid, &sads);
 		/* Ignore any errors */
 		if (ret < 0)
 			ret = 0;
