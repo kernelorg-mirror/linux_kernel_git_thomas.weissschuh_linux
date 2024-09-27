@@ -5,6 +5,7 @@
 #ifndef __ASSEMBLY__
 
 #include <asm/barrier.h>
+#include <vdso/clocksource.h>
 #include <vdso/datapage.h>
 #include <vdso/processor.h>
 #include <vdso/clocksource.h>
