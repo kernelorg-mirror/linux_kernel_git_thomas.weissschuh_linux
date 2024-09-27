@@ -37,18 +37,18 @@
 } while (0)
 
 #define VDSO_CALL(fn, nr, args...) ({					\
-	register void *_r0 asm ("r0");					\
-	register long _r3 asm ("r3");					\
-	register long _r4 asm ("r4");					\
-	register long _r5 asm ("r5");					\
-	register long _r6 asm ("r6");					\
-	register long _r7 asm ("r7");					\
-	register long _r8 asm ("r8");					\
-	register long _rval asm ("r3");					\
+	register void *_r0 __asm__ ("r0");				\
+	register long _r3 __asm__ ("r3");				\
+	register long _r4 __asm__ ("r4");				\
+	register long _r5 __asm__ ("r5");				\
+	register long _r6 __asm__ ("r6");				\
+	register long _r7 __asm__ ("r7");				\
+	register long _r8 __asm__ ("r8");				\
+	register long _rval __asm__ ("r3");				\
 									\
 	LOADARGS_##nr(fn, args);					\
 									\
-	asm volatile(							\
+	__asm__ volatile(						\
 		"	mtctr %0\n"					\
 		"	bctrl\n"					\
 		"	bns+	1f\n"					\
