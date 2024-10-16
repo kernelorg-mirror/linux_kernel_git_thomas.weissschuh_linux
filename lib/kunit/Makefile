@@ -14,6 +14,8 @@ kunit-objs +=				test.o \
 					fwnode.o \
 					bug.o
 
+obj-$(CONFIG_KUNIT_UAPI) +=		kunit-uapi.o
+
 ifeq ($(CONFIG_KUNIT_DEBUGFS),y)
 kunit-objs +=				debugfs.o
 endif
