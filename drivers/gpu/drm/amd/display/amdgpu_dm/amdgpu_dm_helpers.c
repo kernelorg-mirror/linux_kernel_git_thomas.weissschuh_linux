@@ -49,16 +49,9 @@
 #include "ddc_service_types.h"
 #include "clk_mgr.h"
 
-static u32 edid_extract_panel_id(const struct edid *edid)
+static void apply_edid_quirks(struct drm_device *dev, const struct drm_edid *edid, struct dc_edid_caps *edid_caps)
 {
-	return (u32)edid->mfg_id[0] << 24   |
-	       (u32)edid->mfg_id[1] << 16   |
-	       (u32)EDID_PRODUCT_ID(edid);
-}
-
-static void apply_edid_quirks(struct drm_device *dev, const struct edid *edid, struct dc_edid_caps *edid_caps)
-{
-	uint32_t panel_id = edid_extract_panel_id(edid);
+	uint32_t panel_id = drm_edid_get_panel_id(edid);
 
 	switch (panel_id) {
 	/* Workaround for monitors that need a delay after detecting the link */
@@ -142,7 +135,7 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
 	if (edid_caps->edid_hdmi)
 		populate_hdmi_info_from_connector(&connector->display_info.hdmi, edid_caps);
 
-	apply_edid_quirks(dev, edid_buf, edid_caps);
+	apply_edid_quirks(dev, drm_edid, edid_caps);
 
 	sad_count = drm_edid_to_sad(edid_buf, &sads);
 	if (sad_count <= 0)
