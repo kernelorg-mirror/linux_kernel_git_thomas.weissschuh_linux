@@ -453,7 +453,7 @@ static struct dentry * configfs_lookup(struct inode *dir,
 	list_for_each_entry(sd, &parent_sd->s_children, s_sibling) {
 		if ((sd->s_type & CONFIGFS_NOT_PINNED) &&
 		    !strcmp(configfs_get_name(sd), dentry->d_name.name)) {
-			struct configfs_attribute *attr = sd->s_element;
+			const struct configfs_attribute *attr = sd->s_element;
 			umode_t mode = (attr->ca_mode & S_IALLUGO) | S_IFREG;
 
 			dentry->d_fsdata = configfs_get(sd);
@@ -581,8 +581,8 @@ static int populate_attrs(struct config_item *item)
 {
 	const struct config_item_type *t = item->ci_type;
 	const struct configfs_group_operations *ops;
-	struct configfs_attribute *attr;
-	struct configfs_bin_attribute *bin_attr;
+	const struct configfs_attribute *attr;
+	const struct configfs_bin_attribute *bin_attr;
 	int error = 0;
 	int i;
 
