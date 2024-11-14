@@ -6,6 +6,8 @@ bus_type
 clk_ops
 comedi_lrange
 component_ops
+configfs_item_operations
+configfs_group_operations
 dentry_operations
 dev_pm_ops
 device_type
