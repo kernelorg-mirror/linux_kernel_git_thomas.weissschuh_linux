@@ -31,6 +31,8 @@ KBUILD_CFLAGS-$(CONFIG_CC_NO_ARRAY_BOUNDS) += -Wno-array-bounds
 ifdef CONFIG_CC_IS_CLANG
 # The kernel builds with '-std=gnu11' so use of GNU extensions is acceptable.
 KBUILD_CFLAGS += -Wno-gnu
+# Some GNU extensions are also C23 extensions
+KBUILD_CFLAGS += $(call cc-disable-warning, c23-extensions)
 else
 
 # gcc inanely warns about local variables called 'main'
