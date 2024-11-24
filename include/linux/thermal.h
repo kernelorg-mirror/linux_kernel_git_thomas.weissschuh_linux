@@ -350,4 +350,8 @@ static inline int thermal_zone_device_disable(struct thermal_zone_device *tz)
 { return -ENODEV; }
 #endif /* CONFIG_THERMAL */
 
+static inline void foobar(int)
+{
+}
+
 #endif /* __THERMAL_H__ */
