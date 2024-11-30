@@ -214,10 +214,10 @@ static const struct kobj_type ktype_cpuidle = {
 
 struct cpuidle_state_attr {
 	struct attribute attr;
-	ssize_t (*show)(struct cpuidle_state *, \
-					struct cpuidle_state_usage *, char *);
-	ssize_t (*store)(struct cpuidle_state *, \
-			struct cpuidle_state_usage *, const char *, size_t);
+	ssize_t (*show)(struct cpuidle_state *, struct cpuidle_state_usage *, char *);
+	ssize_t (*show_new)(struct cpuidle_state *, struct cpuidle_state_usage *, char *);
+	ssize_t (*store)(struct cpuidle_state *, struct cpuidle_state_usage *, const char *, size_t);
+	ssize_t (*store_new)(struct cpuidle_state *, struct cpuidle_state_usage *, const char *, size_t);
 };
 
 #define define_one_state_ro(_name, show) \
