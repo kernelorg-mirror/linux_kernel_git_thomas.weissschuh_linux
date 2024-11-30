@@ -72,7 +72,9 @@ static ssize_t map_offset_show(struct uio_mem *mem, char *buf)
 struct map_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct uio_mem *, char *);
+	ssize_t (*show_new)(struct uio_mem *, char *);
 	ssize_t (*store)(struct uio_mem *, const char *, size_t);
+	ssize_t (*store_new)(struct uio_mem *, const char *, size_t);
 };
 
 static struct map_sysfs_entry name_attribute =
@@ -161,7 +163,9 @@ static ssize_t portio_porttype_show(struct uio_port *port, char *buf)
 struct portio_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct uio_port *, char *);
+	ssize_t (*show_new)(struct uio_port *, char *);
 	ssize_t (*store)(struct uio_port *, const char *, size_t);
+	ssize_t (*store_new)(struct uio_port *, const char *, size_t);
 };
 
 static struct portio_sysfs_entry portio_name_attribute =
