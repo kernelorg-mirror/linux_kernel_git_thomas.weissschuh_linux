@@ -1492,8 +1492,11 @@ static void vmbus_chan_release(struct kobject *kobj)
 struct vmbus_chan_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct vmbus_channel *chan, char *buf);
+	ssize_t (*show_new)(struct vmbus_channel *chan, char *buf);
 	ssize_t (*store)(struct vmbus_channel *chan,
 			 const char *buf, size_t count);
+	ssize_t (*store_new)(struct vmbus_channel *chan,
+			     const char *buf, size_t count);
 };
 #define VMBUS_CHAN_ATTR(_name, _mode, _show, _store) \
 	struct vmbus_chan_attribute chan_attr_##_name \
