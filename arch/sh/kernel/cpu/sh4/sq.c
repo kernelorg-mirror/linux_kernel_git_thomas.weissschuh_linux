@@ -259,7 +259,9 @@ static struct kobject *sq_kobject[NR_CPUS];
 struct sq_sysfs_attr {
 	struct attribute attr;
 	ssize_t (*show)(char *buf);
+	ssize_t (*show_new)(char *buf);
 	ssize_t (*store)(const char *buf, size_t count);
+	ssize_t (*store_new)(const char *buf, size_t count);
 };
 
 #define to_sq_sysfs_attr(a)	container_of(a, struct sq_sysfs_attr, attr)
