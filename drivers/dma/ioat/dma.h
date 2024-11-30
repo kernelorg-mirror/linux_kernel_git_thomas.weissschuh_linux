@@ -141,7 +141,9 @@ struct ioatdma_chan {
 struct ioat_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct dma_chan *, char *);
+	ssize_t (*show_new)(struct dma_chan *, char *);
 	ssize_t (*store)(struct dma_chan *, const char *, size_t);
+	ssize_t (*store_new)(struct dma_chan *, const char *, size_t);
 };
 
 /**
