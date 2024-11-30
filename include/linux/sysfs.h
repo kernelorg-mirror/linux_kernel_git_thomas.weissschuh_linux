@@ -105,7 +105,10 @@ struct attribute_group {
 	size_t			(*bin_size)(struct kobject *,
 					    const struct bin_attribute *,
 					    int);
-	struct attribute	**attrs;
+	union {
+		struct attribute	**attrs;
+		const struct attribute	*const *attrs_new;
+	};
 	union {
 		struct bin_attribute		**bin_attrs;
 		const struct bin_attribute	*const *bin_attrs_new;
