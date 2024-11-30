@@ -35,7 +35,9 @@ static ssize_t acpi_object_path(acpi_handle handle, char *buf)
 struct acpi_data_node_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct acpi_data_node *, char *);
+	ssize_t (*show_new)(struct acpi_data_node *, char *);
 	ssize_t (*store)(struct acpi_data_node *, const char *, size_t count);
+	ssize_t (*store_new)(struct acpi_data_node *, const char *, size_t count);
 };
 
 #define DATA_NODE_ATTR(_name)			\
