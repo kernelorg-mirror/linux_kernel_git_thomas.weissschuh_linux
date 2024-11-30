@@ -88,9 +88,14 @@ struct widget_attribute {
 	struct attribute	attr;
 	ssize_t (*show)(struct hdac_device *codec, hda_nid_t nid,
 			const struct widget_attribute *attr, char *buf);
+	ssize_t (*show_new)(struct hdac_device *codec, hda_nid_t nid,
+			    const struct widget_attribute *attr, char *buf);
 	ssize_t (*store)(struct hdac_device *codec, hda_nid_t nid,
 			 const struct widget_attribute *attr,
 			 const char *buf, size_t count);
+	ssize_t (*store_new)(struct hdac_device *codec, hda_nid_t nid,
+			     const struct widget_attribute *attr,
+			     const char *buf, size_t count);
 };
 
 static int get_codec_nid(struct kobject *kobj, struct hdac_device **codecp)
