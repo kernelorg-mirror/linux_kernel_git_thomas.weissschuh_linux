@@ -31,8 +31,12 @@ struct elog_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct elog_obj *elog, const struct elog_attribute *attr,
 			char *buf);
+	ssize_t (*show_new)(struct elog_obj *elog, const struct elog_attribute *attr,
+			    char *buf);
 	ssize_t (*store)(struct elog_obj *elog, const struct elog_attribute *attr,
 			 const char *buf, size_t count);
+	ssize_t (*store_new)(struct elog_obj *elog, const struct elog_attribute *attr,
+			     const char *buf, size_t count);
 };
 #define to_elog_attr(x) container_of(x, struct elog_attribute, attr)
 
