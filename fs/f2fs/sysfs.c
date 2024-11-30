@@ -53,15 +53,15 @@ static const char *gc_mode_names[MAX_GC_MODE] = {
 
 struct f2fs_attr {
 	struct attribute attr;
-	ssize_t (*show)(struct f2fs_attr *a, struct f2fs_sb_info *sbi, char *buf);
-	ssize_t (*store)(struct f2fs_attr *a, struct f2fs_sb_info *sbi,
+	ssize_t (*show)(const struct f2fs_attr *a, struct f2fs_sb_info *sbi, char *buf);
+	ssize_t (*store)(const struct f2fs_attr *a, struct f2fs_sb_info *sbi,
 			 const char *buf, size_t len);
 	int struct_type;
 	int offset;
 	int id;
 };
 
-static ssize_t f2fs_sbi_show(struct f2fs_attr *a,
+static ssize_t f2fs_sbi_show(const struct f2fs_attr *a,
 			     struct f2fs_sb_info *sbi, char *buf);
 
 static unsigned char *__struct_ptr(struct f2fs_sb_info *sbi, int struct_type)
@@ -92,28 +92,28 @@ static unsigned char *__struct_ptr(struct f2fs_sb_info *sbi, int struct_type)
 	return NULL;
 }
 
-static ssize_t dirty_segments_show(struct f2fs_attr *a,
+static ssize_t dirty_segments_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "%llu\n",
 			(unsigned long long)(dirty_segments(sbi)));
 }
 
-static ssize_t free_segments_show(struct f2fs_attr *a,
+static ssize_t free_segments_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "%llu\n",
 			(unsigned long long)(free_segments(sbi)));
 }
 
-static ssize_t ovp_segments_show(struct f2fs_attr *a,
+static ssize_t ovp_segments_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "%llu\n",
 			(unsigned long long)(overprovision_segments(sbi)));
 }
 
-static ssize_t lifetime_write_kbytes_show(struct f2fs_attr *a,
+static ssize_t lifetime_write_kbytes_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "%llu\n",
@@ -122,19 +122,19 @@ static ssize_t lifetime_write_kbytes_show(struct f2fs_attr *a,
 				sbi->sectors_written_start) >> 1)));
 }
 
-static ssize_t sb_status_show(struct f2fs_attr *a,
+static ssize_t sb_status_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "%lx\n", sbi->s_flag);
 }
 
-static ssize_t cp_status_show(struct f2fs_attr *a,
+static ssize_t cp_status_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "%x\n", le32_to_cpu(F2FS_CKPT(sbi)->ckpt_flags));
 }
 
-static ssize_t pending_discard_show(struct f2fs_attr *a,
+static ssize_t pending_discard_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	if (!SM_I(sbi)->dcc_info)
@@ -143,7 +143,7 @@ static ssize_t pending_discard_show(struct f2fs_attr *a,
 				&SM_I(sbi)->dcc_info->discard_cmd_cnt));
 }
 
-static ssize_t issued_discard_show(struct f2fs_attr *a,
+static ssize_t issued_discard_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	if (!SM_I(sbi)->dcc_info)
@@ -152,7 +152,7 @@ static ssize_t issued_discard_show(struct f2fs_attr *a,
 				&SM_I(sbi)->dcc_info->issued_discard));
 }
 
-static ssize_t queued_discard_show(struct f2fs_attr *a,
+static ssize_t queued_discard_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	if (!SM_I(sbi)->dcc_info)
@@ -161,7 +161,7 @@ static ssize_t queued_discard_show(struct f2fs_attr *a,
 				&SM_I(sbi)->dcc_info->queued_discard));
 }
 
-static ssize_t undiscard_blks_show(struct f2fs_attr *a,
+static ssize_t undiscard_blks_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	if (!SM_I(sbi)->dcc_info)
@@ -170,19 +170,19 @@ static ssize_t undiscard_blks_show(struct f2fs_attr *a,
 				SM_I(sbi)->dcc_info->undiscard_blks);
 }
 
-static ssize_t atgc_enabled_show(struct f2fs_attr *a,
+static ssize_t atgc_enabled_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "%d\n", sbi->am.atgc_enabled ? 1 : 0);
 }
 
-static ssize_t gc_mode_show(struct f2fs_attr *a,
+static ssize_t gc_mode_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "%s\n", gc_mode_names[sbi->gc_mode]);
 }
 
-static ssize_t features_show(struct f2fs_attr *a,
+static ssize_t features_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	int len = 0;
@@ -235,13 +235,13 @@ static ssize_t features_show(struct f2fs_attr *a,
 	return len;
 }
 
-static ssize_t current_reserved_blocks_show(struct f2fs_attr *a,
+static ssize_t current_reserved_blocks_show(const struct f2fs_attr *a,
 					struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "%u\n", sbi->current_reserved_blocks);
 }
 
-static ssize_t unusable_show(struct f2fs_attr *a,
+static ssize_t unusable_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	block_t unusable;
@@ -253,7 +253,7 @@ static ssize_t unusable_show(struct f2fs_attr *a,
 	return sysfs_emit(buf, "%llu\n", (unsigned long long)unusable);
 }
 
-static ssize_t encoding_show(struct f2fs_attr *a,
+static ssize_t encoding_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 #if IS_ENABLED(CONFIG_UNICODE)
@@ -268,14 +268,14 @@ static ssize_t encoding_show(struct f2fs_attr *a,
 	return sysfs_emit(buf, "(none)\n");
 }
 
-static ssize_t mounted_time_sec_show(struct f2fs_attr *a,
+static ssize_t mounted_time_sec_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "%llu\n", SIT_I(sbi)->mounted_time);
 }
 
 #ifdef CONFIG_F2FS_STAT_FS
-static ssize_t moved_blocks_foreground_show(struct f2fs_attr *a,
+static ssize_t moved_blocks_foreground_show(const struct f2fs_attr *a,
 				struct f2fs_sb_info *sbi, char *buf)
 {
 	struct f2fs_stat_info *si = F2FS_STAT(sbi);
@@ -285,7 +285,7 @@ static ssize_t moved_blocks_foreground_show(struct f2fs_attr *a,
 			(si->bg_data_blks + si->bg_node_blks)));
 }
 
-static ssize_t moved_blocks_background_show(struct f2fs_attr *a,
+static ssize_t moved_blocks_background_show(const struct f2fs_attr *a,
 				struct f2fs_sb_info *sbi, char *buf)
 {
 	struct f2fs_stat_info *si = F2FS_STAT(sbi);
@@ -294,7 +294,7 @@ static ssize_t moved_blocks_background_show(struct f2fs_attr *a,
 		(unsigned long long)(si->bg_data_blks + si->bg_node_blks));
 }
 
-static ssize_t avg_vblocks_show(struct f2fs_attr *a,
+static ssize_t avg_vblocks_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	struct f2fs_stat_info *si = F2FS_STAT(sbi);
@@ -305,14 +305,14 @@ static ssize_t avg_vblocks_show(struct f2fs_attr *a,
 }
 #endif
 
-static ssize_t main_blkaddr_show(struct f2fs_attr *a,
+static ssize_t main_blkaddr_show(const struct f2fs_attr *a,
 				struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "%llu\n",
 			(unsigned long long)MAIN_BLKADDR(sbi));
 }
 
-static ssize_t f2fs_sbi_show(struct f2fs_attr *a,
+static ssize_t f2fs_sbi_show(const struct f2fs_attr *a,
 			struct f2fs_sb_info *sbi, char *buf)
 {
 	unsigned char *ptr = NULL;
@@ -401,7 +401,7 @@ static ssize_t f2fs_sbi_show(struct f2fs_attr *a,
 	return sysfs_emit(buf, "%u\n", *ui);
 }
 
-static ssize_t __sbi_store(struct f2fs_attr *a,
+static ssize_t __sbi_store(const struct f2fs_attr *a,
 			struct f2fs_sb_info *sbi,
 			const char *buf, size_t count)
 {
@@ -816,7 +816,7 @@ out:
 	return count;
 }
 
-static ssize_t f2fs_sbi_store(struct f2fs_attr *a,
+static ssize_t f2fs_sbi_store(const struct f2fs_attr *a,
 			struct f2fs_sb_info *sbi,
 			const char *buf, size_t count)
 {
@@ -840,7 +840,7 @@ static ssize_t f2fs_attr_show(struct kobject *kobj,
 {
 	struct f2fs_sb_info *sbi = container_of(kobj, struct f2fs_sb_info,
 								s_kobj);
-	struct f2fs_attr *a = container_of(attr, struct f2fs_attr, attr);
+	const struct f2fs_attr *a = container_of(attr, struct f2fs_attr, attr);
 
 	return a->show ? a->show(a, sbi, buf) : 0;
 }
@@ -850,7 +850,7 @@ static ssize_t f2fs_attr_store(struct kobject *kobj, struct attribute *attr,
 {
 	struct f2fs_sb_info *sbi = container_of(kobj, struct f2fs_sb_info,
 									s_kobj);
-	struct f2fs_attr *a = container_of(attr, struct f2fs_attr, attr);
+	const struct f2fs_attr *a = container_of(attr, struct f2fs_attr, attr);
 
 	return a->store ? a->store(a, sbi, buf, len) : 0;
 }
@@ -880,7 +880,7 @@ static void f2fs_sb_release(struct kobject *kobj)
  *     please add new on-disk feature in this list only.
  *     - ref. F2FS_SB_FEATURE_RO_ATTR()
  */
-static ssize_t f2fs_feature_show(struct f2fs_attr *a,
+static ssize_t f2fs_feature_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	return sysfs_emit(buf, "supported\n");
@@ -892,7 +892,7 @@ static struct f2fs_attr f2fs_attr_##_name = {			\
 	.show	= f2fs_feature_show,				\
 }
 
-static ssize_t f2fs_sb_feature_show(struct f2fs_attr *a,
+static ssize_t f2fs_sb_feature_show(const struct f2fs_attr *a,
 		struct f2fs_sb_info *sbi, char *buf)
 {
 	if (F2FS_HAS_FEATURE(sbi, a->id))
@@ -1376,7 +1376,7 @@ static ssize_t f2fs_stat_attr_show(struct kobject *kobj,
 {
 	struct f2fs_sb_info *sbi = container_of(kobj, struct f2fs_sb_info,
 								s_stat_kobj);
-	struct f2fs_attr *a = container_of(attr, struct f2fs_attr, attr);
+	const struct f2fs_attr *a = container_of(attr, struct f2fs_attr, attr);
 
 	return a->show ? a->show(a, sbi, buf) : 0;
 }
@@ -1386,7 +1386,7 @@ static ssize_t f2fs_stat_attr_store(struct kobject *kobj, struct attribute *attr
 {
 	struct f2fs_sb_info *sbi = container_of(kobj, struct f2fs_sb_info,
 								s_stat_kobj);
-	struct f2fs_attr *a = container_of(attr, struct f2fs_attr, attr);
+	const struct f2fs_attr *a = container_of(attr, struct f2fs_attr, attr);
 
 	return a->store ? a->store(a, sbi, buf, len) : 0;
 }
@@ -1414,7 +1414,7 @@ static ssize_t f2fs_sb_feat_attr_show(struct kobject *kobj,
 {
 	struct f2fs_sb_info *sbi = container_of(kobj, struct f2fs_sb_info,
 							s_feature_list_kobj);
-	struct f2fs_attr *a = container_of(attr, struct f2fs_attr, attr);
+	const struct f2fs_attr *a = container_of(attr, struct f2fs_attr, attr);
 
 	return a->show ? a->show(a, sbi, buf) : 0;
 }
