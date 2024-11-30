@@ -17,9 +17,9 @@
 struct mdev_type_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct mdev_type *mtype,
-			struct mdev_type_attribute *attr, char *buf);
+			const struct mdev_type_attribute *attr, char *buf);
 	ssize_t (*store)(struct mdev_type *mtype,
-			 struct mdev_type_attribute *attr, const char *buf,
+			 const struct mdev_type_attribute *attr, const char *buf,
 			 size_t count);
 };
 
@@ -59,7 +59,7 @@ static const struct sysfs_ops mdev_type_sysfs_ops = {
 };
 
 static ssize_t create_store(struct mdev_type *mtype,
-			    struct mdev_type_attribute *attr, const char *buf,
+			    const struct mdev_type_attribute *attr, const char *buf,
 			    size_t count)
 {
 	char *str;
@@ -87,14 +87,14 @@ static ssize_t create_store(struct mdev_type *mtype,
 static MDEV_TYPE_ATTR_WO(create);
 
 static ssize_t device_api_show(struct mdev_type *mtype,
-			       struct mdev_type_attribute *attr, char *buf)
+			       const struct mdev_type_attribute *attr, char *buf)
 {
 	return sysfs_emit(buf, "%s\n", mtype->parent->mdev_driver->device_api);
 }
 static MDEV_TYPE_ATTR_RO(device_api);
 
 static ssize_t name_show(struct mdev_type *mtype,
-			 struct mdev_type_attribute *attr, char *buf)
+			 const struct mdev_type_attribute *attr, char *buf)
 {
 	return sysfs_emit(buf, "%s\n",
 		mtype->pretty_name ? mtype->pretty_name : mtype->sysfs_name);
@@ -103,7 +103,7 @@ static ssize_t name_show(struct mdev_type *mtype,
 static MDEV_TYPE_ATTR_RO(name);
 
 static ssize_t available_instances_show(struct mdev_type *mtype,
-					struct mdev_type_attribute *attr,
+					const struct mdev_type_attribute *attr,
 					char *buf)
 {
 	struct mdev_driver *drv = mtype->parent->mdev_driver;
@@ -116,7 +116,7 @@ static ssize_t available_instances_show(struct mdev_type *mtype,
 static MDEV_TYPE_ATTR_RO(available_instances);
 
 static ssize_t description_show(struct mdev_type *mtype,
-				struct mdev_type_attribute *attr,
+				const struct mdev_type_attribute *attr,
 				char *buf)
 {
 	return mtype->parent->mdev_driver->show_description(mtype, buf);
