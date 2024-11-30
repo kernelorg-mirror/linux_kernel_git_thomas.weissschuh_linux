@@ -30,7 +30,9 @@
 struct gfs2_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct gfs2_sbd *, char *);
+	ssize_t (*show_new)(struct gfs2_sbd *, char *);
 	ssize_t (*store)(struct gfs2_sbd *, const char *, size_t);
+	ssize_t (*store_new)(struct gfs2_sbd *, const char *, size_t);
 };
 
 static ssize_t gfs2_attr_show(struct kobject *kobj, struct attribute *attr,
