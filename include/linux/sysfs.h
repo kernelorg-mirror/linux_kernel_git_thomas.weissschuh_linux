@@ -232,8 +232,21 @@ struct attribute_group {
  * See include/linux/device.h for examples..
  */
 
-#define __ATTR_SHOW(_show) .show = _show
-#define __ATTR_STORE(_store) .store = _store
+#define __ATTR_SHOW(_show)						\
+	.show	= _Generic(_show,					\
+		default : _show						\
+	),								\
+	.show_new = _Generic(_show,					\
+		default : NULL						\
+	)
+
+#define __ATTR_STORE(_store)						\
+	.store	= _Generic(_store,					\
+		default : _store					\
+	),								\
+	.store_new = _Generic(_store,					\
+		default : NULL						\
+	)
 
 #define __ATTR(_name, _mode, _show, _store) {				\
 	.attr = {.name = __stringify(_name),				\
