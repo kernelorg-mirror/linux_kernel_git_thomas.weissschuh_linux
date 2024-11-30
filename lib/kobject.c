@@ -826,6 +826,8 @@ static ssize_t kobj_attr_show(struct kobject *kobj, struct attribute *attr,
 	kattr = container_of(attr, struct kobj_attribute, attr);
 	if (kattr->show)
 		ret = kattr->show(kobj, kattr, buf);
+	else if (kattr->show_new)
+		ret = kattr->show_new(kobj, kattr, buf);
 	return ret;
 }
 
@@ -838,6 +840,8 @@ static ssize_t kobj_attr_store(struct kobject *kobj, struct attribute *attr,
 	kattr = container_of(attr, struct kobj_attribute, attr);
 	if (kattr->store)
 		ret = kattr->store(kobj, kattr, buf, count);
+	else if (kattr->store_new)
+		ret = kattr->store_new(kobj, kattr, buf, count);
 	return ret;
 }
 

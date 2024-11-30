@@ -140,8 +140,12 @@ struct kobj_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct kobject *kobj, struct kobj_attribute *attr,
 			char *buf);
+	ssize_t (*show_new)(struct kobject *kobj, const struct kobj_attribute *attr,
+			    char *buf);
 	ssize_t (*store)(struct kobject *kobj, struct kobj_attribute *attr,
 			 const char *buf, size_t count);
+	ssize_t (*store_new)(struct kobject *kobj, const struct kobj_attribute *attr,
+			     const char *buf, size_t count);
 };
 
 extern const struct sysfs_ops kobj_sysfs_ops;
