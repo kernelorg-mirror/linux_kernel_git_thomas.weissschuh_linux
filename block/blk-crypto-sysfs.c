@@ -18,7 +18,7 @@ struct blk_crypto_kobj {
 struct blk_crypto_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct blk_crypto_profile *profile,
-			struct blk_crypto_attr *attr, char *page);
+			const struct blk_crypto_attr *attr, char *page);
 };
 
 static struct blk_crypto_profile *kobj_to_crypto_profile(struct kobject *kobj)
@@ -26,19 +26,19 @@ static struct blk_crypto_profile *kobj_to_crypto_profile(struct kobject *kobj)
 	return container_of(kobj, struct blk_crypto_kobj, kobj)->profile;
 }
 
-static struct blk_crypto_attr *attr_to_crypto_attr(struct attribute *attr)
+static const struct blk_crypto_attr *attr_to_crypto_attr(const struct attribute *attr)
 {
 	return container_of(attr, struct blk_crypto_attr, attr);
 }
 
 static ssize_t max_dun_bits_show(struct blk_crypto_profile *profile,
-				 struct blk_crypto_attr *attr, char *page)
+				 const struct blk_crypto_attr *attr, char *page)
 {
 	return sysfs_emit(page, "%u\n", 8 * profile->max_dun_bytes_supported);
 }
 
 static ssize_t num_keyslots_show(struct blk_crypto_profile *profile,
-				 struct blk_crypto_attr *attr, char *page)
+				 const struct blk_crypto_attr *attr, char *page)
 {
 	return sysfs_emit(page, "%u\n", profile->num_slots);
 }
@@ -70,7 +70,7 @@ static umode_t blk_crypto_mode_is_visible(struct kobject *kobj,
 					  struct attribute *attr, int n)
 {
 	struct blk_crypto_profile *profile = kobj_to_crypto_profile(kobj);
-	struct blk_crypto_attr *a = attr_to_crypto_attr(attr);
+	const struct blk_crypto_attr *a = attr_to_crypto_attr(attr);
 	int mode_num = a - __blk_crypto_mode_attrs;
 
 	if (profile->modes_supported[mode_num])
@@ -79,7 +79,7 @@ static umode_t blk_crypto_mode_is_visible(struct kobject *kobj,
 }
 
 static ssize_t blk_crypto_mode_show(struct blk_crypto_profile *profile,
-				    struct blk_crypto_attr *attr, char *page)
+				    const struct blk_crypto_attr *attr, char *page)
 {
 	int mode_num = attr - __blk_crypto_mode_attrs;
 
@@ -102,7 +102,7 @@ static ssize_t blk_crypto_attr_show(struct kobject *kobj,
 				    struct attribute *attr, char *page)
 {
 	struct blk_crypto_profile *profile = kobj_to_crypto_profile(kobj);
-	struct blk_crypto_attr *a = attr_to_crypto_attr(attr);
+	const struct blk_crypto_attr *a = attr_to_crypto_attr(attr);
 
 	return a->show(profile, a, page);
 }
