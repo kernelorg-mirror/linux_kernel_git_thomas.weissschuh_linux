@@ -54,8 +54,12 @@ struct module_attribute {
 	struct attribute attr;
 	ssize_t (*show)(const struct module_attribute *, struct module_kobject *,
 			char *);
+	ssize_t (*show_new)(const struct module_attribute *, struct module_kobject *,
+			    char *);
 	ssize_t (*store)(const struct module_attribute *, struct module_kobject *,
 			 const char *, size_t count);
+	ssize_t (*store_new)(const struct module_attribute *, struct module_kobject *,
+			     const char *, size_t count);
 	void (*setup)(struct module *, const char *);
 	int (*test)(struct module *);
 	void (*free)(struct module *);
