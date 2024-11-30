@@ -29,15 +29,15 @@ struct elog_obj {
 
 struct elog_attribute {
 	struct attribute attr;
-	ssize_t (*show)(struct elog_obj *elog, struct elog_attribute *attr,
+	ssize_t (*show)(struct elog_obj *elog, const struct elog_attribute *attr,
 			char *buf);
-	ssize_t (*store)(struct elog_obj *elog, struct elog_attribute *attr,
+	ssize_t (*store)(struct elog_obj *elog, const struct elog_attribute *attr,
 			 const char *buf, size_t count);
 };
 #define to_elog_attr(x) container_of(x, struct elog_attribute, attr)
 
 static ssize_t elog_id_show(struct elog_obj *elog_obj,
-			    struct elog_attribute *attr,
+			    const struct elog_attribute *attr,
 			    char *buf)
 {
 	return sprintf(buf, "0x%llx\n", elog_obj->id);
@@ -52,7 +52,7 @@ static const char *elog_type_to_string(uint64_t type)
 }
 
 static ssize_t elog_type_show(struct elog_obj *elog_obj,
-			      struct elog_attribute *attr,
+			      const struct elog_attribute *attr,
 			      char *buf)
 {
 	return sprintf(buf, "0x%llx %s\n",
@@ -61,14 +61,14 @@ static ssize_t elog_type_show(struct elog_obj *elog_obj,
 }
 
 static ssize_t elog_ack_show(struct elog_obj *elog_obj,
-			     struct elog_attribute *attr,
+			     const struct elog_attribute *attr,
 			     char *buf)
 {
 	return sprintf(buf, "ack - acknowledge log message\n");
 }
 
 static ssize_t elog_ack_store(struct elog_obj *elog_obj,
-			      struct elog_attribute *attr,
+			      const struct elog_attribute *attr,
 			      const char *buf,
 			      size_t count)
 {
