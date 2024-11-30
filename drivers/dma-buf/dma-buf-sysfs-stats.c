@@ -53,7 +53,7 @@
 struct dma_buf_stats_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct dma_buf *dmabuf,
-			struct dma_buf_stats_attribute *attr, char *buf);
+			const struct dma_buf_stats_attribute *attr, char *buf);
 };
 #define to_dma_buf_stats_attr(x) container_of(x, struct dma_buf_stats_attribute, attr)
 
@@ -80,14 +80,14 @@ static const struct sysfs_ops dma_buf_stats_sysfs_ops = {
 };
 
 static ssize_t exporter_name_show(struct dma_buf *dmabuf,
-				  struct dma_buf_stats_attribute *attr,
+				  const struct dma_buf_stats_attribute *attr,
 				  char *buf)
 {
 	return sysfs_emit(buf, "%s\n", dmabuf->exp_name);
 }
 
 static ssize_t size_show(struct dma_buf *dmabuf,
-			 struct dma_buf_stats_attribute *attr,
+			 const struct dma_buf_stats_attribute *attr,
 			 char *buf)
 {
 	return sysfs_emit(buf, "%zu\n", dmabuf->size);
