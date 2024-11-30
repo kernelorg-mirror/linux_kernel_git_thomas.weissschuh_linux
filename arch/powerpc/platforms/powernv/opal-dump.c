@@ -29,15 +29,15 @@ struct dump_obj {
 
 struct dump_attribute {
 	struct attribute attr;
-	ssize_t (*show)(struct dump_obj *dump, struct dump_attribute *attr,
+	ssize_t (*show)(struct dump_obj *dump, const struct dump_attribute *attr,
 			char *buf);
-	ssize_t (*store)(struct dump_obj *dump, struct dump_attribute *attr,
+	ssize_t (*store)(struct dump_obj *dump, const struct dump_attribute *attr,
 			 const char *buf, size_t count);
 };
 #define to_dump_attr(x) container_of(x, struct dump_attribute, attr)
 
 static ssize_t dump_id_show(struct dump_obj *dump_obj,
-			    struct dump_attribute *attr,
+			    const struct dump_attribute *attr,
 			    char *buf)
 {
 	return sprintf(buf, "0x%x\n", dump_obj->id);
@@ -54,7 +54,7 @@ static const char* dump_type_to_string(uint32_t type)
 }
 
 static ssize_t dump_type_show(struct dump_obj *dump_obj,
-			      struct dump_attribute *attr,
+			      const struct dump_attribute *attr,
 			      char *buf)
 {
 
@@ -63,7 +63,7 @@ static ssize_t dump_type_show(struct dump_obj *dump_obj,
 }
 
 static ssize_t dump_ack_show(struct dump_obj *dump_obj,
-			     struct dump_attribute *attr,
+			     const struct dump_attribute *attr,
 			     char *buf)
 {
 	return sprintf(buf, "ack - acknowledge dump\n");
@@ -84,7 +84,7 @@ static int64_t dump_send_ack(uint32_t dump_id)
 }
 
 static ssize_t dump_ack_store(struct dump_obj *dump_obj,
-			      struct dump_attribute *attr,
+			      const struct dump_attribute *attr,
 			      const char *buf,
 			      size_t count)
 {
@@ -111,7 +111,7 @@ static struct dump_attribute ack_attribute =
 	__ATTR(acknowledge, 0660, dump_ack_show, dump_ack_store);
 
 static ssize_t init_dump_show(struct dump_obj *dump_obj,
-			      struct dump_attribute *attr,
+			      const struct dump_attribute *attr,
 			      char *buf)
 {
 	return sprintf(buf, "1 - initiate Service Processor(FSP) dump\n");
@@ -129,7 +129,7 @@ static int64_t dump_fips_init(uint8_t type)
 }
 
 static ssize_t init_dump_store(struct dump_obj *dump_obj,
-			       struct dump_attribute *attr,
+			       const struct dump_attribute *attr,
 			       const char *buf,
 			       size_t count)
 {
