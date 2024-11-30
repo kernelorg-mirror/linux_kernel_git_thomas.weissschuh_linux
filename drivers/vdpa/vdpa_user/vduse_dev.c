@@ -1506,8 +1506,11 @@ free_mask:
 struct vq_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct vduse_virtqueue *vq, char *buf);
+	ssize_t (*show_new)(struct vduse_virtqueue *vq, char *buf);
 	ssize_t (*store)(struct vduse_virtqueue *vq, const char *buf,
 			 size_t count);
+	ssize_t (*store_new)(struct vduse_virtqueue *vq, const char *buf,
+			     size_t count);
 };
 
 static struct vq_sysfs_entry irq_cb_affinity_attr = __ATTR_RW(irq_cb_affinity);
