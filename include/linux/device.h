@@ -106,7 +106,11 @@ struct device_attribute {
 	struct attribute	attr;
 	ssize_t (*show)(struct device *dev, struct device_attribute *attr,
 			char *buf);
+	ssize_t (*show_new)(struct device *dev, const struct device_attribute *attr,
+			char *buf);
 	ssize_t (*store)(struct device *dev, struct device_attribute *attr,
+			 const char *buf, size_t count);
+	ssize_t (*store_new)(struct device *dev, const struct device_attribute *attr,
 			 const char *buf, size_t count);
 };
 
