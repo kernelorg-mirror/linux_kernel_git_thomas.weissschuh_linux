@@ -675,8 +675,11 @@ unsigned int gov_attr_set_put(struct gov_attr_set *attr_set, struct list_head *l
 struct governor_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct gov_attr_set *attr_set, char *buf);
+	ssize_t (*show_new)(struct gov_attr_set *attr_set, char *buf);
 	ssize_t (*store)(struct gov_attr_set *attr_set, const char *buf,
 			 size_t count);
+	ssize_t (*store_new)(struct gov_attr_set *attr_set, const char *buf,
+			     size_t count);
 };
 
 /*********************************************************************
