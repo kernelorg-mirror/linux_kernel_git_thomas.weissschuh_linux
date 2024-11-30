@@ -31,8 +31,12 @@ struct dump_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct dump_obj *dump, const struct dump_attribute *attr,
 			char *buf);
+	ssize_t (*show_new)(struct dump_obj *dump, const struct dump_attribute *attr,
+			    char *buf);
 	ssize_t (*store)(struct dump_obj *dump, const struct dump_attribute *attr,
 			 const char *buf, size_t count);
+	ssize_t (*store_new)(struct dump_obj *dump, const struct dump_attribute *attr,
+			     const char *buf, size_t count);
 };
 #define to_dump_attr(x) container_of(x, struct dump_attribute, attr)
 
