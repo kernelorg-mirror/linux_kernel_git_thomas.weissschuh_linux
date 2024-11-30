@@ -100,6 +100,8 @@ struct attribute_group {
 	const char		*name;
 	umode_t			(*is_visible)(struct kobject *,
 					      struct attribute *, int);
+	umode_t			(*is_visible_new)(struct kobject *,
+						  const struct attribute *, int);
 	umode_t			(*is_bin_visible)(struct kobject *,
 						  const struct bin_attribute *, int);
 	size_t			(*bin_size)(struct kobject *,
