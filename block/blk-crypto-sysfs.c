@@ -19,6 +19,8 @@ struct blk_crypto_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct blk_crypto_profile *profile,
 			const struct blk_crypto_attr *attr, char *page);
+	ssize_t (*show_new)(struct blk_crypto_profile *profile,
+			const struct blk_crypto_attr *attr, char *page);
 };
 
 static struct blk_crypto_profile *kobj_to_crypto_profile(struct kobject *kobj)
