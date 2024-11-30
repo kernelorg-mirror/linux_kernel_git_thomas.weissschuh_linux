@@ -177,6 +177,7 @@ const struct attribute_group usnic_attr_group = {
 struct qpn_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct usnic_ib_qp_grp *, char *buf);
+	ssize_t (*show_new)(struct usnic_ib_qp_grp *, char *buf);
 };
 
 /*
