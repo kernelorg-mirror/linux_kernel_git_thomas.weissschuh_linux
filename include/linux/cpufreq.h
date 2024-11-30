@@ -305,7 +305,9 @@ static inline void cpufreq_stats_record_transition(struct cpufreq_policy *policy
 struct freq_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct cpufreq_policy *, char *);
+	ssize_t (*show_new)(struct cpufreq_policy *, char *);
 	ssize_t (*store)(struct cpufreq_policy *, const char *, size_t count);
+	ssize_t (*store_new)(struct cpufreq_policy *, const char *, size_t count);
 };
 
 #define cpufreq_freq_attr_ro(_name)		\
