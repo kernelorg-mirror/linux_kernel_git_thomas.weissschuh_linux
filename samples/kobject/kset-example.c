@@ -38,7 +38,9 @@ struct foo_obj {
 struct foo_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct foo_obj *foo, const struct foo_attribute *attr, char *buf);
+	ssize_t (*show_new)(struct foo_obj *foo, const struct foo_attribute *attr, char *buf);
 	ssize_t (*store)(struct foo_obj *foo, const struct foo_attribute *attr, const char *buf, size_t count);
+	ssize_t (*store_new)(struct foo_obj *foo, const struct foo_attribute *attr, const char *buf, size_t count);
 };
 #define to_foo_attr(x) container_of(x, struct foo_attribute, attr)
 
