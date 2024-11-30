@@ -29,15 +29,15 @@ static struct hyp_sysfs_attr _name##_attr = __ATTR_RW(_name)
 
 struct hyp_sysfs_attr {
 	struct attribute attr;
-	ssize_t (*show)(struct hyp_sysfs_attr *, char *);
-	ssize_t (*store)(struct hyp_sysfs_attr *, const char *, size_t);
+	ssize_t (*show)(const struct hyp_sysfs_attr *, char *);
+	ssize_t (*store)(const struct hyp_sysfs_attr *, const char *, size_t);
 	union {
 		void *hyp_attr_data;
 		unsigned long hyp_attr_value;
 	};
 };
 
-static ssize_t type_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t type_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	return sprintf(buffer, "xen\n");
 }
@@ -49,7 +49,7 @@ static int __init xen_sysfs_type_init(void)
 	return sysfs_create_file(hypervisor_kobj, &type_attr.attr);
 }
 
-static ssize_t guest_type_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t guest_type_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	const char *type;
 
@@ -79,7 +79,7 @@ static int __init xen_sysfs_guest_type_init(void)
 }
 
 /* xen version attributes */
-static ssize_t major_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t major_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int version = HYPERVISOR_xen_version(XENVER_version, NULL);
 	if (version)
@@ -89,7 +89,7 @@ static ssize_t major_show(struct hyp_sysfs_attr *attr, char *buffer)
 
 HYPERVISOR_ATTR_RO(major);
 
-static ssize_t minor_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t minor_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int version = HYPERVISOR_xen_version(XENVER_version, NULL);
 	if (version)
@@ -99,7 +99,7 @@ static ssize_t minor_show(struct hyp_sysfs_attr *attr, char *buffer)
 
 HYPERVISOR_ATTR_RO(minor);
 
-static ssize_t extra_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t extra_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int ret = -ENOMEM;
 	char *extra;
@@ -136,7 +136,7 @@ static int __init xen_sysfs_version_init(void)
 
 /* UUID */
 
-static ssize_t uuid_show_fallback(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t uuid_show_fallback(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	char *vm, *val;
 	int ret;
@@ -157,7 +157,7 @@ static ssize_t uuid_show_fallback(struct hyp_sysfs_attr *attr, char *buffer)
 	return ret;
 }
 
-static ssize_t uuid_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t uuid_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	xen_domain_handle_t uuid;
 	int ret;
@@ -177,7 +177,7 @@ static int __init xen_sysfs_uuid_init(void)
 
 /* xen compilation attributes */
 
-static ssize_t compiler_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t compiler_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int ret = -ENOMEM;
 	struct xen_compile_info *info;
@@ -195,7 +195,7 @@ static ssize_t compiler_show(struct hyp_sysfs_attr *attr, char *buffer)
 
 HYPERVISOR_ATTR_RO(compiler);
 
-static ssize_t compiled_by_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t compiled_by_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int ret = -ENOMEM;
 	struct xen_compile_info *info;
@@ -213,7 +213,7 @@ static ssize_t compiled_by_show(struct hyp_sysfs_attr *attr, char *buffer)
 
 HYPERVISOR_ATTR_RO(compiled_by);
 
-static ssize_t compile_date_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t compile_date_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int ret = -ENOMEM;
 	struct xen_compile_info *info;
@@ -250,7 +250,7 @@ static int __init xen_sysfs_compilation_init(void)
 
 /* xen properties info */
 
-static ssize_t capabilities_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t capabilities_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int ret = -ENOMEM;
 	char *caps;
@@ -268,7 +268,7 @@ static ssize_t capabilities_show(struct hyp_sysfs_attr *attr, char *buffer)
 
 HYPERVISOR_ATTR_RO(capabilities);
 
-static ssize_t changeset_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t changeset_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int ret = -ENOMEM;
 	char *cset;
@@ -286,7 +286,7 @@ static ssize_t changeset_show(struct hyp_sysfs_attr *attr, char *buffer)
 
 HYPERVISOR_ATTR_RO(changeset);
 
-static ssize_t virtual_start_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t virtual_start_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int ret = -ENOMEM;
 	struct xen_platform_parameters *parms;
@@ -306,7 +306,7 @@ static ssize_t virtual_start_show(struct hyp_sysfs_attr *attr, char *buffer)
 
 HYPERVISOR_ATTR_RO(virtual_start);
 
-static ssize_t pagesize_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t pagesize_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int ret;
 
@@ -332,7 +332,7 @@ static ssize_t xen_feature_show(int index, char *buffer)
 	return ret;
 }
 
-static ssize_t features_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t features_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	ssize_t len;
 	int i;
@@ -355,7 +355,7 @@ static ssize_t features_show(struct hyp_sysfs_attr *attr, char *buffer)
 
 HYPERVISOR_ATTR_RO(features);
 
-static ssize_t buildid_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t buildid_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	ssize_t ret;
 	struct xen_build_id *buildid;
@@ -409,7 +409,7 @@ static int __init xen_sysfs_properties_init(void)
 static_assert(sizeof(xen_start_flags) <=
 	      sizeof_field(struct hyp_sysfs_attr, hyp_attr_value));
 
-static ssize_t flag_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t flag_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	char *p = buffer;
 
@@ -469,7 +469,7 @@ static struct pmu_mode pmu_modes[] = {
 	{"all", XENPMU_MODE_ALL}
 };
 
-static ssize_t pmu_mode_store(struct hyp_sysfs_attr *attr,
+static ssize_t pmu_mode_store(const struct hyp_sysfs_attr *attr,
 			      const char *buffer, size_t len)
 {
 	int ret;
@@ -495,7 +495,7 @@ static ssize_t pmu_mode_store(struct hyp_sysfs_attr *attr,
 	return len;
 }
 
-static ssize_t pmu_mode_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t pmu_mode_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int ret;
 	struct xen_pmu_params xp;
@@ -518,7 +518,7 @@ static ssize_t pmu_mode_show(struct hyp_sysfs_attr *attr, char *buffer)
 }
 HYPERVISOR_ATTR_RW(pmu_mode);
 
-static ssize_t pmu_features_store(struct hyp_sysfs_attr *attr,
+static ssize_t pmu_features_store(const struct hyp_sysfs_attr *attr,
 				  const char *buffer, size_t len)
 {
 	int ret;
@@ -539,7 +539,7 @@ static ssize_t pmu_features_store(struct hyp_sysfs_attr *attr,
 	return len;
 }
 
-static ssize_t pmu_features_show(struct hyp_sysfs_attr *attr, char *buffer)
+static ssize_t pmu_features_show(const struct hyp_sysfs_attr *attr, char *buffer)
 {
 	int ret;
 	struct xen_pmu_params xp;
