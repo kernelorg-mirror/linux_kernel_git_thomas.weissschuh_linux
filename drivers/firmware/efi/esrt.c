@@ -75,6 +75,7 @@ static LIST_HEAD(entry_list);
 struct esre_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct esre_entry *entry, char *buf);
+	ssize_t (*show_new)(struct esre_entry *entry, char *buf);
 };
 
 static struct esre_entry *to_entry(struct kobject *kobj)
