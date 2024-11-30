@@ -23,6 +23,7 @@ static struct efi_runtime_map_entry **map_entries;
 struct map_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct efi_runtime_map_entry *entry, char *buf);
+	ssize_t (*show_new)(struct efi_runtime_map_entry *entry, char *buf);
 };
 
 static inline struct map_attribute *to_map_attr(struct attribute *attr)
