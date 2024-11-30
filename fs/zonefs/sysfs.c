@@ -13,6 +13,7 @@
 struct zonefs_sysfs_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct zonefs_sb_info *sbi, char *buf);
+	ssize_t (*show_new)(struct zonefs_sb_info *sbi, char *buf);
 };
 
 #define ZONEFS_SYSFS_ATTR_RO(name) \
