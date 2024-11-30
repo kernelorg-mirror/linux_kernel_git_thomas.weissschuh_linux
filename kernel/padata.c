@@ -875,8 +875,11 @@ static void padata_sysfs_release(struct kobject *kobj)
 struct padata_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct padata_instance *, const struct attribute *, char *);
+	ssize_t (*show_new)(struct padata_instance *, const struct attribute *, char *);
 	ssize_t (*store)(struct padata_instance *, const struct attribute *,
 			 const char *, size_t);
+	ssize_t (*store_new)(struct padata_instance *, const struct attribute *,
+			     const char *, size_t);
 };
 
 static ssize_t show_cpumask(struct padata_instance *pinst,
