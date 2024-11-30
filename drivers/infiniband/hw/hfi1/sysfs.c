@@ -569,7 +569,9 @@ const struct attribute_group *hfi1_attr_port_groups[] = {
 struct sde_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct sdma_engine *sde, char *buf);
+	ssize_t (*show_new)(struct sdma_engine *sde, char *buf);
 	ssize_t (*store)(struct sdma_engine *sde, const char *buf, size_t cnt);
+	ssize_t (*store_new)(struct sdma_engine *sde, const char *buf, size_t cnt);
 };
 
 static ssize_t sde_show(struct kobject *kobj, struct attribute *attr, char *buf)
