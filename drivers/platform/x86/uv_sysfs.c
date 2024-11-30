@@ -151,7 +151,9 @@ static ssize_t hub_cnode_show(struct uv_bios_hub_info *hub_info, char *buf)
 struct hub_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct uv_bios_hub_info *hub_info, char *buf);
+	ssize_t (*show_new)(struct uv_bios_hub_info *hub_info, char *buf);
 	ssize_t (*store)(struct uv_bios_hub_info *hub_info, const char *buf, size_t sz);
+	ssize_t (*store_new)(struct uv_bios_hub_info *hub_info, const char *buf, size_t sz);
 };
 
 static struct hub_sysfs_entry name_attribute =
@@ -316,7 +318,9 @@ static ssize_t uv_port_conn_port_show(struct uv_bios_port_info *port, char *buf)
 struct uv_port_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct uv_bios_port_info *port_info, char *buf);
+	ssize_t (*show_new)(struct uv_bios_port_info *port_info, char *buf);
 	ssize_t (*store)(struct uv_bios_port_info *port_info, const char *buf, size_t size);
+	ssize_t (*store_new)(struct uv_bios_port_info *port_info, const char *buf, size_t size);
 };
 
 static struct uv_port_sysfs_entry uv_port_conn_hub_attribute =
@@ -487,7 +491,9 @@ static ssize_t uv_pci_slot_show(struct uv_pci_top_obj *top_obj, char *buf)
 struct uv_pci_top_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct uv_pci_top_obj *top_obj, char *buf);
+	ssize_t (*show_new)(struct uv_pci_top_obj *top_obj, char *buf);
 	ssize_t (*store)(struct uv_pci_top_obj *top_obj, const char *buf, size_t size);
+	ssize_t (*store_new)(struct uv_pci_top_obj *top_obj, const char *buf, size_t size);
 };
 
 static struct uv_pci_top_sysfs_entry uv_pci_type_attribute =
