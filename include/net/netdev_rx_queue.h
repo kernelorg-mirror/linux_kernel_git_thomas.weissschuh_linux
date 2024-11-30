@@ -35,8 +35,11 @@ struct netdev_rx_queue {
 struct rx_queue_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct netdev_rx_queue *queue, char *buf);
+	ssize_t (*show_new)(struct netdev_rx_queue *queue, char *buf);
 	ssize_t (*store)(struct netdev_rx_queue *queue,
 			 const char *buf, size_t len);
+	ssize_t (*store_new)(struct netdev_rx_queue *queue,
+			     const char *buf, size_t len);
 };
 
 static inline struct netdev_rx_queue *
