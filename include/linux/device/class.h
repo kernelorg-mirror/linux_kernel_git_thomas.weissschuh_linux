@@ -170,8 +170,12 @@ struct class_attribute {
 	struct attribute attr;
 	ssize_t (*show)(const struct class *class, const struct class_attribute *attr,
 			char *buf);
+	ssize_t (*show_new)(const struct class *class, const struct class_attribute *attr,
+			    char *buf);
 	ssize_t (*store)(const struct class *class, const struct class_attribute *attr,
 			 const char *buf, size_t count);
+	ssize_t (*store_new)(const struct class *class, const struct class_attribute *attr,
+			     const char *buf, size_t count);
 };
 
 #define CLASS_ATTR_RW(_name) \
