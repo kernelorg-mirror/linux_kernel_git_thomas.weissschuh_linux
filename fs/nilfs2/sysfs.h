@@ -55,8 +55,12 @@ struct nilfs_##name##_attr { \
 	struct attribute attr; \
 	ssize_t (*show)(struct kobject *, const struct attribute *, \
 			char *); \
+	ssize_t (*show_new)(struct kobject *, const struct attribute *, \
+			    char *); \
 	ssize_t (*store)(struct kobject *, const struct attribute *, \
 			 const char *, size_t); \
+	ssize_t (*store_new)(struct kobject *, const struct attribute *, \
+			     const char *, size_t); \
 }
 
 NILFS_COMMON_ATTR_STRUCT(feature);
@@ -66,8 +70,12 @@ struct nilfs_##name##_attr { \
 	struct attribute attr; \
 	ssize_t (*show)(const struct nilfs_##name##_attr *, struct the_nilfs *, \
 			char *); \
+	ssize_t (*show_new)(const struct nilfs_##name##_attr *, struct the_nilfs *, \
+			    char *); \
 	ssize_t (*store)(const struct nilfs_##name##_attr *, struct the_nilfs *, \
 			 const char *, size_t); \
+	ssize_t (*store_new)(const struct nilfs_##name##_attr *, struct the_nilfs *, \
+			     const char *, size_t); \
 }
 
 NILFS_DEV_ATTR_STRUCT(dev);
@@ -82,8 +90,12 @@ struct nilfs_##name##_attr { \
 	struct attribute attr; \
 	ssize_t (*show)(const struct nilfs_##name##_attr *, struct nilfs_root *, \
 			char *); \
+	ssize_t (*show_new)(const struct nilfs_##name##_attr *, struct nilfs_root *, \
+			    char *); \
 	ssize_t (*store)(const struct nilfs_##name##_attr *, struct nilfs_root *, \
 			 const char *, size_t); \
+	ssize_t (*store_new)(const struct nilfs_##name##_attr *, struct nilfs_root *, \
+			     const char *, size_t); \
 }
 
 NILFS_CP_ATTR_STRUCT(snapshot);
