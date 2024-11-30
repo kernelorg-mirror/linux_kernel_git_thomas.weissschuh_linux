@@ -113,7 +113,9 @@ int __must_check bus_rescan_devices(const struct bus_type *bus);
 struct bus_attribute {
 	struct attribute	attr;
 	ssize_t (*show)(const struct bus_type *bus, char *buf);
+	ssize_t (*show_new)(const struct bus_type *bus, char *buf);
 	ssize_t (*store)(const struct bus_type *bus, const char *buf, size_t count);
+	ssize_t (*store_new)(const struct bus_type *bus, const char *buf, size_t count);
 };
 
 #define BUS_ATTR_RW(_name) \
