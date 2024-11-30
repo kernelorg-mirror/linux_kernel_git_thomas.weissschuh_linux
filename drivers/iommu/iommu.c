@@ -76,8 +76,11 @@ struct group_device {
 struct iommu_group_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct iommu_group *group, char *buf);
+	ssize_t (*show_new)(struct iommu_group *group, char *buf);
 	ssize_t (*store)(struct iommu_group *group,
 			 const char *buf, size_t count);
+	ssize_t (*store_new)(struct iommu_group *group,
+			     const char *buf, size_t count);
 };
 
 static const char * const iommu_group_resv_type_string[] = {
