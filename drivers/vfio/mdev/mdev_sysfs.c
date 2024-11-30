@@ -18,9 +18,14 @@ struct mdev_type_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct mdev_type *mtype,
 			const struct mdev_type_attribute *attr, char *buf);
+	ssize_t (*show_new)(struct mdev_type *mtype,
+			    const struct mdev_type_attribute *attr, char *buf);
 	ssize_t (*store)(struct mdev_type *mtype,
 			 const struct mdev_type_attribute *attr, const char *buf,
 			 size_t count);
+	ssize_t (*store_new)(struct mdev_type *mtype,
+			     const struct mdev_type_attribute *attr, const char *buf,
+			     size_t count);
 };
 
 #define MDEV_TYPE_ATTR_RO(_name) \
