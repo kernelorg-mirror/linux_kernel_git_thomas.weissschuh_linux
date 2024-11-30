@@ -760,6 +760,7 @@ struct ip_die_entry {
 struct ip_hw_instance_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct ip_hw_instance *ip_hw_instance, char *buf);
+	ssize_t (*show_new)(struct ip_hw_instance *ip_hw_instance, char *buf);
 };
 
 static ssize_t hw_id_show(struct ip_hw_instance *ip_hw_instance, char *buf)
@@ -890,6 +891,7 @@ static void ip_disc_release(struct kobject *kobj);
 struct ip_die_entry_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct ip_die_entry *ip_die_entry, char *buf);
+	ssize_t (*show_new)(struct ip_die_entry *ip_die_entry, char *buf);
 };
 
 #define to_ip_die_entry_attr(x)  container_of(x, struct ip_die_entry_attribute, attr)
