@@ -23,9 +23,15 @@ struct gb_audio_manager_module_attribute {
 	ssize_t (*show)(struct gb_audio_manager_module *module,
 			const struct gb_audio_manager_module_attribute *attr,
 			char *buf);
+	ssize_t (*show_new)(struct gb_audio_manager_module *module,
+			    const struct gb_audio_manager_module_attribute *attr,
+			    char *buf);
 	ssize_t (*store)(struct gb_audio_manager_module *module,
 			 const struct gb_audio_manager_module_attribute *attr,
 			 const char *buf, size_t count);
+	ssize_t (*store_new)(struct gb_audio_manager_module *module,
+			     const struct gb_audio_manager_module_attribute *attr,
+			     const char *buf, size_t count);
 };
 
 static ssize_t gb_audio_module_attr_show(struct kobject *kobj,
