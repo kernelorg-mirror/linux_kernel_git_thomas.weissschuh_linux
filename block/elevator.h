@@ -55,7 +55,9 @@ struct elevator_mq_ops {
 struct elv_fs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct elevator_queue *, char *);
+	ssize_t (*show_new)(struct elevator_queue *, char *);
 	ssize_t (*store)(struct elevator_queue *, const char *, size_t);
+	ssize_t (*store_new)(struct elevator_queue *, const char *, size_t);
 };
 
 /*
