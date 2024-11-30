@@ -102,7 +102,7 @@ static struct bin_attribute *port_cc_bin_attributes[] = {
 };
 
 static ssize_t cc_prescan_show(struct ib_device *ibdev, u32 port_num,
-			       struct ib_port_attribute *attr, char *buf)
+			       const struct ib_port_attribute *attr, char *buf)
 {
 	struct hfi1_devdata *dd = dd_from_ibdev(ibdev);
 	struct hfi1_pportdata *ppd = &dd->pport[port_num - 1];
@@ -111,7 +111,7 @@ static ssize_t cc_prescan_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t cc_prescan_store(struct ib_device *ibdev, u32 port_num,
-				struct ib_port_attribute *attr, const char *buf,
+				const struct ib_port_attribute *attr, const char *buf,
 				size_t count)
 {
 	struct hfi1_devdata *dd = dd_from_ibdev(ibdev);
@@ -144,7 +144,7 @@ struct hfi1_sc2vl_attr {
 };
 
 static ssize_t sc2vl_attr_show(struct ib_device *ibdev, u32 port_num,
-			       struct ib_port_attribute *attr, char *buf)
+			       const struct ib_port_attribute *attr, char *buf)
 {
 	struct hfi1_sc2vl_attr *sattr =
 		container_of(attr, struct hfi1_sc2vl_attr, attr);
@@ -241,7 +241,7 @@ struct hfi1_sl2sc_attr {
 };
 
 static ssize_t sl2sc_attr_show(struct ib_device *ibdev, u32 port_num,
-			       struct ib_port_attribute *attr, char *buf)
+			       const struct ib_port_attribute *attr, char *buf)
 {
 	struct hfi1_sl2sc_attr *sattr =
 		container_of(attr, struct hfi1_sl2sc_attr, attr);
@@ -340,7 +340,7 @@ struct hfi1_vl2mtu_attr {
 };
 
 static ssize_t vl2mtu_attr_show(struct ib_device *ibdev, u32 port_num,
-				struct ib_port_attribute *attr, char *buf)
+				const struct ib_port_attribute *attr, char *buf)
 {
 	struct hfi1_vl2mtu_attr *vlattr =
 		container_of(attr, struct hfi1_vl2mtu_attr, attr);

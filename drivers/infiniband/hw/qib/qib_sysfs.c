@@ -50,7 +50,7 @@ static struct qib_pportdata *qib_get_pportdata_kobj(struct kobject *kobj)
  * Get/Set heartbeat enable. OR of 1=enabled, 2=auto
  */
 static ssize_t hrtbt_enable_show(struct ib_device *ibdev, u32 port_num,
-				 struct ib_port_attribute *attr, char *buf)
+				 const struct ib_port_attribute *attr, char *buf)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
 	struct qib_pportdata *ppd = &dd->pport[port_num - 1];
@@ -59,7 +59,7 @@ static ssize_t hrtbt_enable_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t hrtbt_enable_store(struct ib_device *ibdev, u32 port_num,
-				  struct ib_port_attribute *attr,
+				  const struct ib_port_attribute *attr,
 				  const char *buf, size_t count)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
@@ -86,7 +86,7 @@ static ssize_t hrtbt_enable_store(struct ib_device *ibdev, u32 port_num,
 static IB_PORT_ATTR_RW(hrtbt_enable);
 
 static ssize_t loopback_store(struct ib_device *ibdev, u32 port_num,
-			      struct ib_port_attribute *attr, const char *buf,
+			      const struct ib_port_attribute *attr, const char *buf,
 			      size_t count)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
@@ -102,7 +102,7 @@ static ssize_t loopback_store(struct ib_device *ibdev, u32 port_num,
 static IB_PORT_ATTR_WO(loopback);
 
 static ssize_t led_override_store(struct ib_device *ibdev, u32 port_num,
-				  struct ib_port_attribute *attr,
+				  const struct ib_port_attribute *attr,
 				  const char *buf, size_t count)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
@@ -122,7 +122,7 @@ static ssize_t led_override_store(struct ib_device *ibdev, u32 port_num,
 static IB_PORT_ATTR_WO(led_override);
 
 static ssize_t status_show(struct ib_device *ibdev, u32 port_num,
-			   struct ib_port_attribute *attr, char *buf)
+			   const struct ib_port_attribute *attr, char *buf)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
 	struct qib_pportdata *ppd = &dd->pport[port_num - 1];
@@ -153,7 +153,7 @@ static const char * const qib_status_str[] = {
 };
 
 static ssize_t status_str_show(struct ib_device *ibdev, u32 port_num,
-			       struct ib_port_attribute *attr, char *buf)
+			       const struct ib_port_attribute *attr, char *buf)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
 	struct qib_pportdata *ppd = &dd->pport[port_num - 1];
@@ -306,7 +306,7 @@ struct qib_sl2vl_attr {
 };
 
 static ssize_t sl2vl_attr_show(struct ib_device *ibdev, u32 port_num,
-			       struct ib_port_attribute *attr, char *buf)
+			       const struct ib_port_attribute *attr, char *buf)
 {
 	struct qib_sl2vl_attr *sattr =
 		container_of(attr, struct qib_sl2vl_attr, attr);
@@ -374,7 +374,7 @@ struct qib_diagc_attr {
 };
 
 static ssize_t diagc_attr_show(struct ib_device *ibdev, u32 port_num,
-			       struct ib_port_attribute *attr, char *buf)
+			       const struct ib_port_attribute *attr, char *buf)
 {
 	struct qib_diagc_attr *dattr =
 		container_of(attr, struct qib_diagc_attr, attr);
@@ -385,7 +385,7 @@ static ssize_t diagc_attr_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t diagc_attr_store(struct ib_device *ibdev, u32 port_num,
-				struct ib_port_attribute *attr, const char *buf,
+				const struct ib_port_attribute *attr, const char *buf,
 				size_t count)
 {
 	struct qib_diagc_attr *dattr =
@@ -452,7 +452,7 @@ static ssize_t qib_store_per_cpu(struct qib_devdata *dd, const char *buf,
 }
 
 static ssize_t rc_acks_show(struct ib_device *ibdev, u32 port_num,
-			    struct ib_port_attribute *attr, char *buf)
+			    const struct ib_port_attribute *attr, char *buf)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
 	struct qib_ibport *qibp = &dd->pport[port_num - 1].ibport_data;
@@ -463,7 +463,7 @@ static ssize_t rc_acks_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t rc_acks_store(struct ib_device *ibdev, u32 port_num,
-			     struct ib_port_attribute *attr, const char *buf,
+			     const struct ib_port_attribute *attr, const char *buf,
 			     size_t count)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
@@ -475,7 +475,7 @@ static ssize_t rc_acks_store(struct ib_device *ibdev, u32 port_num,
 static IB_PORT_ATTR_RW(rc_acks);
 
 static ssize_t rc_qacks_show(struct ib_device *ibdev, u32 port_num,
-			     struct ib_port_attribute *attr, char *buf)
+			     const struct ib_port_attribute *attr, char *buf)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
 	struct qib_ibport *qibp = &dd->pport[port_num - 1].ibport_data;
@@ -486,7 +486,7 @@ static ssize_t rc_qacks_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t rc_qacks_store(struct ib_device *ibdev, u32 port_num,
-			      struct ib_port_attribute *attr, const char *buf,
+			      const struct ib_port_attribute *attr, const char *buf,
 			      size_t count)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
@@ -498,7 +498,7 @@ static ssize_t rc_qacks_store(struct ib_device *ibdev, u32 port_num,
 static IB_PORT_ATTR_RW(rc_qacks);
 
 static ssize_t rc_delayed_comp_show(struct ib_device *ibdev, u32 port_num,
-				    struct ib_port_attribute *attr, char *buf)
+				    const struct ib_port_attribute *attr, char *buf)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);
 	struct qib_ibport *qibp = &dd->pport[port_num - 1].ibport_data;
@@ -509,7 +509,7 @@ static ssize_t rc_delayed_comp_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t rc_delayed_comp_store(struct ib_device *ibdev, u32 port_num,
-				     struct ib_port_attribute *attr,
+				     const struct ib_port_attribute *attr,
 				     const char *buf, size_t count)
 {
 	struct qib_devdata *dd = dd_from_ibdev(ibdev);

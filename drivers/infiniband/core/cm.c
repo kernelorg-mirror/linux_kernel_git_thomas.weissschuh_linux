@@ -4288,7 +4288,7 @@ int ib_cm_init_qp_attr(struct ib_cm_id *cm_id,
 EXPORT_SYMBOL(ib_cm_init_qp_attr);
 
 static ssize_t cm_show_counter(struct ib_device *ibdev, u32 port_num,
-			       struct ib_port_attribute *attr, char *buf)
+			       const struct ib_port_attribute *attr, char *buf)
 {
 	struct cm_counter_attribute *cm_attr =
 		container_of(attr, struct cm_counter_attribute, attr);

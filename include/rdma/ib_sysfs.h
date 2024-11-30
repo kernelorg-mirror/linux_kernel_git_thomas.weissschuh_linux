@@ -12,9 +12,9 @@ struct ib_device;
 struct ib_port_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct ib_device *ibdev, u32 port_num,
-			struct ib_port_attribute *attr, char *buf);
+			const struct ib_port_attribute *attr, char *buf);
 	ssize_t (*store)(struct ib_device *ibdev, u32 port_num,
-			 struct ib_port_attribute *attr, const char *buf,
+			 const struct ib_port_attribute *attr, const char *buf,
 			 size_t count);
 };
 
