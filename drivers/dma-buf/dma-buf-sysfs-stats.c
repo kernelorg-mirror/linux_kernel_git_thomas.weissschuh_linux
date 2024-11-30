@@ -54,6 +54,8 @@ struct dma_buf_stats_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct dma_buf *dmabuf,
 			const struct dma_buf_stats_attribute *attr, char *buf);
+	ssize_t (*show_new)(struct dma_buf *dmabuf,
+			    const struct dma_buf_stats_attribute *attr, char *buf);
 };
 #define to_dma_buf_stats_attr(x) container_of(x, struct dma_buf_stats_attribute, attr)
 
