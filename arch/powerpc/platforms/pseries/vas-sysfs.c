@@ -64,7 +64,9 @@ static ssize_t _name##_show(struct vas_cop_feat_caps *caps, char *buf) 	\
 struct vas_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct vas_cop_feat_caps *, char *);
+	ssize_t (*show_new)(struct vas_cop_feat_caps *, char *);
 	ssize_t (*store)(struct vas_cop_feat_caps *, const char *, size_t);
+	ssize_t (*store_new)(struct vas_cop_feat_caps *, const char *, size_t);
 };
 
 #define VAS_ATTR_RO(_name)	\
