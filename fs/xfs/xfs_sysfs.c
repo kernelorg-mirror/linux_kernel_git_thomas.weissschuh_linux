@@ -17,8 +17,11 @@
 struct xfs_sysfs_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct kobject *kobject, char *buf);
+	ssize_t (*show_new)(struct kobject *kobject, char *buf);
 	ssize_t (*store)(struct kobject *kobject, const char *buf,
 			 size_t count);
+	ssize_t (*store_new)(struct kobject *kobject, const char *buf,
+			     size_t count);
 };
 
 static inline struct xfs_sysfs_attr *
