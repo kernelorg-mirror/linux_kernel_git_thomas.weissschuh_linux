@@ -240,23 +240,35 @@ typedef ssize_t (*__sysfs_device_attr_store_new)(struct device *dev,
 						 const struct device_attribute *attr,
 						 const char *buf, size_t count);
 
+struct kobj_attribute;
+typedef ssize_t (*__sysfs_kobj_attr_show_new)(struct kobject *kobj,
+					      const struct kobj_attribute *attr,
+					      char *buf);
+typedef ssize_t (*__sysfs_kobj_attr_store_new)(struct kobject *kobj,
+					       const struct kobj_attribute *attr,
+					       const char *buf, size_t count);
+
 #define __ATTR_SHOW(_show)						\
 	.show	= _Generic(_show,					\
 		__sysfs_device_attr_show_new : NULL,			\
+		__sysfs_kobj_attr_show_new : NULL,			\
 		default : _show						\
 	),								\
 	.show_new = _Generic(_show,					\
 		__sysfs_device_attr_show_new : _show,			\
+		__sysfs_kobj_attr_show_new : _show,			\
 		default : NULL						\
 	)
 
 #define __ATTR_STORE(_store)						\
 	.store	= _Generic(_store,					\
 		__sysfs_device_attr_store_new : NULL,			\
+		__sysfs_kobj_attr_store_new : NULL,			\
 		default : _store					\
 	),								\
 	.store_new = _Generic(_store,					\
 		__sysfs_device_attr_store_new : _store,			\
+		__sysfs_kobj_attr_store_new : _store,			\
 		default : NULL						\
 	)
 
