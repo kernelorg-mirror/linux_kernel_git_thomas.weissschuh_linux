@@ -165,10 +165,10 @@
 struct orangefs_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct kobject *kobj,
-			struct orangefs_attribute *attr,
+			const struct orangefs_attribute *attr,
 			char *buf);
 	ssize_t (*store)(struct kobject *kobj,
-			 struct orangefs_attribute *attr,
+			 const struct orangefs_attribute *attr,
 			 const char *buf,
 			 size_t count);
 };
@@ -177,7 +177,7 @@ static ssize_t orangefs_attr_show(struct kobject *kobj,
 				  struct attribute *attr,
 				  char *buf)
 {
-	struct orangefs_attribute *attribute;
+	const struct orangefs_attribute *attribute;
 
 	attribute = container_of(attr, struct orangefs_attribute, attr);
 	if (!attribute->show)
@@ -190,7 +190,7 @@ static ssize_t orangefs_attr_store(struct kobject *kobj,
 				   const char *buf,
 				   size_t len)
 {
-	struct orangefs_attribute *attribute;
+	const struct orangefs_attribute *attribute;
 
 	if (!strcmp(kobj->name, PC_KOBJ_ID) ||
 	    !strcmp(kobj->name, STATS_KOBJ_ID))
@@ -208,7 +208,7 @@ static const struct sysfs_ops orangefs_sysfs_ops = {
 };
 
 static ssize_t sysfs_int_show(struct kobject *kobj,
-    struct orangefs_attribute *attr, char *buf)
+    const struct orangefs_attribute *attr, char *buf)
 {
 	int rc = -EIO;
 
@@ -278,7 +278,7 @@ out:
 }
 
 static ssize_t sysfs_int_store(struct kobject *kobj,
-    struct orangefs_attribute *attr, const char *buf, size_t count)
+    const struct orangefs_attribute *attr, const char *buf, size_t count)
 {
 	int rc = 0;
 
@@ -318,7 +318,7 @@ out:
  * obtain attribute values from userspace with a service operation.
  */
 static ssize_t sysfs_service_op_show(struct kobject *kobj,
-    struct orangefs_attribute *attr, char *buf)
+    const struct orangefs_attribute *attr, char *buf)
 {
 	struct orangefs_kernel_op_s *new_op = NULL;
 	int rc = 0;
@@ -533,7 +533,7 @@ out:
  * EINVAL if not.
  */
 static ssize_t sysfs_service_op_store(struct kobject *kobj,
-    struct orangefs_attribute *attr, const char *buf, size_t count)
+    const struct orangefs_attribute *attr, const char *buf, size_t count)
 {
 	struct orangefs_kernel_op_s *new_op = NULL;
 	int val = 0;
