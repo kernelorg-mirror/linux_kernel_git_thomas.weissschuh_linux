@@ -751,7 +751,9 @@ struct md_personality
 struct md_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct mddev *, char *);
+	ssize_t (*show_new)(struct mddev *, char *);
 	ssize_t (*store)(struct mddev *, const char *, size_t);
+	ssize_t (*store_new)(struct mddev *, const char *, size_t);
 };
 extern const struct attribute_group md_bitmap_group;
 

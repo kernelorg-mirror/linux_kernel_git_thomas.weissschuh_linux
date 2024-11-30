@@ -2858,7 +2858,9 @@ static int cmd_match(const char *cmd, const char *str)
 struct rdev_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct md_rdev *, char *);
+	ssize_t (*show_new)(struct md_rdev *, char *);
 	ssize_t (*store)(struct md_rdev *, const char *, size_t);
+	ssize_t (*store_new)(struct md_rdev *, const char *, size_t);
 };
 
 static ssize_t
