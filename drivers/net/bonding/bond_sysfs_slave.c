@@ -13,6 +13,7 @@
 struct slave_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct slave *, char *);
+	ssize_t (*show_new)(struct slave *, char *);
 };
 
 #define SLAVE_ATTR_RO(_name)					\
