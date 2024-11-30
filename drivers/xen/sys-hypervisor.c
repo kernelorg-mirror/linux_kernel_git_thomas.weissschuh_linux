@@ -30,7 +30,9 @@ static struct hyp_sysfs_attr _name##_attr = __ATTR_RW(_name)
 struct hyp_sysfs_attr {
 	struct attribute attr;
 	ssize_t (*show)(const struct hyp_sysfs_attr *, char *);
+	ssize_t (*show_new)(const struct hyp_sysfs_attr *, char *);
 	ssize_t (*store)(const struct hyp_sysfs_attr *, const char *, size_t);
+	ssize_t (*store_new)(const struct hyp_sysfs_attr *, const char *, size_t);
 	union {
 		void *hyp_attr_data;
 		unsigned long hyp_attr_value;
