@@ -54,8 +54,11 @@ static const char *gc_mode_names[MAX_GC_MODE] = {
 struct f2fs_attr {
 	struct attribute attr;
 	ssize_t (*show)(const struct f2fs_attr *a, struct f2fs_sb_info *sbi, char *buf);
+	ssize_t (*show_new)(const struct f2fs_attr *a, struct f2fs_sb_info *sbi, char *buf);
 	ssize_t (*store)(const struct f2fs_attr *a, struct f2fs_sb_info *sbi,
 			 const char *buf, size_t len);
+	ssize_t (*store_new)(const struct f2fs_attr *a, struct f2fs_sb_info *sbi,
+			     const char *buf, size_t len);
 	int struct_type;
 	int offset;
 	int id;
