@@ -54,6 +54,7 @@ firmware_map_find_entry(u64 start, u64 end, const char *type);
 struct memmap_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct firmware_map_entry *entry, char *buf);
+	ssize_t (*show_new)(struct firmware_map_entry *entry, char *buf);
 };
 
 static struct memmap_attribute memmap_start_attr = __ATTR_RO(start);
