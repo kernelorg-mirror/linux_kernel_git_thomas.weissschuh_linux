@@ -6627,7 +6627,9 @@ static ssize_t show_slab_objects(struct kmem_cache *s,
 struct slab_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct kmem_cache *s, char *buf);
+	ssize_t (*show_new)(struct kmem_cache *s, char *buf);
 	ssize_t (*store)(struct kmem_cache *s, const char *x, size_t count);
+	ssize_t (*store_new)(struct kmem_cache *s, const char *x, size_t count);
 };
 
 #define SLAB_ATTR_RO(_name) \
