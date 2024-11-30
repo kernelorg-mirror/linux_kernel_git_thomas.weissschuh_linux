@@ -167,10 +167,17 @@ struct orangefs_attribute {
 	ssize_t (*show)(struct kobject *kobj,
 			const struct orangefs_attribute *attr,
 			char *buf);
+	ssize_t (*show_new)(struct kobject *kobj,
+			    const struct orangefs_attribute *attr,
+			    char *buf);
 	ssize_t (*store)(struct kobject *kobj,
 			 const struct orangefs_attribute *attr,
 			 const char *buf,
 			 size_t count);
+	ssize_t (*store_new)(struct kobject *kobj,
+			     const struct orangefs_attribute *attr,
+			     const char *buf,
+			     size_t count);
 };
 
 static ssize_t orangefs_attr_show(struct kobject *kobj,
