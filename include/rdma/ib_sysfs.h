@@ -13,9 +13,14 @@ struct ib_port_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct ib_device *ibdev, u32 port_num,
 			const struct ib_port_attribute *attr, char *buf);
+	ssize_t (*show_new)(struct ib_device *ibdev, u32 port_num,
+			const struct ib_port_attribute *attr, char *buf);
 	ssize_t (*store)(struct ib_device *ibdev, u32 port_num,
 			 const struct ib_port_attribute *attr, const char *buf,
 			 size_t count);
+	ssize_t (*store_new)(struct ib_device *ibdev, u32 port_num,
+			     const struct ib_port_attribute *attr, const char *buf,
+			     size_t count);
 };
 
 #define IB_PORT_ATTR_RW(_name)                                                 \
