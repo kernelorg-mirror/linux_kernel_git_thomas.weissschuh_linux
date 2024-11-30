@@ -1214,8 +1214,11 @@ static int net_rx_queue_change_owner(struct net_device *dev, int num,
 struct netdev_queue_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct netdev_queue *queue, char *buf);
+	ssize_t (*show_new)(struct netdev_queue *queue, char *buf);
 	ssize_t (*store)(struct netdev_queue *queue,
 			 const char *buf, size_t len);
+	ssize_t (*store_new)(struct netdev_queue *queue,
+			     const char *buf, size_t len);
 };
 #define to_netdev_queue_attr(_attr) \
 	container_of(_attr, struct netdev_queue_attribute, attr)
