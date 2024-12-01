@@ -352,7 +352,9 @@ static ssize_t overlay_zorder_store(struct omap_overlay *ovl,
 struct overlay_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct omap_overlay *, char *);
+	ssize_t (*show_new)(struct omap_overlay *, char *);
 	ssize_t	(*store)(struct omap_overlay *, const char *, size_t);
+	ssize_t	(*store_new)(struct omap_overlay *, const char *, size_t);
 };
 
 #define OVERLAY_ATTR(_name, _mode, _show, _store) \
