@@ -416,7 +416,9 @@ static ssize_t manager_cpr_coef_store(struct omap_overlay_manager *mgr,
 struct manager_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct omap_overlay_manager *, char *);
+	ssize_t (*show_new)(struct omap_overlay_manager *, char *);
 	ssize_t	(*store)(struct omap_overlay_manager *, const char *, size_t);
+	ssize_t	(*store_new)(struct omap_overlay_manager *, const char *, size_t);
 };
 
 #define MANAGER_ATTR(_name, _mode, _show, _store) \

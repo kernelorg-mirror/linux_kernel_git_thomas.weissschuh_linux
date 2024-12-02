@@ -233,7 +233,9 @@ static ssize_t display_wss_store(struct omap_dss_device *dssdev,
 struct display_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct omap_dss_device *, char *);
+	ssize_t (*show_new)(struct omap_dss_device *, char *);
 	ssize_t	(*store)(struct omap_dss_device *, const char *, size_t);
+	ssize_t	(*store_new)(struct omap_dss_device *, const char *, size_t);
 };
 
 #define DISPLAY_ATTR(_name, _mode, _show, _store) \
