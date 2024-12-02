@@ -2440,7 +2440,9 @@ static void ab8500_fg_reinit_work(struct work_struct *work)
 struct ab8500_fg_sysfs_entry {
 	struct attribute attr;
 	ssize_t (*show)(struct ab8500_fg *, char *);
+	ssize_t (*show_new)(struct ab8500_fg *, char *);
 	ssize_t (*store)(struct ab8500_fg *, const char *, size_t);
+	ssize_t (*store_new)(struct ab8500_fg *, const char *, size_t);
 };
 
 static ssize_t charge_full_show(struct ab8500_fg *di, char *buf)
