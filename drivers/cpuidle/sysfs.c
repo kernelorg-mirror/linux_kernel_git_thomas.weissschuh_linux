@@ -542,7 +542,9 @@ struct cpuidle_driver_kobj {
 struct cpuidle_driver_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct cpuidle_driver *, char *);
+	ssize_t (*show_new)(struct cpuidle_driver *, char *);
 	ssize_t (*store)(struct cpuidle_driver *, const char *, size_t);
+	ssize_t (*store_new)(struct cpuidle_driver *, const char *, size_t);
 };
 
 static ssize_t show_driver_name(struct cpuidle_driver *drv, char *buf)
