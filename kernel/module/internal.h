@@ -338,6 +338,7 @@ void module_mark_ro_after_init(const Elf_Ehdr *hdr, Elf_Shdr *sechdrs,
 			       const char *secstrings);
 
 int module_sig_check(const void *mod, size_t modlen, const void *sig, size_t siglen);
+int module_hash_check(const void *mod, size_t modlen, const void *sig, size_t siglen);
 
 #ifdef CONFIG_DEBUG_KMEMLEAK
 void kmemleak_load_module(const struct module *mod, const struct load_info *info);

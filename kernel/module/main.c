@@ -3399,6 +3399,11 @@ static int module_split_and_check_signature(struct load_info *info, int flags)
 				       (char *)info->hdr + info->len, sig_len);
 		if (!err)
 			info->sig_ok = true;
+	} else if (IS_ENABLED(CONFIG_MODULE_HASHES) && sig_type == MODULE_SIGNATURE_TYPE_MERKLE) {
+		err = module_hash_check(info->hdr, info->len,
+					(char *)info->hdr + info->len, sig_len);
+		if (!err)
+			info->sig_ok = true;
 	} else {
 		pr_err("module: not signed with expected signature\n");
 		return -ENOPKG;
