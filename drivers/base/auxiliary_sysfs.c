@@ -13,13 +13,8 @@ struct auxiliary_irq_info {
 	char name[AUXILIARY_MAX_IRQ_NAME];
 };
 
-static struct attribute *auxiliary_irq_attrs[] = {
-	NULL
-};
-
 static const struct attribute_group auxiliary_irqs_group = {
 	.name = "irqs",
-	.attrs = auxiliary_irq_attrs,
 };
 
 static int auxiliary_irq_dir_prepare(struct auxiliary_device *auxdev)

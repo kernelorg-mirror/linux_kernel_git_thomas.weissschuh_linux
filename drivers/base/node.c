@@ -88,22 +88,12 @@ struct node_access_nodes {
 };
 #define to_access_nodes(dev) container_of(dev, struct node_access_nodes, dev)
 
-static struct attribute *node_init_access_node_attrs[] = {
-	NULL,
-};
-
-static struct attribute *node_targ_access_node_attrs[] = {
-	NULL,
-};
-
 static const struct attribute_group initiators = {
 	.name	= "initiators",
-	.attrs	= node_init_access_node_attrs,
 };
 
 static const struct attribute_group targets = {
 	.name	= "targets",
-	.attrs	= node_targ_access_node_attrs,
 };
 
 static const struct attribute_group *node_access_node_groups[] = {
