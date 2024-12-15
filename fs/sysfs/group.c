@@ -141,7 +141,7 @@ static int internal_create_group(struct kobject *kobj, int update,
 	if (unlikely(update && !kobj->sd))
 		return -EINVAL;
 
-	if (!grp->attrs && !grp->bin_attrs) {
+	if (!grp->attrs && !grp->bin_attrs && (!grp->name || update)) {
 		pr_debug("sysfs: (bin_)attrs not set by subsystem for group: %s/%s, skipping\n",
 			 kobj->name, grp->name ?: "");
 		return 0;
