@@ -28,7 +28,7 @@ config MODULE_DEBUGFS
 
 config MODULE_DEBUG
 	bool "Module debugging"
-	depends on DEBUG_FS
+	default y
 	help
 	  Allows you to enable / disable features which can help you debug
 	  modules. You don't need these options on production systems.

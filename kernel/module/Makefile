@@ -3,6 +3,8 @@
 # Makefile for linux kernel module support
 #
 
+ccflags-y := -DDEBUG
+
 # These are called from save_stack_trace() on slub debug path,
 # and produce insane amounts of uninteresting coverage.
 KCOV_INSTRUMENT_main.o := n
