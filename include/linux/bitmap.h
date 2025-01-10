@@ -9,6 +9,7 @@
 #include <linux/cleanup.h>
 #include <linux/errno.h>
 #include <linux/find.h>
+#include <linux/foreach_macros.h>
 #include <linux/limits.h>
 #include <linux/string.h>
 #include <linux/types.h>
@@ -124,6 +125,17 @@ struct device;
  * to declare an array named 'name' of just enough unsigned longs to
  * contain all bit positions from 0 to 'bits' - 1.
  */
+
+#define __BITMAP_FROM_BITS(s1, s2, x) (((x) >= s1 && ((x) < s2)) ? BIT_ULL((x) - s1) : 0) |
+
+#define BITMAP_FROM_BITS64(...) {								   \
+	BITMAP_FROM_U64(FOREACH_S2(0, UINT_MAX, __BITMAP_FROM_BITS, __VA_ARGS__) FOREACH_END(0))   \
+}
+
+#define BITMAP_FROM_BITS128(...) {								   \
+	BITMAP_FROM_U64(FOREACH_S2( 0,       64, __BITMAP_FROM_BITS, __VA_ARGS__) FOREACH_END(0)), \
+	BITMAP_FROM_U64(FOREACH_S2(64, UINT_MAX, __BITMAP_FROM_BITS, __VA_ARGS__) FOREACH_END(0)), \
+}
 
 /*
  * Allocation and deallocation of bitmap.
