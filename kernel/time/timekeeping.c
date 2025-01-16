@@ -26,6 +26,8 @@
 #include <linux/audit.h>
 #include <linux/random.h>
 
+#include <vdso/auxclock.h>
+
 #include "tick-internal.h"
 #include "ntp_internal.h"
 #include "timekeeping_internal.h"
