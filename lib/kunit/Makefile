@@ -16,7 +16,13 @@ kunit-objs +=				test.o \
 					fwnode.o \
 					bug.o
 
+userprogs +=				uapi-preinit
+uapi-preinit-userccflags +=		-static $(NOLIBC_USERCFLAGS)
+uapi-preinit-userldlibs  +=		$(NOLIBC_USERLDLIBS)
 obj-$(CONFIG_KUNIT_UAPI) +=		kunit-uapi.o
+
+CFLAGS_kunit-uapi.o :=			-Wa,-I$(obj)
+$(obj)/kunit-uapi.o: $(obj)/uapi-preinit
 
 ifeq ($(CONFIG_KUNIT_DEBUGFS),y)
 kunit-objs +=				debugfs.o
