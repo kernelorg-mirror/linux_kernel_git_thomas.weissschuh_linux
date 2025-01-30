@@ -2169,6 +2169,8 @@ config ARCH_HAS_SYNC_CORE_BEFORE_USERMODE
 config ARCH_HAS_SYSCALL_WRAPPER
 	def_bool n
 
+source "init/Kconfig.nolibc"
+
 config DEBUG_ME
 	bool
 	select DEBUG_KERNEL

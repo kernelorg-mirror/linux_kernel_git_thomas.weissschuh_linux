@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: GPL-2.0
+# Compiler flags, which are necessary to build userspace applications with the
+# in-kernel libc "nolibc". Only define the variables if the necessary
+# requirements are met. This makes it easy to write configurations which can
+# fall back to the system libc.
+
+ifeq ($(and $(CONFIG_ARCH_HAS_NOLIBC),$(CONFIG_HEADERS_INSTALL)),y)
+
+# Default -mcpu may lack 64-bit multiplication instructions, Linux itself also needs v8.
+nolibc-userflags-$(CONFIG_SPARC32) += -mcpu=v8
+# Avoid $$dyncall references.
+nolibc-userflags-$(CONFIG_PARISC) += -mfast-indirect-calls
+# lacks 64-bit multiplication instructions.
+nolibc-userldlibs-$(CONFIG_OPENRISC) += -lgcc
+
+NOLIBC_USERCFLAGS := -nostdlib -nostdinc -static -ffreestanding \
+		     -fno-asynchronous-unwind-tables -fno-stack-protector \
+		     -I$(objtree)/usr/include -I$(srctree)/tools/include/nolibc/ \
+		     $(nolibc-userflags-y)
+
+NOLIBC_USERLDFLAGS := -nostdlib -nostdinc -static
+NOLIBC_USERLDLIBS := $(nolibc-userldlibs-y)
+
+endif # CONFIG_ARCH_HAS_NOLIBC && CONFIG_HEADERS_INSTALL
