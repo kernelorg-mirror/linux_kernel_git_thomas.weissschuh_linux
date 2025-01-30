@@ -445,6 +445,8 @@ static inline int ksft_min_kernel_version(unsigned int min_major,
 					  unsigned int min_minor)
 {
 #ifdef NOLIBC
+	(void)min_major;
+	(void)min_minor;
 	ksft_print_msg("NOLIBC: Can't check kernel version: Function not implemented\n");
 	return 0;
 #else
