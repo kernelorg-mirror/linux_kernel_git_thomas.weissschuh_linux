@@ -351,6 +351,29 @@ int printf(const char *fmt, ...)
 	return ret;
 }
 
+static __attribute__((unused, format(printf, 2, 0)))
+int vdprintf(int fd, const char *fmt, va_list args)
+{
+	FILE *stream;
+
+	stream = fdopen(fd, NULL);
+	if (!stream)
+		return -1;
+	return vfprintf(stream, fmt, args);
+}
+
+static __attribute__((unused, format(printf, 2, 3)))
+int dprintf(int fd, const char *fmt, ...)
+{
+	va_list args;
+	int ret;
+
+	va_start(args, fmt);
+	ret = vdprintf(fd, fmt, args);
+	va_end(args);
+	return ret;
+}
+
 static __attribute__((unused))
 void perror(const char *msg)
 {
