@@ -1226,8 +1226,8 @@ static void __run_test(struct __fixture_metadata *f,
 		t->pid = child;
 		__wait_for_test(t);
 	}
-	ksft_print_msg("         %4s  %s\n",
-		       __test_passed(t) ? "OK" : "FAIL", test_name);
+	ksft_print_msg("         %s  %s\n",
+		       __test_passed(t) ? "  OK" : "FAIL", test_name);
 
 	/* Check if we're expecting this test to fail */
 	for (xfail = variant->xfails; xfail; xfail = xfail->next)
