@@ -1,0 +1,55 @@
+TAP version 13
+1..8
+# Starting 8 tests from 3 test cases.
+#  RUN           global.standalone_pass ...
+# harness-selftest.c:16:standalone_pass:before
+# harness-selftest.c:18:standalone_pass:after
+#            OK  global.standalone_pass
+ok 1 global.standalone_pass
+#  RUN           global.standalone_fail ...
+# harness-selftest.c:22:standalone_fail:before
+# harness-selftest.c:23:standalone_fail:Expected 0 (0) == 1 (1)
+# standalone_fail: Test terminated by assertion
+#          FAIL  global.standalone_fail
+not ok 2 global.standalone_fail
+#  RUN           global.signal_pass ...
+# harness-selftest.c:28:signal_pass:before
+# harness-selftest.c:30:signal_pass:after
+#            OK  global.signal_pass
+ok 3 global.signal_pass
+#  RUN           global.signal_fail ...
+# harness-selftest.c:35:signal_fail:before
+# harness-selftest.c:36:signal_fail:Expected 0 (0) == 1 (1)
+# signal_fail: Test terminated by assertion
+#          FAIL  global.signal_fail
+not ok 4 global.signal_fail
+#  RUN           fixture.pass ...
+# harness-selftest.c:46:pass:setup
+# harness-selftest.c:55:pass:before
+# harness-selftest.c:57:pass:after
+# harness-selftest.c:51:pass:teardown same-process=1
+#            OK  fixture.pass
+ok 5 fixture.pass
+#  RUN           fixture.fail ...
+# harness-selftest.c:46:fail:setup
+# harness-selftest.c:61:fail:before
+# harness-selftest.c:62:fail:Expected 0 (0) == 1 (1)
+# harness-selftest.c:51:fail:teardown same-process=1
+# fail: Test terminated by assertion
+#          FAIL  fixture.fail
+not ok 6 fixture.fail
+#  RUN           fixture.timeout ...
+# harness-selftest.c:46:timeout:setup
+# harness-selftest.c:67:timeout:before
+# timeout: Test terminated by timeout
+#          FAIL  fixture.timeout
+not ok 7 fixture.timeout
+#  RUN           fixture_parent.pass ...
+# harness-selftest.c:77:pass:setup
+# harness-selftest.c:86:pass:before
+# harness-selftest.c:88:pass:after
+# harness-selftest.c:82:pass:teardown same-process=0
+#            OK  fixture_parent.pass
+ok 8 fixture_parent.pass
+# FAILED: 4 / 8 tests passed.
+# Totals: pass:4 fail:4 xfail:0 xpass:0 skip:0 error:0
