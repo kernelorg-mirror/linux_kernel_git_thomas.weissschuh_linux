@@ -437,7 +437,7 @@
 			fixture_name##_##test_name(_metadata, self, variant->data); \
 			_metadata->teardown_fn(false, _metadata, self, variant->data); \
 			_exit(0); \
-		} else if (child < 0 || child != waitpid(child, &status, 0)) { \
+		} else if (child < 0 || child != __wait_for_child(child, &status, 0)) { \
 			ksft_print_msg("ERROR SPAWNING TEST GRANDCHILD\n"); \
 			_metadata->exit_code = KSFT_FAIL; \
 		} \
@@ -964,6 +964,19 @@ static inline int __bail(int for_realz, struct __test_metadata *t, void *self, c
 	return 0;
 }
 
+static inline pid_t __wait_for_child(pid_t pid, int *status, int options)
+{
+	siginfo_t info;
+	int ret;
+
+	ret = waitid(P_PID, pid, &info, WEXITED | options);
+	if (ret == -1)
+		return -1;
+
+	*status = info.si_status;
+	return info.si_pid;
+}
+
 static void __wait_for_test(struct __test_metadata *t)
 {
 	/*
@@ -994,7 +1007,7 @@ static void __wait_for_test(struct __test_metadata *t)
 		/* signal process group */
 		kill(-(t->pid), SIGKILL);
 	}
-	child = waitpid(t->pid, &status, WNOHANG);
+	child = __wait_for_child(t->pid, &status, WNOHANG);
 	if (child == -1 && errno != EINTR) {
 		t->exit_code = KSFT_FAIL;
 		fprintf(TH_LOG_STREAM,
