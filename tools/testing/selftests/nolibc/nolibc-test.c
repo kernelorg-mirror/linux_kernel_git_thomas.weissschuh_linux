@@ -1306,7 +1306,7 @@ static int expect_vfprintf(int llen, int c, const char *expected, const char *fm
 	return ret;
 }
 
-static int run_vfprintf(int min, int max)
+static int run_printf(int min, int max)
 {
 	int test;
 	int ret = 0;
@@ -1468,7 +1468,7 @@ static const struct test test_names[] = {
 	{ .name = "startup",    .func = run_startup    },
 	{ .name = "syscall",    .func = run_syscall    },
 	{ .name = "stdlib",     .func = run_stdlib     },
-	{ .name = "vfprintf",   .func = run_vfprintf   },
+	{ .name = "printf",     .func = run_printf     },
 	{ .name = "protection", .func = run_protection },
 	{ 0 }
 };
