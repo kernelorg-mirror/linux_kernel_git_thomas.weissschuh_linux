@@ -10,4 +10,8 @@ NOLIBC_USERCFLAGS := -nostdlib -nostdinc -static -ffreestanding \
 
 NOLIBC_USERLDFLAGS := -nostdlib -nostdinc -static
 
+ifdef CONFIG_ARM
+NOLIBC_USERCFLAGS += -march=armv8-a
+endif
+
 endif # CONFIG_ARCH_HAS_NOLIBC && CONFIG_HEADERS_INSTALL
