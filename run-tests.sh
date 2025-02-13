@@ -46,8 +46,8 @@ if [ -z "$architectures" ]; then
 	fi
 fi
 
-options=""
-filters=()
+options="--kunitconfig lib/vdso/tests"
+filters=(vdso)
 
 for arch in $architectures; do
 	ct_triple=$(crosstool_triple $arch)
