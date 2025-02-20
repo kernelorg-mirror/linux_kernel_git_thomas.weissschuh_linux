@@ -32,3 +32,8 @@ obj-$(CONFIG_TEST_UDELAY)			+= test_udelay.o
 obj-$(CONFIG_TIME_NS)				+= namespace.o
 obj-$(CONFIG_TEST_CLOCKSOURCE_WATCHDOG)		+= clocksource-wdtest.o
 obj-$(CONFIG_TIME_KUNIT_TEST)			+= time_test.o
+
+userprogs					+= test_auxclock
+test_auxclock-nolibc				:= y
+blobs						+= test_auxclock.blob.o
+obj-$(CONFIG_POSIX_AUX_CLOCKS_TESTS)		+= aux_clock_tests.o test_auxclock.blob.o

@@ -221,4 +221,9 @@ config POSIX_AUX_CLOCKS
 	  and other clock domains, which are not correlated to the TAI/NTP
 	  notion of time.
 
+config POSIX_AUX_CLOCKS_TESTS
+	def_bool y
+	depends on KUNIT_UAPI
+	depends on POSIX_AUX_CLOCKS
+
 endmenu
