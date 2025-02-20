@@ -13,6 +13,7 @@ crosstool_triple() {
 	riscv) echo riscv64-linux;;
 	loongarch) echo loongarch64-linux;;
 	sh) echo sh4-linux;;
+	mips*) echo mips-linux;;
 	*) echo "$1-linux";;
 	esac
 }
@@ -34,7 +35,7 @@ while true; do
 	esac
 done
 
-non_llvm_architectures="alpha m68k powerpc powerpc32 powerpcle sh sparc sparc64"
+non_llvm_architectures="arm alpha m68k mips mipsel powerpc powerpc32 powerpcle sh sparc sparc64 riscv"
 architectures="$*"
 if [ -z "$architectures" ]; then
 	architectures="$(tools/testing/kunit/kunit.py run --arch help)"
@@ -45,12 +46,18 @@ if [ -z "$architectures" ]; then
 	fi
 fi
 
-options="--kunitconfig lib/kunit"
+options=""
+filters=()
 
 for arch in $architectures; do
 	ct_triple=$(crosstool_triple $arch)
 	build_dir=".kunit_${arch}"
 	opts="$options"
+
+	if [[ ("$arch" = "alpha") || ("$arch" = "sh") || ("$arch" = "m68k") || ("$arch" = "riscv32") ]]; then
+		# unsupported
+		continue
+	fi
 
 	if [[ "$llvm" = 1 ]]; then
 		build_dir="${build_dir}_llvm"
@@ -59,5 +66,7 @@ for arch in $architectures; do
 		compile_opts="--cross_compile $HOME/.cache/crosstools/gcc-13.2.0-nolibc/$ct_triple/bin/$ct_triple-"
 	fi
 
-	./tools/testing/kunit/kunit.py run --build_dir $build_dir --arch $arch $compile_opts $options $filter
+	for filter in "${filters[@]}"; do
+		./tools/testing/kunit/kunit.py run --build_dir $build_dir --arch $arch $compile_opts $options $filter
+	done
 done
