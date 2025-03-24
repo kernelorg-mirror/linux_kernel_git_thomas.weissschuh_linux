@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0
+
+config TIMER_UAPI_TEST
+	tristate "timer UAPI tests" if !KUNIT_ALL_TESTS
+	depends on KUNIT_UAPI
+	default KUNIT_ALL_TESTS
+
+config TIME_NS_UAPI_TEST
+	tristate "time namespaces UAPI tests" if !KUNIT_ALL_TESTS
+	depends on KUNIT_UAPI
+	depends on TIME_NS
+	default KUNIT_ALL_TESTS

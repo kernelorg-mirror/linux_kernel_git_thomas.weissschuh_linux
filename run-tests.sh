@@ -46,10 +46,10 @@ if [ -z "$architectures" ]; then
 	fi
 fi
 
-options="--kunitconfig lib/vdso/tests"
-filters=(vdso)
-
 for arch in $architectures; do
+	options="--kunitconfig lib/vdso/tests"
+	filters=(vdso timer)
+
 	ct_triple=$(crosstool_triple $arch)
 	build_dir=".kunit_${arch}"
 	opts="$options"
@@ -70,6 +70,13 @@ for arch in $architectures; do
 		filters+=(x86)
 		options+=" --kunitconfig arch/x86/tests"
 	fi
+
+	if [[ "$arch" != "um" && "$arch" != "mips" && "$arch" != "mipsel" && "$arch" != "arm" && "$arch" != "sparc64" && "$arch" != "sparc" ]]; then
+		filters+=(timens)
+		options+=" --kunitconfig kernel/time/tests"
+	fi
+
+	options+=" --kconfig_add CONFIG_TIMER_UAPI_TEST=y"
 
 	for filter in "${filters[@]}"; do
 		./tools/testing/kunit/kunit.py run --build_dir $build_dir --arch $arch $compile_opts $options $filter

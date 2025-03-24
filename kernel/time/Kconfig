@@ -211,3 +211,5 @@ config CLOCKSOURCE_WATCHDOG_MAX_SKEW_US
 
 endmenu
 endif
+
+source "kernel/time/tests/Kconfig"
