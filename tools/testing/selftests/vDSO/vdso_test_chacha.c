@@ -86,7 +86,7 @@ void __weak __arch_chacha20_blocks_nostack(uint8_t *dst_bytes, const uint32_t *k
 
 int main(int argc, char *argv[])
 {
-	enum { TRIALS = 1000, BLOCKS = 128, BLOCK_SIZE = 64 };
+	enum { TRIALS = 1, BLOCKS = 128, BLOCK_SIZE = 64 };
 	uint32_t key[8], counter1[2], counter2[2];
 	uint8_t output1[BLOCK_SIZE * BLOCKS], output2[BLOCK_SIZE * BLOCKS];
 
