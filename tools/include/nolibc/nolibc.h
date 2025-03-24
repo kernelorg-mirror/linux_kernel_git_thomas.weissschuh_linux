@@ -92,6 +92,8 @@
 #ifndef _NOLIBC_H
 #define _NOLIBC_H
 
+#ifndef __ASSEMBLER__
+
 #include "std.h"
 #include "arch.h"
 #include "types.h"
@@ -126,6 +128,8 @@
 #include "getopt.h"
 #include "poll.h"
 #include "math.h"
+
+#endif /* __ASSEMBLER__ */
 
 /* Used by programs to avoid std includes */
 #define NOLIBC
