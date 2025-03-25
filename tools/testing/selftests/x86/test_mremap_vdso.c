@@ -61,7 +61,7 @@ static int try_to_remap(void *vdso_addr, unsigned long size)
 #define MSEAL_FLAGS "sl"
 #define MAX_LINE_LEN 512
 
-bool vdso_sealed(FILE *maps)
+static bool vdso_sealed(FILE *maps)
 {
 	char line[MAX_LINE_LEN];
 	bool has_vdso = false;
@@ -128,7 +128,7 @@ int main(int argc, char **argv, char **envp)
 		}
 
 		/* Glibc is likely to explode now - exit with raw syscall */
-		syscall(SYS_exit, ret);
+		syscall(__NR_exit, ret);
 	} else {
 		int status;
 
