@@ -3,6 +3,7 @@
 menu "Host processor type and features"
 
 source "arch/x86/Kconfig.cpu"
+source "arch/x86/tests/Kconfig"
 
 endmenu
 

@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0
+
+config X86_UAPI_TEST
+        tristate "x86 UAPI tests" if !KUNIT_ALL_TESTS
+        depends on KUNIT_UAPI
+        default KUNIT_ALL_TESTS

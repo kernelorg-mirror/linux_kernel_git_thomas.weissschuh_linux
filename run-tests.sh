@@ -66,6 +66,11 @@ for arch in $architectures; do
 		compile_opts="--cross_compile $HOME/.cache/crosstools/gcc-13.2.0-nolibc/$ct_triple/bin/$ct_triple-"
 	fi
 
+	if [[ "$arch" == "x86_64" || "$arch" == "i386" || "$arch" == "um" ]]; then
+		filters+=(x86)
+		options+=" --kunitconfig arch/x86/tests"
+	fi
+
 	for filter in "${filters[@]}"; do
 		./tools/testing/kunit/kunit.py run --build_dir $build_dir --arch $arch $compile_opts $options $filter
 	done
