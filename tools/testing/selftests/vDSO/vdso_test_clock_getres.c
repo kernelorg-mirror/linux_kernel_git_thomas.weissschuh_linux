@@ -30,7 +30,7 @@ static long syscall_clock_getres(clockid_t _clkid, struct timespec *_ts)
 {
 	long ret;
 
-	ret = syscall(SYS_clock_getres, _clkid, _ts);
+	ret = syscall(__NR_clock_getres, _clkid, _ts);
 
 	return ret;
 }
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 {
 	int ret = 0;
 
-#if _POSIX_TIMERS > 0
+#if _POSIX_TIMERS > 0 || defined(NOLIBC)
 
 #ifdef CLOCK_REALTIME
 	ret += vdso_test_clock(CLOCK_REALTIME);
