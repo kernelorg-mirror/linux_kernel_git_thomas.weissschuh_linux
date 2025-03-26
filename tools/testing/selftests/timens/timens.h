@@ -95,9 +95,9 @@ static inline int _gettime(clockid_t clk_id, struct timespec *res, bool raw_sysc
 		return 0;
 	}
 
-	err = syscall(SYS_clock_gettime, clk_id, res);
+	err = syscall(__NR_clock_gettime, clk_id, res);
 	if (err)
-		pr_perror("syscall(SYS_clock_gettime(%d))", (int)clk_id);
+		pr_perror("syscall(__NR_clock_gettime(%d))", (int)clk_id);
 
 	return err;
 }
