@@ -3,6 +3,8 @@
  * Copyright (C) 2022-2024 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
  */
 
+#define _GNU_SOURCE
+
 #include <assert.h>
 #include <pthread.h>
 #include <stdint.h>
