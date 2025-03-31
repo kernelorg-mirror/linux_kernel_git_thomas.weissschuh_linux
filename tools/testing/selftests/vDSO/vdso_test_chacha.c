@@ -78,11 +78,16 @@ static void reference_chacha20_blocks(uint8_t *dst_bytes, const uint32_t *key, u
 	counter[1] = s[13];
 }
 
+void __arch_chacha20_blocks_nostack(uint8_t *dst_bytes, const uint32_t *key, uint32_t *counter, size_t nblocks);
 void __weak __arch_chacha20_blocks_nostack(uint8_t *dst_bytes, const uint32_t *key, uint32_t *counter, size_t nblocks)
 {
 	ksft_test_result_skip("Not implemented on architecture\n");
 	ksft_finished();
 }
+
+#ifdef BLOCK_SIZE
+#undef BLOCK_SIZE
+#endif
 
 int main(int argc, char *argv[])
 {
