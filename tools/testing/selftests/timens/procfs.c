@@ -69,14 +69,29 @@ static int read_proc_uptime(struct timespec *uptime)
 {
 	unsigned long up_sec, up_nsec;
 	FILE *proc;
+	int fd;
 
-	proc = fopen("/proc/uptime", "r");
+	fd = open("/proc/uptime", O_RDONLY);
+	if (fd == -1) {
+		pr_perror("Unable to open /proc/uptime");
+		return -1;
+	}
+
+	proc = fdopen(fd, "r");
 	if (proc == NULL) {
 		pr_perror("Unable to open /proc/uptime");
 		return -1;
 	}
 
-	if (fscanf(proc, "%lu.%02lu", &up_sec, &up_nsec) != 2) {
+	char buf[100];
+
+	ssize_t r = read(fd, buf, sizeof(buf));
+	if (r == -1) {
+		pr_perror("fscanf");
+		return -errno;
+	}
+
+	if (sscanf(buf, "%lu.%lu", &up_sec, &up_nsec) != 2) {
 		if (errno) {
 			pr_perror("fscanf");
 			return -errno;
@@ -93,10 +108,17 @@ static int read_proc_uptime(struct timespec *uptime)
 
 static int read_proc_stat_btime(unsigned long long *boottime_sec)
 {
+	int fd;
 	FILE *proc;
 	char line_buf[2048];
 
-	proc = fopen("/proc/stat", "r");
+	fd = open("/proc/stat", O_RDONLY);
+	if (fd == -1) {
+		pr_perror("Unable to open /proc/stat");
+		return -1;
+	}
+
+	proc = fdopen(fd, "r");
 	if (proc == NULL) {
 		pr_perror("Unable to open /proc/stat");
 		return -1;
