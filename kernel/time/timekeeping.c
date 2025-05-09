@@ -14,6 +14,7 @@
 #include <linux/sched/loadavg.h>
 #include <linux/sched/clock.h>
 #include <linux/syscore_ops.h>
+#include <linux/sysfs.h>
 #include <linux/clocksource.h>
 #include <linux/jiffies.h>
 #include <linux/time.h>
@@ -2899,6 +2900,130 @@ const struct k_clock clock_aux = {
 	.clock_set		= aux_clock_set,
 	.clock_adj		= aux_clock_adj,
 };
+
+static void aux_clock_enable(unsigned int id)
+{
+	struct tk_read_base *tkr_raw = &tk_core.timekeeper.tkr_raw;
+	struct tk_data *tkd = aux_get_tk_data(id);
+	struct timekeeper *tks = &tkd->shadow_timekeeper;
+
+	/* Prevent the core timekeeper from changing. */
+	guard(raw_spinlock_irq)(&tk_core.lock);
+
+	/*
+	 * Setup the auxiliary clock assuming that the raw core timekeeper
+	 * clock frequency conversion is close enough. Userspace has to
+	 * adjust for the deviation via clock_adjtime(2).
+	 */
+	guard(raw_spinlock_nested)(&tkd->lock);
+
+	/* Remove leftovers of a previous registration */
+	memset(tks, 0, sizeof(*tks));
+	/* Restore the timekeeper id */
+	tks->id = tkd->timekeeper.id;
+	/* Setup the timekeeper based on the current system clocksource */
+	tk_setup_internals(tks, tkr_raw->clock);
+
+	/* Mark it valid and set it live */
+	tks->clock_valid = true;
+	timekeeping_update_from_shadow(tkd, TK_UPDATE_ALL);
+}
+
+static void aux_clock_disable(unsigned int id)
+{
+	struct tk_data *tkd = aux_get_tk_data(id);
+
+	guard(raw_spinlock_irq)(&tkd->lock);
+	tkd->shadow_timekeeper.clock_valid = false;
+	timekeeping_update_from_shadow(tkd, TK_UPDATE_ALL);
+}
+
+static DEFINE_MUTEX(aux_clock_mutex);
+
+static ssize_t aux_clock_enable_store(struct kobject *kobj, struct kobj_attribute *attr,
+				      const char *buf, size_t count)
+{
+	/* Lazy atoi() as name is "0..7" */
+	int id = kobj->name[0] & 0x7;
+	bool enable;
+
+	if (!capable(CAP_SYS_TIME))
+		return -EPERM;
+
+	if (kstrtobool(buf, &enable) < 0)
+		return -EINVAL;
+
+	guard(mutex)(&aux_clock_mutex);
+	if (enable == test_bit(id, &aux_timekeepers))
+		return count;
+
+	if (enable) {
+		aux_clock_enable(CLOCK_AUX + id);
+		set_bit(id, &aux_timekeepers);
+	} else {
+		aux_clock_disable(CLOCK_AUX + id);
+		clear_bit(id, &aux_timekeepers);
+	}
+	return count;
+}
+
+static ssize_t aux_clock_enable_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
+{
+	unsigned long active = READ_ONCE(aux_timekeepers);
+	/* Lazy atoi() as name is "0..7" */
+	int id = kobj->name[0] & 0x7;
+
+	return sysfs_emit(buf, "%d\n", test_bit(id, &active));
+}
+
+static struct kobj_attribute aux_clock_enable_attr = __ATTR_RW(aux_clock_enable);
+
+static struct attribute *aux_clock_enable_attrs[] = {
+	&aux_clock_enable_attr.attr,
+	NULL,
+};
+
+static const struct attribute_group aux_clock_enable_attr_group = {
+	.attrs = aux_clock_enable_attrs,
+};
+
+static int __init tk_aux_sysfs_init(void)
+{
+	struct kobject *auxo, *tko = kobject_create_and_add("time", kernel_kobj);
+
+	if (!tko) {
+		pr_warn("Unable to create /sys/kernel/time/. POSIX AUX clocks disabled.\n");
+		return -ENOMEM;
+	}
+
+	auxo = kobject_create_and_add("aux_clocks", tko);
+	if (!auxo) {
+		pr_warn("Unable to create /sys/kernel/time/aux_clocks. POSIX AUX clocks disabled.\n");
+		kobject_put(tko);
+		return -ENOMEM;
+	}
+
+	for (int i = TIMEKEEPER_AUX; i <= TIMEKEEPER_AUX_LAST; i++) {
+		char id[2] = { [0] = '0' + (i - TIMEKEEPER_AUX), };
+		struct kobject *clk = kobject_create_and_add(id, auxo);
+
+		if (!clk) {
+			pr_warn("Unable to create /sys/kernel/time/aux_clocks/%d\n",
+				i - TIMEKEEPER_AUX);
+			return -ENOMEM;
+		}
+
+		int ret = sysfs_create_group(clk, &aux_clock_enable_attr_group);
+
+		if (ret) {
+			pr_warn("Unable to create /sys/kernel/time/aux_clocks/%d/enable\n",
+				i - TIMEKEEPER_AUX);
+			return ret;
+		}
+	}
+	return 0;
+}
+late_initcall(tk_aux_sysfs_init);
 
 static __init void tk_aux_setup(void)
 {
