@@ -58,20 +58,37 @@ extern struct ms_hyperv_tsc_page hvclock_page
 static __always_inline
 long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
-	return -ENOSYS;
+	long ret;
+
+	asm ("syscall" : "=a" (ret), "=m" (*_ts) :
+	     "0" (__NR_clock_gettime), "D" (_clkid), "S" (_ts) :
+	     "rcx", "r11");
+
+	return ret;
 }
 
 static __always_inline
 long gettimeofday_fallback(struct __kernel_old_timeval *_tv,
 			   struct timezone *_tz)
 {
-	return -ENOSYS;
+	long ret;
+
+	asm("syscall" : "=a" (ret) :
+	    "0" (__NR_gettimeofday), "D" (_tv), "S" (_tz) : "memory");
+
+	return ret;
 }
 
 static __always_inline
 long clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
-	return -ENOSYS;
+	long ret;
+
+	asm ("syscall" : "=a" (ret), "=m" (*_ts) :
+	     "0" (__NR_clock_getres), "D" (_clkid), "S" (_ts) :
+	     "rcx", "r11");
+
+	return ret;
 }
 
 #else
@@ -79,32 +96,87 @@ long clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 static __always_inline
 long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
-	return -ENOSYS;
+	long ret;
+
+	asm (
+		"mov %%ebx, %%edx \n"
+		"mov %[clock], %%ebx \n"
+		"call __kernel_vsyscall \n"
+		"mov %%edx, %%ebx \n"
+		: "=a" (ret), "=m" (*_ts)
+		: "0" (__NR_clock_gettime64), [clock] "g" (_clkid), "c" (_ts)
+		: "edx");
+
+	return ret;
 }
 
 static __always_inline
 long clock_gettime32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
 {
-	return -ENOSYS;
+	long ret;
+
+	asm (
+		"mov %%ebx, %%edx \n"
+		"mov %[clock], %%ebx \n"
+		"call __kernel_vsyscall \n"
+		"mov %%edx, %%ebx \n"
+		: "=a" (ret), "=m" (*_ts)
+		: "0" (__NR_clock_gettime), [clock] "g" (_clkid), "c" (_ts)
+		: "edx");
+
+	return ret;
 }
 
 static __always_inline
 long gettimeofday_fallback(struct __kernel_old_timeval *_tv,
 			   struct timezone *_tz)
 {
-	return -ENOSYS;
+	long ret;
+
+	asm(
+		"mov %%ebx, %%edx \n"
+		"mov %2, %%ebx \n"
+		"call __kernel_vsyscall \n"
+		"mov %%edx, %%ebx \n"
+		: "=a" (ret)
+		: "0" (__NR_gettimeofday), "g" (_tv), "c" (_tz)
+		: "memory", "edx");
+
+	return ret;
 }
 
 static __always_inline long
 clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
-	return -ENOSYS;
+	long ret;
+
+	asm (
+		"mov %%ebx, %%edx \n"
+		"mov %[clock], %%ebx \n"
+		"call __kernel_vsyscall \n"
+		"mov %%edx, %%ebx \n"
+		: "=a" (ret), "=m" (*_ts)
+		: "0" (__NR_clock_getres_time64), [clock] "g" (_clkid), "c" (_ts)
+		: "edx");
+
+	return ret;
 }
 
 static __always_inline
 long clock_getres32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
 {
-	return -ENOSYS;
+	long ret;
+
+	asm (
+		"mov %%ebx, %%edx \n"
+		"mov %[clock], %%ebx \n"
+		"call __kernel_vsyscall \n"
+		"mov %%edx, %%ebx \n"
+		: "=a" (ret), "=m" (*_ts)
+		: "0" (__NR_clock_getres), [clock] "g" (_clkid), "c" (_ts)
+		: "edx");
+
+	return ret;
 }
 
 #endif
@@ -258,55 +330,6 @@ static __always_inline u64 vdso_calc_ns(const struct vdso_clock *vc, u64 cycles,
 	return ((delta * vc->mult) + base) >> vc->shift;
 }
 #define vdso_calc_ns vdso_calc_ns
-
-#if defined(__x86_64__)
-
-#define my_syscall3(num, arg1, arg2, arg3)                                    \
-({                                                                            \
-	long _ret;                                                            \
-	register long _num  __asm__ ("rax") = (num);                          \
-	register long _arg1 __asm__ ("rdi") = (long)(arg1);                   \
-	register long _arg2 __asm__ ("rsi") = (long)(arg2);                   \
-	register long _arg3 __asm__ ("rdx") = (long)(arg3);                   \
-									      \
-	__asm__ volatile (                                                    \
-		"syscall\n"                                                   \
-		: "=a"(_ret)                                                  \
-		: "r"(_arg1), "r"(_arg2), "r"(_arg3),                         \
-		  "0"(_num)                                                   \
-		: "rcx", "r11", "memory", "cc"                                \
-	);                                                                    \
-	_ret;                                                                 \
-})
-
-#else
-
-#define my_syscall3(num, arg1, arg2, arg3)                                    \
-({                                                                            \
-	long _ret;                                                            \
-	register long _num __asm__ ("eax") = (num);                           \
-	register long _arg1 __asm__ ("ebx") = (long)(arg1);                   \
-	register long _arg2 __asm__ ("ecx") = (long)(arg2);                   \
-	register long _arg3 __asm__ ("edx") = (long)(arg3);                   \
-									      \
-	__asm__ volatile (                                                    \
-		"int $0x80\n"                                                 \
-		: "=a" (_ret)                                                 \
-		: "r"(_arg1), "r"(_arg2), "r"(_arg3),                         \
-		  "0"(_num)                                                   \
-		: "memory", "cc"                                              \
-	);                                                                    \
-	_ret;                                                                 \
-})
-
-#endif
-
-static __maybe_unused void do_debug(const char *msg, size_t len)
-{
-	my_syscall3(__NR_write, 1, msg, len);
-}
-
-#define DEBUG(msg) do_debug(msg, sizeof(msg) - 1)
 
 #endif /* !__ASSEMBLER__ */
 
