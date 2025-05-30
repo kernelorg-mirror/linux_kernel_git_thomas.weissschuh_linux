@@ -93,13 +93,6 @@ pid_t waitpid(pid_t pid, int *status, int options)
 	case CLD_DUMPED:
 		*status = (info.si_status & 0x7f) | 0x80;
 		break;
-	case CLD_STOPPED:
-	case CLD_TRAPPED:
-		*status = (info.si_status << 8) + 0x7f;
-		break;
-	case CLD_CONTINUED:
-		*status = 0xffff;
-		break;
 	default:
 		return -1;
 	}
