@@ -38,4 +38,12 @@ unsigned long getauxval(unsigned long type)
 	return ret;
 }
 
+/* arm64 for libgcc */
+unsigned long __getauxval(unsigned long type);
+__attribute__((unused,weak))
+unsigned long __getauxval(unsigned long type)
+{
+	return getauxval(type);
+}
+
 #endif /* _NOLIBC_SYS_AUXV_H */
