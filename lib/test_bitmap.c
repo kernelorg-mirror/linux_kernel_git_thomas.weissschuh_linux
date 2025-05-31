@@ -1422,6 +1422,32 @@ static void __init test_bitmap_write_perf(void)
 
 #undef TEST_BIT_LEN
 
+static void __init test_initializer(void)
+{
+	enum {
+		TWENTYONE = 21,
+	};
+	static const DECLARE_BITMAP(bitmap1, 40) __initconst =
+		BITMAP_FROM_BITS64(1, 2, 3, 5, 8, 13, TWENTYONE, 33);
+	static const DECLARE_BITMAP(bitmap2, 128) __initconst =
+		BITMAP_FROM_BITS128(1, 2, 10, 20, 60, 100, 119);
+
+	expect_eq_bitmap(exp2_to_exp3_mask, bitmap1, 40);
+
+	DECLARE_BITMAP(bitmap3, 128);
+
+	bitmap_zero(bitmap3, 128);
+	__set_bit(1, bitmap3);
+	__set_bit(2, bitmap3);
+	__set_bit(10, bitmap3);
+	__set_bit(20, bitmap3);
+	__set_bit(60, bitmap3);
+	__set_bit(100, bitmap3);
+	__set_bit(119, bitmap3);
+
+	expect_eq_bitmap(bitmap3, bitmap2, 128);
+}
+
 static void __init selftest(void)
 {
 	test_zero_clear();
@@ -1454,6 +1480,7 @@ static void __init selftest(void)
 	test_for_each_clear_bitrange_from();
 	test_for_each_set_clump8();
 	test_for_each_set_bit_wrap();
+	test_initializer();
 }
 
 KSTM_MODULE_LOADERS(test_bitmap);
