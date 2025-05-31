@@ -1,0 +1,48 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (c) 2025 David Mazieres
+ * Copyright (c) 2025 Thomas Weißschuh <linux@weissschuh.net>
+ */
+
+#ifndef _LINUX_FOREACH_MACROS_H
+#define _LINUX_FOREACH_MACROS_H
+
+#define __FOREACH_PARENS ()
+#define FOREACH_END(X) (X)
+
+#define __FOREACH_EXPAND(...) __FOREACH_EXPAND3(__FOREACH_EXPAND3(__FOREACH_EXPAND3(__VA_ARGS__)))
+#define __FOREACH_EXPAND3(...) __FOREACH_EXPAND2(__FOREACH_EXPAND2(__FOREACH_EXPAND2(__VA_ARGS__)))
+#define __FOREACH_EXPAND2(...) __FOREACH_EXPAND1(__FOREACH_EXPAND1(__FOREACH_EXPAND1(__VA_ARGS__)))
+#define __FOREACH_EXPAND1(...) __VA_ARGS__
+
+
+#define FOREACH(MACRO, ...)								\
+	__VA_OPT__(__FOREACH_EXPAND(__FOREACH_HELPER(MACRO, __VA_ARGS__)))
+
+#define __FOREACH_HELPER(MACRO, A1, ...)						\
+	MACRO(A1)									\
+	__VA_OPT__(__FOREACH_AGAIN __FOREACH_PARENS (MACRO, __VA_ARGS__))
+
+#define __FOREACH_AGAIN() __FOREACH_HELPER
+
+
+#define FOREACH_S1(S1, MACRO, ...)							\
+	__VA_OPT__(__FOREACH_EXPAND(__FOREACH_S1_HELPER(S1, MACRO, __VA_ARGS__)))
+
+#define __FOREACH_S1_HELPER(S1, MACRO, A1, ...)						\
+	MACRO(S1, A1)									\
+	__VA_OPT__(__FOREACH_S1_AGAIN __FOREACH_PARENS (S1, MACRO, __VA_ARGS__))
+
+#define __FOREACH_S1_AGAIN() __FOREACH_S1_HELPER
+
+
+#define FOREACH_S2(S1, S2, MACRO, ...)							\
+	__VA_OPT__(__FOREACH_EXPAND(__FOREACH_S2_HELPER(S1, S2, MACRO, __VA_ARGS__)))
+
+#define __FOREACH_S2_HELPER(S1, S2, MACRO, A1, ...)					\
+	MACRO(S1, S2, A1)								\
+	__VA_OPT__(__FOREACH_S2_AGAIN __FOREACH_PARENS (S1, S2, MACRO, __VA_ARGS__))
+
+#define __FOREACH_S2_AGAIN() __FOREACH_S2_HELPER
+
+#endif	/* _LINUX_FOREACH_MACROS_H */
