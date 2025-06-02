@@ -16,7 +16,11 @@ user-csingle	:= $(addprefix $(obj)/, $(user-csingle))
 user-cmulti	:= $(addprefix $(obj)/, $(user-cmulti))
 user-cobjs	:= $(addprefix $(obj)/, $(user-cobjs))
 
-user-libgcc     := $(call try-run,$(CC) -Werror $(KBUILD_USERCFLAGS) -lgcc -x c -shared /dev/null -o "$$TMP",-lgcc)
+# FIXME try if it actually exists
+_libgcc_file	:= $(shell $(CC) $(KBUILD_USERCFLAGS) -print-libgcc-file-name)
+ifneq ($(_libgcc_file),libgcc.a)
+user-libgcc	:= $(_libgcc_file)
+endif
 
 user_nolibc_ccflags := -nostdlib -nostdinc -static -fno-ident -fno-asynchronous-unwind-tables \
 		      -ffreestanding -fno-stack-protector \
