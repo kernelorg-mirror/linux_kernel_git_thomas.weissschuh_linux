@@ -6,7 +6,11 @@ CONFIG_ARCH_VIRT=y
 CONFIG_SERIAL_AMBA_PL010=y
 CONFIG_SERIAL_AMBA_PL010_CONSOLE=y
 CONFIG_SERIAL_AMBA_PL011=y
-CONFIG_SERIAL_AMBA_PL011_CONSOLE=y''',
+CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
+CONFIG_VFP=y
+CONFIG_VFPv3=y
+CONFIG_NEON=y
+''',
 			   qemu_arch='arm',
 			   kernel_path='arch/arm/boot/zImage',
 			   kernel_command_line='console=ttyAMA0',
