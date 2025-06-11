@@ -9,6 +9,7 @@ NOLIBC_USERCFLAGS := -nostdlib -nostdinc -static -ffreestanding \
 		     -isystem $(objtree)/usr/include -isystem $(srctree)/tools/include/nolibc/
 
 NOLIBC_USERLDFLAGS := -nostdlib -nostdinc -static
+NOLIBC_USERLDLIBS := $(call try-run,$(CC) -Werror $(KBUILD_USERCFLAGS) -lgcc -x c -nostdlib -shared /dev/null -o "$$TMP",-lgcc)
 
 ifdef CONFIG_ARM
 NOLIBC_USERCFLAGS += -march=armv8-a
