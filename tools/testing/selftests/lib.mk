@@ -28,6 +28,8 @@ else
 CLANG_TARGET_FLAGS := $(CLANG_TARGET_FLAGS_$(ARCH))
 endif
 
+LDFLAGS += -fuse-ld=lld
+
 ifeq ($(CROSS_COMPILE),)
 ifeq ($(CLANG_TARGET_FLAGS),)
 $(error Specify CROSS_COMPILE or add '--target=' option to lib.mk)
