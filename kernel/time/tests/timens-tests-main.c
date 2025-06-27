@@ -45,7 +45,7 @@ static void procfs(struct kunit *test)
 	kunit_uapi_run_kselftest(test, &timens_test_procfs);
 }
 
-static void timens(struct kunit *test)
+static void timensX(struct kunit *test)
 {
 	if (IS_ENABLED(CONFIG_CC_CAN_LINK_STATIC)) {
 		KUNIT_UAPI_EMBED_BLOB(timens_test_timens, "timens_test_timens");
@@ -85,7 +85,7 @@ static struct kunit_case timens_test_cases[] = {
 	KUNIT_CASE(futex),
 	KUNIT_CASE_SLOW(gettime_perf),
 	KUNIT_CASE(procfs),
-	KUNIT_CASE(timens),
+	KUNIT_CASE(timensX),
 	KUNIT_CASE(timer),
 	KUNIT_CASE(timerfd),
 	KUNIT_CASE(vfork_exec),
