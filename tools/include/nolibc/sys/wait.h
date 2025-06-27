@@ -57,6 +57,8 @@ pid_t waitpid(pid_t pid, int *status, int options)
 	siginfo_t info;
 	pid_t id;
 
+	*status = 0;
+
 	if (pid == INT_MIN) {
 		SET_ERRNO(ESRCH);
 		return -1;
