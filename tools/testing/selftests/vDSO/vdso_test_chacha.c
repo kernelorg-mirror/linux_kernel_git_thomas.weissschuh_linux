@@ -3,7 +3,6 @@
  * Copyright (C) 2022-2024 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
  */
 
-#include <linux/compiler.h>
 #include <tools/le_byteshift.h>
 #include <sys/random.h>
 #include <sys/auxv.h>
@@ -79,7 +78,7 @@ static void reference_chacha20_blocks(uint8_t *dst_bytes, const uint32_t *key, u
 }
 
 void __arch_chacha20_blocks_nostack(uint8_t *dst_bytes, const uint32_t *key, uint32_t *counter, size_t nblocks);
-void __weak __arch_chacha20_blocks_nostack(uint8_t *dst_bytes, const uint32_t *key, uint32_t *counter, size_t nblocks)
+void __attribute__((weak)) __arch_chacha20_blocks_nostack(uint8_t *dst_bytes, const uint32_t *key, uint32_t *counter, size_t nblocks)
 {
 	ksft_test_result_skip("Not implemented on architecture\n");
 	ksft_finished();
