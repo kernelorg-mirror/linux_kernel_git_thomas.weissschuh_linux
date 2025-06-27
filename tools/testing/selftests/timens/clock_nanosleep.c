@@ -16,7 +16,7 @@
 #include "log.h"
 #include "timens.h"
 
-void test_sig(int sig)
+static void test_sig(int sig)
 {
 	if (sig == SIGUSR2)
 		pthread_exit(NULL);
@@ -29,7 +29,7 @@ struct thread_args {
 	int abs;
 };
 
-void *call_nanosleep(void *_args)
+static void *call_nanosleep(void *_args)
 {
 	struct thread_args *args = _args;
 
