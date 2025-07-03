@@ -93,3 +93,11 @@ config RV_REACT_PANIC
 	help
 	  Enables the panic reactor. The panic reactor emits a printk()
 	  message if an exception is found and panic()s the system.
+
+config RV_REACT_SIGNAL
+	bool "Signal reactor"
+	depends on RV_REACTORS
+	default y
+	help
+	  Enables the signal reactor. The signal reactors sends a signal to the
+	  task triggering an exception.
