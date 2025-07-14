@@ -8,10 +8,12 @@ struct __kernel_timespec;
 struct timezone;
 
 #if !defined(CONFIG_64BIT) || defined(BUILD_VDSO32_64)
+_Static_assert(sizeof(long) == 4, "");
 struct old_timespec32;
 int __vdso_clock_getres(clockid_t clock, struct old_timespec32 *res);
 int __vdso_clock_gettime(clockid_t clock, struct old_timespec32 *ts);
 #else
+_Static_assert(sizeof(long) == 8, "");
 int __vdso_clock_getres(clockid_t clock, struct __kernel_timespec *res);
 int __vdso_clock_gettime(clockid_t clock, struct __kernel_timespec *ts);
 #endif

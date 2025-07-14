@@ -33,6 +33,10 @@
 #define SECTIONS_SHIFT	0
 #endif
 
+#ifdef BUILD_VDSO32_64
+#error foo
+#endif
+
 /*
  * page->flags layout:
  *

@@ -1123,6 +1123,9 @@ static inline bool zone_is_empty(struct zone *zone)
 	return zone->spanned_pages == 0;
 }
 
+#ifdef BUILD_VDSO32_64
+#error foo
+#endif
 /*
  * The zone field is never updated after free_area_init_core()
  * sets it, so none of the operations on it need to be atomic.

@@ -24,6 +24,9 @@
  *
  * Nodes in the tree point to their parent unless bit 0 is set.
  */
+#ifdef BUILD_VDSO32_64
+#error foo
+#endif
 #if defined(CONFIG_64BIT)
 /* 64bit sizes */
 #define MAPLE_NODE_SLOTS	31	/* 256 bytes including ->parent */
