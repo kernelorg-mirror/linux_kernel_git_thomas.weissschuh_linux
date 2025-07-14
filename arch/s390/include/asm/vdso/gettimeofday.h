@@ -2,10 +2,6 @@
 #ifndef ASM_VDSO_GETTIMEOFDAY_H
 #define ASM_VDSO_GETTIMEOFDAY_H
 
-#define VDSO_HAS_TIME 1
-
-#define VDSO_HAS_CLOCK_GETRES 1
-
 #define VDSO_DELTA_NOMASK 1
 
 #include <asm/syscall.h>
