@@ -33,7 +33,6 @@
 #define SECTIONS_SHIFT	0
 #endif
 
-#ifndef BUILD_VDSO32_64
 /*
  * page->flags layout:
  *
@@ -120,5 +119,4 @@
 #define NR_UNUSED_PAGEFLAG_BITS	(BITS_PER_LONG - \
 				(NR_NON_PAGEFLAG_BITS + NR_PAGEFLAGS))
 
-#endif
 #endif /* _LINUX_PAGE_FLAGS_LAYOUT */

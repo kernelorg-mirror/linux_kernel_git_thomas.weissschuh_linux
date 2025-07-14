@@ -1123,7 +1123,6 @@ static inline bool zone_is_empty(struct zone *zone)
 	return zone->spanned_pages == 0;
 }
 
-#ifndef BUILD_VDSO32_64
 /*
  * The zone field is never updated after free_area_init_core()
  * sets it, so none of the operations on it need to be atomic.
@@ -1242,7 +1241,6 @@ static inline bool folio_is_zone_movable(const struct folio *folio)
 {
 	return folio_zonenum(folio) == ZONE_MOVABLE;
 }
-#endif
 
 /*
  * Return true if [start_pfn, start_pfn + nr_pages) range has a non-empty

@@ -24,7 +24,7 @@
  *
  * Nodes in the tree point to their parent unless bit 0 is set.
  */
-#if defined(CONFIG_64BIT) || defined(BUILD_VDSO32_64)
+#if defined(CONFIG_64BIT)
 /* 64bit sizes */
 #define MAPLE_NODE_SLOTS	31	/* 256 bytes including ->parent */
 #define MAPLE_RANGE64_SLOTS	16	/* 256 bytes */
@@ -36,7 +36,7 @@
 #define MAPLE_RANGE64_SLOTS	32	/* 256 bytes */
 #define MAPLE_ARANGE64_SLOTS	21	/* 240 bytes */
 #define MAPLE_ALLOC_SLOTS	(MAPLE_NODE_SLOTS - 2)
-#endif /* defined(CONFIG_64BIT) || defined(BUILD_VDSO32_64) */
+#endif /* defined(CONFIG_64BIT) */
 
 #define MAPLE_NODE_MASK		255UL
 
