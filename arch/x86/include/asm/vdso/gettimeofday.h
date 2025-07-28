@@ -17,7 +17,8 @@
 #include <asm/unistd.h>
 #include <asm/msr.h>
 #include <asm/pvclock.h>
-#include <clocksource/hyperv_timer.h>
+#include <asm/tsc.h>
+#include <vdso/hyperv_timer.h>
 
 #define VDSO_HAS_TIME 1
 
