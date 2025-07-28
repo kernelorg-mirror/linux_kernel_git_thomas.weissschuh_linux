@@ -7,7 +7,7 @@
 struct __kernel_timespec;
 struct timezone;
 
-#if !defined(CONFIG_64BIT) || defined(BUILD_VDSO32_64)
+#if __BITS_PER_LONG == 32
 _Static_assert(sizeof(long) == 4, "");
 struct old_timespec32;
 int __vdso_clock_getres(clockid_t clock, struct old_timespec32 *res);
