@@ -12,7 +12,7 @@
 #ifndef __ASSEMBLY__
 
 #include <asm/asm.h>
-#include <asm/vdso.h>
+#include <asm/mipsregs.h>
 
 static inline const struct vdso_time_data *get_vdso_time_data(void)
 {
