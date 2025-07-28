@@ -9,8 +9,6 @@
 
 #include <asm/page.h>
 
-#define BUILD_VDSO32
-
 #include "../vdso-layout.lds.S"
 
 /* The ELF entry point can be used to set the AT_SYSINFO value.  */
