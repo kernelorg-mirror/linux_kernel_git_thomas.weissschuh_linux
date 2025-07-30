@@ -6,7 +6,6 @@
  *	include/linux/kmod.h
  */
 
-#include <linux/umh.h>
 #include <linux/gfp.h>
 #include <linux/stddef.h>
 #include <linux/errno.h>
