@@ -28,6 +28,7 @@
 #include <linux/unaligned.h>
 #include <linux/drbd_limits.h>
 #include <linux/kthread.h>
+#include <linux/umh.h>
 
 #include <net/genetlink.h>
 
