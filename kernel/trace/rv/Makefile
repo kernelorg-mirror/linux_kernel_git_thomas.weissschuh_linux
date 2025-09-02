@@ -2,6 +2,8 @@
 
 ccflags-y += -I $(src)		# needed for trace events
 
+userprogs-always-y += monitors/rtapp/tests/pthread_test
+
 obj-$(CONFIG_RV) += rv.o
 obj-$(CONFIG_RV_MON_WIP) += monitors/wip/wip.o
 obj-$(CONFIG_RV_MON_WWNR) += monitors/wwnr/wwnr.o
