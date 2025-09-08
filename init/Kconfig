@@ -1347,7 +1347,7 @@ config UTS_NS
 
 config TIME_NS
 	bool "TIME namespace"
-	depends on GENERIC_GETTIMEOFDAY
+	depends on !SPARC64 # custom vDSO time implementation
 	default y
 	help
 	  In this namespace boottime and monotonic clocks can be set.
