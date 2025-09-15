@@ -17,13 +17,6 @@
  */
 VERSION {
 	LINUX_2.6 {
-	global:
-		clock_gettime;
-		__vdso_clock_gettime;
-		gettimeofday;
-		__vdso_gettimeofday;
-		time;
-		__vdso_time;
 	local: *;
 	};
 }
