@@ -70,13 +70,13 @@ static void rv_reaction_signal(int signal, const char *fmt, va_list args)
 __printf(1, 0)
 static void rv_reaction_sigbus(const char *fmt, va_list args)
 {
-	rv_reaction_signal(SIGBUS, fmt, args);
+	rv_reaction_signal(SIGTRAP, fmt, args);
 }
 
-static struct rv_reactor rv_sigbus = {
-	.name		= "sigbus",
-	.description	= "Kill the current task with SIGBUS",
-	.react		= rv_reaction_sigbus,
+static struct rv_reactor rv_sigtrap = {
+	.name		= "sigtrap",
+	.description	= "Kill the current task with SIGTRAP",
+	.react		= rv_reaction_sigtrap,
 };
 
 static int __init register_react_signal(void)
@@ -88,7 +88,7 @@ static int __init register_react_signal(void)
 	if (!rv_signal_task_work_pool)
 		return -ENOMEM;
 
-	ret = rv_register_reactor(&rv_sigbus);
+	ret = rv_register_reactor(&rv_sigtrap);
 	if (ret) {
 		mempool_destroy(rv_signal_task_work_pool);
 		return ret;
@@ -99,7 +99,7 @@ static int __init register_react_signal(void)
 
 static void __exit unregister_react_signal(void)
 {
-	rv_unregister_reactor(&rv_sigbus);
+	rv_unregister_reactor(&rv_sigtrap);
 	mempool_destroy(rv_signal_task_work_pool);
 }
 
