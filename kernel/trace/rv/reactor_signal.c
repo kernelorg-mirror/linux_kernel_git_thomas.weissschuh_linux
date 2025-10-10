@@ -20,15 +20,12 @@
 struct rv_signal_work {
 	struct callback_head twork;
 	int signal;
-	char message[256];
 };
 
 static mempool_t *rv_signal_task_work_pool;
 
-static void rv_signal_force_sig(int signal, const char *message)
+static void rv_signal_force_sig(int signal)
 {
-	/* The message already contains a subsystem prefix, so use raw printk() */
-	printk(KERN_WARNING "%s", message);
 	pr_warn("Killing PID %d with signal %d", task_pid_nr(current), signal);
 	force_sig(signal);
 }
@@ -37,7 +34,7 @@ static void rv_signal_task_work(struct callback_head *cbh)
 {
 	struct rv_signal_work *work = container_of_const(cbh, struct rv_signal_work, twork);
 
-	rv_signal_force_sig(work->signal, work->message);
+	rv_signal_force_sig(work->signal);
 
 	mempool_free(work, rv_signal_task_work_pool);
 }
@@ -45,19 +42,16 @@ static void rv_signal_task_work(struct callback_head *cbh)
 static void rv_reaction_signal(int signal, const char *fmt, va_list args)
 {
 	struct rv_signal_work *work;
-	char message[256];
 
 	work = mempool_alloc_preallocated(rv_signal_task_work_pool);
 	if (!work) {
 		pr_warn_ratelimited("Unable to signal through task_work, sending directly\n");
-		vsnprintf(message, sizeof(message), fmt, args);
-		rv_signal_force_sig(signal, message);
+		rv_signal_force_sig(signal);
 		return;
 	}
 
 	init_task_work(&work->twork, rv_signal_task_work);
 	work->signal = signal;
-	vsnprintf(work->message, sizeof(work->message), fmt, args);
 
 	/*
 	 * The reactor can be called from any context through tracepoints.
