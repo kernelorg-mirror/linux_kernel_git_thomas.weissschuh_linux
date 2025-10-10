@@ -26,7 +26,6 @@ static mempool_t *rv_signal_task_work_pool;
 
 static void rv_signal_force_sig(int signal)
 {
-	pr_warn("Killing PID %d with signal %d", task_pid_nr(current), signal);
 	force_sig(signal);
 }
 
