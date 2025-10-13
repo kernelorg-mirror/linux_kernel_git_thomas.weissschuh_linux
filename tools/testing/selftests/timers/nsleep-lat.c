@@ -26,6 +26,7 @@
 #include <signal.h>
 #include <include/vdso/time64.h>
 #include "../kselftest.h"
+#include "../clock-helpers.h"
 
 #define UNRESONABLE_LATENCY 40000000 /* 40ms in nanosecs */
 
@@ -33,35 +34,6 @@
 #define CLOCK_HWSPECIFIC		10
 
 #define UNSUPPORTED 0xf00f
-
-char *clockstring(int clockid)
-{
-	switch (clockid) {
-	case CLOCK_REALTIME:
-		return "CLOCK_REALTIME";
-	case CLOCK_MONOTONIC:
-		return "CLOCK_MONOTONIC";
-	case CLOCK_PROCESS_CPUTIME_ID:
-		return "CLOCK_PROCESS_CPUTIME_ID";
-	case CLOCK_THREAD_CPUTIME_ID:
-		return "CLOCK_THREAD_CPUTIME_ID";
-	case CLOCK_MONOTONIC_RAW:
-		return "CLOCK_MONOTONIC_RAW";
-	case CLOCK_REALTIME_COARSE:
-		return "CLOCK_REALTIME_COARSE";
-	case CLOCK_MONOTONIC_COARSE:
-		return "CLOCK_MONOTONIC_COARSE";
-	case CLOCK_BOOTTIME:
-		return "CLOCK_BOOTTIME";
-	case CLOCK_REALTIME_ALARM:
-		return "CLOCK_REALTIME_ALARM";
-	case CLOCK_BOOTTIME_ALARM:
-		return "CLOCK_BOOTTIME_ALARM";
-	case CLOCK_TAI:
-		return "CLOCK_TAI";
-	};
-	return "UNKNOWN_CLOCKID";
-}
 
 struct timespec timespec_add(struct timespec ts, unsigned long long ns)
 {
@@ -155,10 +127,10 @@ int main(int argc, char **argv)
 		}
 
 		if (ret == UNSUPPORTED) {
-			ksft_test_result_skip("%s\n", clockstring(clockid));
+			ksft_test_result_skip("%s\n", clock_name(clockid));
 		} else {
 			ksft_test_result(ret >= 0, "%s\n",
-					 clockstring(clockid));
+					 clock_name(clockid));
 		}
 	}
 
