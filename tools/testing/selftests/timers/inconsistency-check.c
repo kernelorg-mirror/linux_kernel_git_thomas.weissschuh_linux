@@ -32,9 +32,6 @@
 #include "../kselftest.h"
 #include "../clock-helpers.h"
 
-/* CLOCK_HWSPECIFIC == CLOCK_SGI_CYCLE (Deprecated) */
-#define CLOCK_HWSPECIFIC		10
-
 #define CALLS_PER_LOOP 64
 
 /* returns 1 if a <= b, 0 otherwise */
@@ -108,14 +105,29 @@ int consistency_test(int clock_type, unsigned long seconds)
 	return 0;
 }
 
+static const clockid_t all_clocks[] = {
+	CLOCK_REALTIME,
+	CLOCK_MONOTONIC,
+	CLOCK_PROCESS_CPUTIME_ID,
+	CLOCK_THREAD_CPUTIME_ID,
+	CLOCK_MONOTONIC_RAW,
+	CLOCK_REALTIME_COARSE,
+	CLOCK_MONOTONIC_COARSE,
+	CLOCK_BOOTTIME,
+	CLOCK_REALTIME_ALARM,
+	CLOCK_BOOTTIME_ALARM,
+	CLOCK_TAI,
+};
 
 int main(int argc, char *argv[])
 {
-	int clockid, opt;
-	int userclock = CLOCK_REALTIME;
-	int maxclocks = CLOCK_TAI + 1;
-	int runtime = 10;
+	size_t num_tested_clocks = ARRAY_SIZE(all_clocks);
+	const clockid_t *tested_clocks = all_clocks;
+	clockid_t clockid, userclock;
+	size_t clock_index;
 	struct timespec ts;
+	int runtime = 10;
+	int opt;
 
 	/* Process arguments */
 	while ((opt = getopt(argc, argv, "t:c:")) != -1) {
@@ -125,7 +137,8 @@ int main(int argc, char *argv[])
 			break;
 		case 'c':
 			userclock = atoi(optarg);
-			maxclocks = userclock + 1;
+			tested_clocks = &userclock;
+			num_tested_clocks = 1;
 			break;
 		default:
 			printf("Usage: %s [-t <secs>] [-c <clockid>]\n", argv[0]);
@@ -138,11 +151,12 @@ int main(int argc, char *argv[])
 	setbuf(stdout, NULL);
 
 	ksft_print_header();
-	ksft_set_plan(maxclocks - userclock);
+	ksft_set_plan(num_tested_clocks);
 
-	for (clockid = userclock; clockid < maxclocks; clockid++) {
+	for (clock_index = 0; clock_index < num_tested_clocks; clock_index++) {
+		clockid = tested_clocks[clock_index];
 
-		if (clockid == CLOCK_HWSPECIFIC || clock_gettime(clockid, &ts)) {
+		if (clock_gettime(clockid, &ts)) {
 			ksft_test_result_skip("%-31s\n", clock_name(clockid));
 			continue;
 		}
