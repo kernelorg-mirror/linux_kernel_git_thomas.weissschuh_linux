@@ -22,6 +22,7 @@
 #include "vdso_config.h"
 #include "vdso_call.h"
 #include "../kselftest.h"
+#include "../clock-helpers.h"
 
 static const char **name;
 
@@ -238,23 +239,28 @@ static bool tv_leq(const struct timeval *a, const struct timeval *b)
 		return a->tv_usec <= b->tv_usec;
 }
 
-static char const * const clocknames[] = {
-	[0] = "CLOCK_REALTIME",
-	[1] = "CLOCK_MONOTONIC",
-	[2] = "CLOCK_PROCESS_CPUTIME_ID",
-	[3] = "CLOCK_THREAD_CPUTIME_ID",
-	[4] = "CLOCK_MONOTONIC_RAW",
-	[5] = "CLOCK_REALTIME_COARSE",
-	[6] = "CLOCK_MONOTONIC_COARSE",
-	[7] = "CLOCK_BOOTTIME",
-	[8] = "CLOCK_REALTIME_ALARM",
-	[9] = "CLOCK_BOOTTIME_ALARM",
-	[10] = "CLOCK_SGI_CYCLE",
-	[11] = "CLOCK_TAI",
+static const clockid_t vdso_clocks[] = {
+	CLOCK_REALTIME,
+	CLOCK_MONOTONIC,
+	CLOCK_PROCESS_CPUTIME_ID,
+	CLOCK_THREAD_CPUTIME_ID,
+	CLOCK_MONOTONIC_RAW,
+	CLOCK_REALTIME_COARSE,
+	CLOCK_MONOTONIC_COARSE,
+	CLOCK_BOOTTIME,
+	CLOCK_REALTIME_ALARM,
+	CLOCK_BOOTTIME_ALARM,
+	CLOCK_TAI,
+	/* Also test some invalid clock ids */
+	10 /* CLOCK_SGI_CYCLE */,
+	-1,
+	INT_MIN,
+	INT_MAX,
 };
 
-static void test_one_clock_gettime(int clock, const char *name)
+static void test_one_clock_gettime(int clock)
 {
+	const char *name = clock_name(clock);
 	struct timespec start, vdso, end;
 	int vdso_ret, end_ret;
 
@@ -306,18 +312,14 @@ static void test_clock_gettime(void)
 		return;
 	}
 
-	for (int clock = 0; clock < ARRAY_SIZE(clocknames); clock++)
-		test_one_clock_gettime(clock, clocknames[clock]);
-
-	/* Also test some invalid clock ids */
-	test_one_clock_gettime(-1, "invalid");
-	test_one_clock_gettime(INT_MIN, "invalid");
-	test_one_clock_gettime(INT_MAX, "invalid");
+	for (int clock = 0; clock < ARRAY_SIZE(vdso_clocks); clock++)
+		test_one_clock_gettime(vdso_clocks[clock]);
 }
 
-static void test_one_clock_gettime64(int clock, const char *name)
+static void test_one_clock_gettime64(int clock)
 {
 	struct __kernel_timespec start, vdso, end;
+	const char *name = clock_name(clock);
 	int vdso_ret, end_ret;
 
 	printf("[RUN]\tTesting clock_gettime64 for clock %s (%d)...\n", name, clock);
@@ -368,13 +370,8 @@ static void test_clock_gettime64(void)
 		return;
 	}
 
-	for (int clock = 0; clock < ARRAY_SIZE(clocknames); clock++)
-		test_one_clock_gettime64(clock, clocknames[clock]);
-
-	/* Also test some invalid clock ids */
-	test_one_clock_gettime64(-1, "invalid");
-	test_one_clock_gettime64(INT_MIN, "invalid");
-	test_one_clock_gettime64(INT_MAX, "invalid");
+	for (int clock = 0; clock < ARRAY_SIZE(vdso_clocks); clock++)
+		test_one_clock_gettime64(vdso_clocks[clock]);
 }
 
 static void test_gettimeofday(void)
