@@ -117,6 +117,14 @@ static const clockid_t all_clocks[] = {
 	CLOCK_REALTIME_ALARM,
 	CLOCK_BOOTTIME_ALARM,
 	CLOCK_TAI,
+	CLOCK_AUX + 0,
+	CLOCK_AUX + 1,
+	CLOCK_AUX + 2,
+	CLOCK_AUX + 3,
+	CLOCK_AUX + 4,
+	CLOCK_AUX + 5,
+	CLOCK_AUX + 6,
+	CLOCK_AUX + 7,
 };
 
 int main(int argc, char *argv[])
