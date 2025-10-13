@@ -196,11 +196,12 @@ static inline void vdso_test_clock(clockid_t clock_id)
 	vdso_test_clock_getres(clock_id);
 }
 
-#define VDSO_TEST_PLAN	29
+#define VDSO_TEST_PLAN	53
 
 int main(int argc, char **argv)
 {
 	unsigned long sysinfo_ehdr = getauxval(AT_SYSINFO_EHDR);
+	clockid_t aux_clock;
 
 	ksft_print_header();
 
@@ -227,6 +228,9 @@ int main(int argc, char **argv)
 	vdso_test_clock(CLOCK_MONOTONIC_COARSE);
 	vdso_test_clock(CLOCK_PROCESS_CPUTIME_ID);
 	vdso_test_clock(CLOCK_THREAD_CPUTIME_ID);
+
+	for (aux_clock = CLOCK_AUX; aux_clock <= CLOCK_AUX_LAST; aux_clock++)
+		vdso_test_clock(aux_clock);
 
 	vdso_test_time();
 
