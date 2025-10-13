@@ -253,6 +253,14 @@ static const clockid_t vdso_clocks[] = {
 	CLOCK_REALTIME_ALARM,
 	CLOCK_BOOTTIME_ALARM,
 	CLOCK_TAI,
+	CLOCK_AUX + 0,
+	CLOCK_AUX + 1,
+	CLOCK_AUX + 2,
+	CLOCK_AUX + 3,
+	CLOCK_AUX + 4,
+	CLOCK_AUX + 5,
+	CLOCK_AUX + 6,
+	CLOCK_AUX + 7,
 	/* Also test some invalid clock ids */
 	10 /* CLOCK_SGI_CYCLE */,
 	-1,
@@ -429,7 +437,7 @@ int main(int argc, char **argv)
 	fill_function_pointers();
 
 	ksft_print_header();
-	ksft_set_plan(32);
+	ksft_set_plan(48);
 
 	test_clock_gettime();
 	test_clock_gettime64();
