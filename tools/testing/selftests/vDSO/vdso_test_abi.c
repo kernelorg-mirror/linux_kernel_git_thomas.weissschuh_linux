@@ -11,9 +11,7 @@
 #include <stdint.h>
 #include <elf.h>
 #include <stdio.h>
-#include <time.h>
 #include <sys/auxv.h>
-#include <sys/time.h>
 #define _GNU_SOURCE
 #include <unistd.h>
 #include <sys/syscall.h>
@@ -21,23 +19,11 @@
 #include "kselftest.h"
 #include "vdso_config.h"
 #include "vdso_call.h"
+#include "vdso_types.h"
 #include "parse_vdso.h"
 
 static const char *version;
 static const char **name;
-
-/* The same as struct __kernel_timespec */
-struct vdso_timespec64 {
-	uint64_t tv_sec;
-	uint64_t tv_nsec;
-};
-
-typedef long (*vdso_gettimeofday_t)(struct timeval *tv, struct timezone *tz);
-typedef long (*vdso_clock_gettime_t)(clockid_t clk_id, struct timespec *ts);
-typedef long (*vdso_clock_gettime64_t)(clockid_t clk_id, struct vdso_timespec64 *ts);
-typedef long (*vdso_clock_getres_t)(clockid_t clk_id, struct timespec *ts);
-typedef long (*vdso_clock_getres_time64_t)(clockid_t clk_id, struct vdso_timespec64 *ts);
-typedef time_t (*vdso_time_t)(time_t *t);
 
 static const char * const vdso_clock_name[] = {
 	[CLOCK_REALTIME]		= "CLOCK_REALTIME",
@@ -66,7 +52,7 @@ static void vdso_test_gettimeofday(void)
 		return;
 	}
 
-	struct timeval tv;
+	struct __kernel_old_timeval tv;
 	long ret = VDSO_CALL(vdso_gettimeofday, 2, &tv, 0);
 
 	if (ret == 0) {
@@ -78,7 +64,7 @@ static void vdso_test_gettimeofday(void)
 	}
 }
 
-static void vdso_test_clock_gettime64(clockid_t clk_id)
+static void vdso_test_clock_gettime64(__kernel_clockid_t clk_id)
 {
 	/* Find clock_gettime64. */
 	vdso_clock_gettime64_t vdso_clock_gettime64 =
@@ -91,7 +77,7 @@ static void vdso_test_clock_gettime64(clockid_t clk_id)
 		return;
 	}
 
-	struct vdso_timespec64 ts;
+	struct __kernel_timespec ts;
 	long ret = VDSO_CALL(vdso_clock_gettime64, 2, clk_id, &ts);
 
 	if (ret == 0) {
@@ -105,7 +91,7 @@ static void vdso_test_clock_gettime64(clockid_t clk_id)
 	}
 }
 
-static void vdso_test_clock_gettime(clockid_t clk_id)
+static void vdso_test_clock_gettime(__kernel_clockid_t clk_id)
 {
 	/* Find clock_gettime. */
 	vdso_clock_gettime_t vdso_clock_gettime =
@@ -118,7 +104,7 @@ static void vdso_test_clock_gettime(clockid_t clk_id)
 		return;
 	}
 
-	struct timespec ts;
+	struct __kernel_old_timespec ts;
 	long ret = VDSO_CALL(vdso_clock_gettime, 2, clk_id, &ts);
 
 	if (ret == 0) {
@@ -155,7 +141,7 @@ static void vdso_test_time(void)
 	}
 }
 
-static void vdso_test_clock_getres(clockid_t clk_id)
+static void vdso_test_clock_getres(__kernel_clockid_t clk_id)
 {
 	int clock_getres_fail = 0;
 
@@ -170,7 +156,8 @@ static void vdso_test_clock_getres(clockid_t clk_id)
 		return;
 	}
 
-	struct timespec ts, sys_ts;
+	struct __kernel_old_timespec ts;
+	struct timespec sys_ts;
 	long ret = VDSO_CALL(vdso_clock_getres, 2, clk_id, &ts);
 
 	if (ret == 0) {
@@ -213,7 +200,7 @@ static void vdso_test_clock_getres_time64(clockid_t clk_id)
 		return;
 	}
 
-	struct vdso_timespec64 ts, sys_ts;
+	struct __kernel_timespec ts, sys_ts;
 	long ret = VDSO_CALL(vdso_clock_getres_time64, 2, clk_id, &ts);
 
 	if (ret == 0) {
@@ -250,7 +237,7 @@ static void vdso_test_clock_getres_time64(clockid_t clk_id)
  * This function calls vdso_test_clock_gettime and vdso_test_clock_getres
  * with different values for clock_id.
  */
-static inline void vdso_test_clock(clockid_t clock_id)
+static inline void vdso_test_clock(__kernel_clockid_t clock_id)
 {
 	ksft_print_msg("clock_id: %s\n", vdso_clock_name[clock_id]);
 
