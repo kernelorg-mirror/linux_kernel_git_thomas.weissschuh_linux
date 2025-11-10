@@ -61,6 +61,7 @@ static void *vgetrandom_get_state(void)
 	if (!vgrnd.len) {
 		size_t page_size = getpagesize();
 		size_t new_cap;
+		/* FIXME sysconf() returns -1 on error */
 		size_t alloc_size, num = sysconf(_SC_NPROCESSORS_ONLN); /* Just a decent heuristic. */
 		size_t state_size_aligned, cache_line_size = sysconf(_SC_LEVEL1_DCACHE_LINESIZE) ?: 1;
 		void *new_block, *new_states;
