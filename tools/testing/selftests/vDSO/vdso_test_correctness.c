@@ -7,7 +7,6 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
-#include <sys/time.h>
 #include <time.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -22,6 +21,7 @@
 #include "parse_vdso.h"
 #include "vdso_config.h"
 #include "vdso_call.h"
+#include "vdso_types.h"
 #include "kselftest.h"
 
 static const char *version;
@@ -31,29 +31,15 @@ static const char **name;
 #define __NR_clock_gettime64	403
 #endif
 
-#ifndef __kernel_timespec
-struct __kernel_timespec {
-	long long	tv_sec;
-	long long	tv_nsec;
-};
-#endif
-
 /* max length of lines in /proc/self/maps - anything longer is skipped here */
 #define MAPS_LINE_LEN 128
 
 int nerrs = 0;
 
-typedef int (*vgettime_t)(clockid_t, struct timespec *);
-
-vgettime_t vdso_clock_gettime;
-
-typedef int (*vgettime64_t)(clockid_t, struct __kernel_timespec *);
-
-vgettime64_t vdso_clock_gettime64;
-
-typedef long (*vgtod_t)(struct timeval *tv, struct timezone *tz);
-
-vgtod_t vdso_gettimeofday;
+vdso_clock_gettime_t vdso_clock_gettime;
+vdso_clock_gettime64_t vdso_clock_gettime64;
+vdso_gettimeofday_t vdso_gettimeofday;
+vdso_time_t vdso_time;
 
 typedef time_t (*vtime_t)(__kernel_time_t *tloc);
 
@@ -123,21 +109,21 @@ static void fill_function_pointers(void)
 
 	vgetcpu = (getcpu_t) vsyscall_getcpu();
 
-	vdso_clock_gettime = (vgettime_t)vdso_sym(version, name[1]);
+	vdso_clock_gettime = (vdso_clock_gettime_t)vdso_sym(version, name[1]);
 	if (!vdso_clock_gettime)
 		printf("Warning: failed to find clock_gettime in vDSO\n");
 
 #if defined(VDSO_32BIT)
-	vdso_clock_gettime64 = (vgettime64_t)vdso_sym(version, name[5]);
+	vdso_clock_gettime64 = (vdso_clock_gettime64_t)vdso_sym(version, name[5]);
 	if (!vdso_clock_gettime64)
 		printf("Warning: failed to find clock_gettime64 in vDSO\n");
 #endif
 
-	vdso_gettimeofday = (vgtod_t)vdso_sym(version, name[0]);
+	vdso_gettimeofday = (vdso_gettimeofday_t)vdso_sym(version, name[0]);
 	if (!vdso_gettimeofday)
 		printf("Warning: failed to find gettimeofday in vDSO\n");
 
-	vdso_time = (vtime_t)vdso_sym(version, name[2]);
+	vdso_time = (vdso_time_t)vdso_sym(version, name[2]);
 	if (!vdso_time)
 		printf("Warning: failed to find time in vDSO\n");
 
@@ -265,7 +251,8 @@ static char const * const clocknames[] = {
 
 static void test_one_clock_gettime(int clock, const char *name)
 {
-	struct timespec start, vdso, end;
+	struct __kernel_old_timespec vdso;
+	struct timespec start, end;
 	int vdso_ret, end_ret;
 
 	printf("[RUN]\tTesting clock_gettime for clock %s (%d)...\n", name, clock);
@@ -389,8 +376,10 @@ static void test_clock_gettime64(void)
 
 static void test_gettimeofday(void)
 {
-	struct timeval start, vdso, end;
-	struct timezone sys_tz, vdso_tz;
+	struct __kernel_old_timeval vdso;
+	struct kernel_timezone vdso_tz;
+	struct timeval start, end;
+	struct timezone sys_tz;
 	int vdso_ret, end_ret;
 
 	if (!vdso_gettimeofday)
