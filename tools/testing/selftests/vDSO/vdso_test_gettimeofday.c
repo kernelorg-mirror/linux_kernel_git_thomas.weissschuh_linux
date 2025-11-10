@@ -12,12 +12,12 @@
 
 #include <stdio.h>
 #include <sys/auxv.h>
-#include <sys/time.h>
 
 #include "kselftest.h"
 #include "parse_vdso.h"
 #include "vdso_config.h"
 #include "vdso_call.h"
+#include "vdso_types.h"
 
 int main(int argc, char **argv)
 {
@@ -33,15 +33,14 @@ int main(int argc, char **argv)
 	vdso_init_from_sysinfo_ehdr(getauxval(AT_SYSINFO_EHDR));
 
 	/* Find gettimeofday. */
-	typedef long (*gtod_t)(struct timeval *tv, struct timezone *tz);
-	gtod_t gtod = (gtod_t)vdso_sym(version, name[0]);
+	vdso_gettimeofday_t gtod = (vdso_gettimeofday_t)vdso_sym(version, name[0]);
 
 	if (!gtod) {
 		printf("Could not find %s\n", name[0]);
 		return KSFT_SKIP;
 	}
 
-	struct timeval tv;
+	struct __kernel_old_timeval tv;
 	long ret = VDSO_CALL(gtod, 2, &tv, 0);
 
 	if (ret == 0) {
