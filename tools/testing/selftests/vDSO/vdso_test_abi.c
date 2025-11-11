@@ -19,6 +19,7 @@
 #include "kselftest.h"
 #include "vdso_config.h"
 #include "vdso_call.h"
+#include "vdso_syscalls.h"
 #include "vdso_types.h"
 #include "parse_vdso.h"
 
@@ -157,7 +158,7 @@ static void vdso_test_clock_getres(__kernel_clockid_t clk_id)
 	}
 
 	struct __kernel_old_timespec ts;
-	struct timespec sys_ts;
+	struct __kernel_timespec sys_ts;
 	long ret = VDSO_CALL(vdso_clock_getres, 2, clk_id, &ts);
 
 	if (ret == 0) {
@@ -167,7 +168,7 @@ static void vdso_test_clock_getres(__kernel_clockid_t clk_id)
 		clock_getres_fail++;
 	}
 
-	ret = syscall(__NR_clock_getres, clk_id, &sys_ts);
+	ret = sys_clock_getres(clk_id, &sys_ts);
 
 	ksft_print_msg("The syscall resolution is %lld %lld\n",
 			(long long)sys_ts.tv_sec, (long long)sys_ts.tv_nsec);
@@ -210,7 +211,7 @@ static void vdso_test_clock_getres_time64(clockid_t clk_id)
 		clock_getres_fail++;
 	}
 
-	ret = syscall(__NR_clock_getres_time64, clk_id, &sys_ts);
+	ret = sys_clock_getres(clk_id, &sys_ts);
 
 	ksft_print_msg("The syscall resolution is %lld %lld\n",
 			(long long)sys_ts.tv_sec, (long long)sys_ts.tv_nsec);
