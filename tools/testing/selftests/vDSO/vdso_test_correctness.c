@@ -226,30 +226,27 @@ static void test_getcpu(void)
 	}
 }
 
-static bool ts_leq(const struct timespec *a, const struct timespec *b)
-{
-	if (a->tv_sec != b->tv_sec)
-		return a->tv_sec < b->tv_sec;
-	else
-		return a->tv_nsec <= b->tv_nsec;
-}
+#define ts_leq(_a, _b)	({				\
+	bool _ret;					\
+							\
+	if ((_a)->tv_sec != (_b)->tv_sec)		\
+		_ret = (_a)->tv_sec < (_b)->tv_sec;	\
+	else						\
+		_ret = (_a)->tv_nsec <= (_b)->tv_nsec;	\
+							\
+	_ret;						\
+})
 
-static bool ts64_leq(const struct __kernel_timespec *a,
-		     const struct __kernel_timespec *b)
-{
-	if (a->tv_sec != b->tv_sec)
-		return a->tv_sec < b->tv_sec;
-	else
-		return a->tv_nsec <= b->tv_nsec;
-}
-
-static bool tv_leq(const struct timeval *a, const struct timeval *b)
-{
-	if (a->tv_sec != b->tv_sec)
-		return a->tv_sec < b->tv_sec;
-	else
-		return a->tv_usec <= b->tv_usec;
-}
+#define tv_leq(_a, _b)	({				\
+	bool _ret;					\
+							\
+	if ((_a)->tv_sec != (_b)->tv_sec)		\
+		_ret = (_a)->tv_sec < (_b)->tv_sec;	\
+	else						\
+		_ret = (_a)->tv_usec <= (_b)->tv_usec;	\
+							\
+	_ret;						\
+})
 
 static char const * const clocknames[] = {
 	[0] = "CLOCK_REALTIME",
@@ -365,7 +362,7 @@ static void test_one_clock_gettime64(int clock, const char *name)
 	       (unsigned long long)vdso.tv_sec, vdso.tv_nsec,
 	       (unsigned long long)end.tv_sec, end.tv_nsec);
 
-	if (!ts64_leq(&start, &vdso) || !ts64_leq(&vdso, &end)) {
+	if (!ts_leq(&start, &vdso) || !ts_leq(&vdso, &end)) {
 		printf("[FAIL]\tTimes are out of sequence\n");
 		nerrs++;
 		return;
