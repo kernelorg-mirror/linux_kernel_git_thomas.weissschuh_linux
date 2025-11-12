@@ -21,6 +21,7 @@
 #include "parse_vdso.h"
 #include "vdso_config.h"
 #include "vdso_call.h"
+#include "vdso_syscalls.h"
 #include "vdso_types.h"
 #include "kselftest.h"
 
@@ -135,31 +136,6 @@ static long sys_getcpu(unsigned * cpu, unsigned * node,
 	return syscall(__NR_getcpu, cpu, node, cache);
 }
 
-static inline int sys_clock_gettime(clockid_t id, struct timespec *ts)
-{
-	return syscall(__NR_clock_gettime, id, ts);
-}
-
-static inline int sys_clock_gettime64(clockid_t id, struct __kernel_timespec *ts)
-{
-	return syscall(__NR_clock_gettime64, id, ts);
-}
-
-static inline int sys_gettimeofday(struct timeval *tv, struct timezone *tz)
-{
-	return syscall(__NR_gettimeofday, tv, tz);
-}
-
-static inline __kernel_old_time_t sys_time(__kernel_old_time_t *tloc)
-{
-#ifdef __NR_time
-	return syscall(__NR_time, tloc);
-#else
-	errno = ENOSYS;
-	return -1;
-#endif
-}
-
 static void test_getcpu(void)
 {
 	printf("[RUN]\tTesting getcpu...\n");
@@ -251,8 +227,8 @@ static char const * const clocknames[] = {
 
 static void test_one_clock_gettime(int clock, const char *name)
 {
+	struct __kernel_timespec start, end;
 	struct __kernel_old_timespec vdso;
-	struct timespec start, end;
 	int vdso_ret, end_ret;
 
 	printf("[RUN]\tTesting clock_gettime for clock %s (%d)...\n", name, clock);
@@ -283,9 +259,9 @@ static void test_one_clock_gettime(int clock, const char *name)
 	}
 
 	printf("\t%llu.%09ld %llu.%09ld %llu.%09ld\n",
-	       (unsigned long long)start.tv_sec, start.tv_nsec,
-	       (unsigned long long)vdso.tv_sec, vdso.tv_nsec,
-	       (unsigned long long)end.tv_sec, end.tv_nsec);
+	       (unsigned long long)start.tv_sec, (unsigned long)start.tv_nsec,
+	       (unsigned long long)vdso.tv_sec, (unsigned long)vdso.tv_nsec,
+	       (unsigned long long)end.tv_sec, (unsigned long)end.tv_nsec);
 
 	if (!ts_leq(&start, &vdso) || !ts_leq(&vdso, &end)) {
 		printf("[FAIL]\tTimes are out of sequence\n");
@@ -319,7 +295,7 @@ static void test_one_clock_gettime64(int clock, const char *name)
 
 	printf("[RUN]\tTesting clock_gettime64 for clock %s (%d)...\n", name, clock);
 
-	if (sys_clock_gettime64(clock, &start) < 0) {
+	if (sys_clock_gettime(clock, &start) < 0) {
 		if (errno == EINVAL) {
 			vdso_ret = VDSO_CALL(vdso_clock_gettime64, 2, clock, &vdso);
 			if (vdso_ret == -EINVAL) {
@@ -335,7 +311,7 @@ static void test_one_clock_gettime64(int clock, const char *name)
 	}
 
 	vdso_ret = VDSO_CALL(vdso_clock_gettime64, 2, clock, &vdso);
-	end_ret = sys_clock_gettime64(clock, &end);
+	end_ret = sys_clock_gettime(clock, &end);
 
 	if (vdso_ret != 0 || end_ret != 0) {
 		printf("[FAIL]\tvDSO returned %d, syscall errno=%d\n",
@@ -376,10 +352,8 @@ static void test_clock_gettime64(void)
 
 static void test_gettimeofday(void)
 {
-	struct __kernel_old_timeval vdso;
-	struct kernel_timezone vdso_tz;
-	struct timeval start, end;
-	struct timezone sys_tz;
+	struct __kernel_old_timeval start, vdso, end;
+	struct kernel_timezone vdso_tz, sys_tz;
 	int vdso_ret, end_ret;
 
 	if (!vdso_gettimeofday)
