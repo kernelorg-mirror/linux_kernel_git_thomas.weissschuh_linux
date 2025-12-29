@@ -40,9 +40,7 @@
 #include <linux/ioctl.h>
 
 /* Endian macros. */
-#ifndef __KERNEL__
-#  include <endian.h>
-#endif
+#include <linux/byteorder.h>
 
 /*
  *	Supported card ID numbers (Should be somewhere else?)
@@ -189,15 +187,13 @@ typedef struct seq_event_rec {
 #undef _LINUX_PATCHKEY_H_INDIRECT
 
 #if !defined(__KERNEL__)
-# if defined(__BYTE_ORDER)
-#  if __BYTE_ORDER == __BIG_ENDIAN
+#  if defined(__BYTE_ORDER) ? __BYTE_ORDER == __BIG_ENDIAN : defined(__BIG_ENDIAN)
 #    define AFMT_S16_NE AFMT_S16_BE
-#  elif __BYTE_ORDER == __LITTLE_ENDIAN
+#  elif defined(__BYTE_ORDER) ? __BYTE_ORDER == __LITTLE_ENDIAN : defined(__LITTLE_ENDIAN)
 #    define AFMT_S16_NE AFMT_S16_LE
 #  else
 #    error "could not determine byte order"
 #  endif
-# endif
 #endif
 
 /*
