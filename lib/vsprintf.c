@@ -864,7 +864,14 @@ static noinline_for_stack
 char *restricted_pointer(char *buf, char *end, const void *ptr,
 			 struct printf_spec spec)
 {
+	/*
+	 * has_capability_noaudit() may use spinlocks.
+	 * Make sure %pK is only used from valid contexts.
+	 */
+	static DEFINE_WAIT_ASSERT_MAP(vsprintf_restricted_pointer_map, LD_WAIT_CONFIG);
+
 	lockdep_assert(in_task());
+	guard(lock_map_acquire)(&vsprintf_restricted_pointer_map);
 
 	switch (kptr_restrict) {
 	case 0:
