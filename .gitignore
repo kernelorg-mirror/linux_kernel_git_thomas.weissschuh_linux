@@ -31,6 +31,7 @@
 *.header-check
 *.i
 *.ko
+*.ko.stripped
 *.lex.c
 *.ll
 *.lst
