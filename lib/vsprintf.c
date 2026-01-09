@@ -859,6 +859,9 @@ static char *default_pointer(char *buf, char *end, const void *ptr,
 }
 
 int kptr_restrict __read_mostly;
+#if IS_MODULE(CONFIG_PRINTF_KUNIT_TEST)
+EXPORT_SYMBOL_FOR_MODULES(kptr_restrict, "printf_kunit");
+#endif
 
 static noinline_for_stack
 char *restricted_pointer(char *buf, char *end, const void *ptr,
