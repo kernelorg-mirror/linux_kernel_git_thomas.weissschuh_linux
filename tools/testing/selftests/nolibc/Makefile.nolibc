@@ -307,7 +307,7 @@ nolibc-test: nolibc-test.c nolibc-test-linkage.c sysroot/$(ARCH)/include
 	  -nostdlib -nostdinc -static -Isysroot/$(ARCH)/include nolibc-test.c nolibc-test-linkage.c $(LIBGCC)
 
 libc-test: nolibc-test.c nolibc-test-linkage.c
-	$(QUIET_CC)$(HOSTCC) -o $@ nolibc-test.c nolibc-test-linkage.c
+	$(QUIET_CC)$(HOSTCC) $(CFLAGS_LIBC_TEST) -o $@ nolibc-test.c nolibc-test-linkage.c
 
 # local libc-test
 run-libc-test: libc-test

@@ -15,6 +15,7 @@ $(OUTPUT)/nolibc-test: CFLAGS = -nostdlib -nostdinc -static \
 $(OUTPUT)/nolibc-test: LDLIBS = $(if $(LLVM),,-lgcc)
 $(OUTPUT)/nolibc-test: nolibc-test.c nolibc-test-linkage.c | headers
 
+$(OUTPUT)/libc-test: CFLAGS += $(CFLAGS_LIBC_TEST)
 $(OUTPUT)/libc-test: nolibc-test.c nolibc-test-linkage.c
 	$(call msg,CC,,$@)
 	$(Q)$(LINK.c) $^ -o $@
