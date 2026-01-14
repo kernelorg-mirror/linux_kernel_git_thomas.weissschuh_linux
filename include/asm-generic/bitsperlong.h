@@ -19,6 +19,15 @@
 #error Inconsistent word size. Check asm/bitsperlong.h
 #endif
 
+#if __BITS_PER_LONG != __CHAR_BIT__ * __SIZEOF_LONG__
+#error Inconsistent word size. Check asm/bitsperlong.h
+#endif
+
+#ifndef __ASSEMBLER__
+_Static_assert(sizeof(long) * 8 == __BITS_PER_LONG,
+	       "Inconsistent word size. Check asm/bitsperlong.h");
+#endif
+
 #ifndef BITS_PER_LONG_LONG
 #define BITS_PER_LONG_LONG 64
 #endif
