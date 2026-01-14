@@ -19,9 +19,7 @@
 #error Inconsistent word size. Check asm/bitsperlong.h
 #endif
 
-#ifndef BITS_PER_LONG_LONG
 #define BITS_PER_LONG_LONG 64
-#endif
 
 /*
  * small_const_nbits(n) is true precisely when it is known at compile-time
