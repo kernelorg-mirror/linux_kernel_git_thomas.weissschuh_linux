@@ -110,8 +110,7 @@ ifeq ($(CONFIG_X86_32),y)
         UTS_MACHINE := i386
         CHECKFLAGS += -D__i386__
 
-        KBUILD_AFLAGS += -m32
-        KBUILD_CFLAGS += -m32
+        KBUILD_CPPFLAGS += -m32
 
         KBUILD_CFLAGS += -msoft-float -mregparm=3 -freg-struct-return
 
@@ -139,8 +138,7 @@ else
         UTS_MACHINE := x86_64
         CHECKFLAGS += -D__x86_64__
 
-        KBUILD_AFLAGS += -m64
-        KBUILD_CFLAGS += -m64
+        KBUILD_CPPFLAGS += -m64
 
         # Align jump targets to 1 byte, not the default 16 bytes:
         KBUILD_CFLAGS += $(call cc-option,-falign-jumps=1)
