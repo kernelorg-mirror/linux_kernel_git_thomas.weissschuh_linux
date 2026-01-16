@@ -12,6 +12,7 @@
  */
 #undef	CONFIG_64BIT
 #undef	CONFIG_SPARC64
+#define	BUILD_VDSO
 #define	BUILD_VDSO32_64
 #define	CONFIG_32BIT
 #undef	CONFIG_QUEUED_RWLOCKS
