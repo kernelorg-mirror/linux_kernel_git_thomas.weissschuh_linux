@@ -23,6 +23,10 @@
 #ifndef _UAPI_LINUX_SYSCTL_H
 #define _UAPI_LINUX_SYSCTL_H
 
+#ifdef __KERNEL__
+#error Do not include uapi/linux/sysctl.h from kernel code
+#endif
+
 #include <linux/const.h>
 #include <linux/types.h>
 #include <linux/compiler.h>
