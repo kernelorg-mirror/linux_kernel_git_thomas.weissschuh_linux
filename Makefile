@@ -553,6 +553,7 @@ CLIPPY_DRIVER	= clippy-driver
 BINDGEN		= bindgen
 PAHOLE		= pahole
 RESOLVE_BTFIDS	= $(objtree)/tools/bpf/resolve_btfids/resolve_btfids
+BPFTOOL		= $(objtree)/tools/bpf/bpftool/bpftool
 LEX		= flex
 YACC		= bison
 AWK		= awk
@@ -646,7 +647,7 @@ export CLIPPY_CONF_DIR := $(srctree)
 export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC HOSTPKG_CONFIG
 export RUSTC RUSTDOC RUSTFMT RUSTC_OR_CLIPPY_QUIET RUSTC_OR_CLIPPY BINDGEN LLVM_LINK
 export HOSTRUSTC KBUILD_HOSTRUSTFLAGS
-export CPP AR NM STRIP OBJCOPY OBJDUMP READELF PAHOLE RESOLVE_BTFIDS LEX YACC AWK INSTALLKERNEL
+export CPP AR NM STRIP OBJCOPY OBJDUMP READELF PAHOLE RESOLVE_BTFIDS BPFTOOL LEX YACC AWK INSTALLKERNEL
 export PERL PYTHON3 CHECK CHECKFLAGS MAKE UTS_MACHINE HOSTCXX
 export KGZIP KBZIP2 KLZOP LZMA LZ4 XZ ZSTD TAR
 export KBUILD_HOSTCXXFLAGS KBUILD_HOSTLDFLAGS KBUILD_HOSTLDLIBS KBUILD_PROCMACROLDFLAGS LDFLAGS_MODULE
@@ -1570,6 +1571,9 @@ ifdef CONFIG_BPF
 ifdef CONFIG_DEBUG_INFO_BTF
 prepare: tools/bpf/resolve_btfids
 endif
+ifdef CONFIG_BPFTOOL
+prepare: tools/bpf/bpftool
+endif
 endif
 
 # tools/bootconfig renders the embedded bootconfig into a cmdline at build time.
@@ -1621,6 +1625,15 @@ bootconfig_O = $(abspath $(objtree))/tools/bootconfig
 bootconfig_clean:
 ifneq ($(wildcard $(bootconfig_O)),)
 	$(Q)$(MAKE) -sC $(srctree)/tools/bootconfig O=$(bootconfig_O) clean
+endif
+
+PHONY += bpftool_clean
+
+bpftool_O = $(abspath $(objtree))/tools/bpf/bpftool
+
+bpftool_clean:
+ifneq ($(wildcard $(bpftool_O)),)
+	$(Q)$(MAKE) -sC $(abs_srctree)/tools/bpf/bpftool O=$(objtool_O) srctree=$(abs_srctree) clean
 endif
 
 tools/: FORCE
@@ -1798,7 +1811,7 @@ vmlinuxclean:
 	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/link-vmlinux.sh clean
 	$(Q)$(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) clean)
 
-clean: archclean vmlinuxclean resolve_btfids_clean objtool_clean bootconfig_clean
+clean: archclean vmlinuxclean resolve_btfids_clean objtool_clean bootconfig_clean bpftool_clean
 
 # mrproper - Delete all generated files, including .config
 #
