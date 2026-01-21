@@ -42,6 +42,9 @@ mkdir -p "${destdir}"
 	if is_enabled CONFIG_GCC_PLUGINS; then
 		find scripts/gcc-plugins -name '*.so'
 	fi
+	if is_enabled CONFIG_BPF_VMLINUX_H; then
+		echo vmlinux.h
+	fi
 } | tar -c -f - -T - | tar -xf - -C "${destdir}"
 
 # When ${CC} and ${HOSTCC} differ, rebuild host programs using ${CC}.
