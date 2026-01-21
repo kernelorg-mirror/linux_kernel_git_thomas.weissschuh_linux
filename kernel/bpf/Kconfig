@@ -104,4 +104,9 @@ config BPF_LSM
 config BPFTOOL
 	bool
 
+config BPF_VMLINUX_H
+	bool "Generate vmlinux.h"
+	depends on DEBUG_INFO_BTF
+	select BPFTOOL
+
 endmenu # "BPF subsystem"
