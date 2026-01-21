@@ -1512,6 +1512,9 @@ endif
 
 PHONY += bpftool_clean
 
+# Do not build the skeletons
+tools/bpf/bpftool: toolopts := FEATURE_DISPLAY_DEFERRED=1 feature-clang-bpf-co-re=0
+
 bpftool_O = $(abspath $(objtree))/tools/bpf/bpftool
 
 bpftool_clean:
@@ -1525,7 +1528,7 @@ tools/: FORCE
 
 tools/%: FORCE
 	$(Q)mkdir -p $(objtree)/tools
-	$(Q)$(MAKE) O=$(abspath $(objtree)) subdir=tools -C $(srctree)/tools/ $*
+	$(Q)$(MAKE) O=$(abspath $(objtree)) subdir=tools -C $(srctree)/tools/ $(toolopts) $*
 
 # ---------------------------------------------------------------------------
 # Kernel selftest
@@ -1662,7 +1665,7 @@ CLEAN_FILES += vmlinux.symvers modules-only.symvers \
 	       modules.builtin modules.builtin.modinfo modules.nsdeps \
 	       modules.builtin.ranges vmlinux.o.map vmlinux.unstripped \
 	       compile_commands.json rust/test \
-	       rust-project.json .vmlinux.objs .vmlinux.export.c \
+	       rust-project.json .vmlinux.objs .vmlinux.export.c vmlinux.h \
                .builtin-dtbs-list .builtin-dtb.S
 
 # Directories & files removed with 'make mrproper'

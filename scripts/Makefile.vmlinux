@@ -157,6 +157,20 @@ vmlinux.map: vmlinux.unstripped
 
 endif
 
+# vmlinux.h
+# ---------------------------------------------------------------------------
+ifdef CONFIG_BPF_VMLINUX_H
+__default: vmlinux.h
+
+quiet_cmd_vmlinux_h = GEN     $@
+      cmd_vmlinux_h = $(BPFTOOL) btf dump file $< format c > $@
+
+targets += vmlinux.h
+vmlinux.h: vmlinux.unstripped $(BPFTOOL) FORCE
+	$(call if_changed,vmlinux_h)
+
+endif
+
 # Add FORCE to the prerequisites of a target to force it to be always rebuilt.
 # ---------------------------------------------------------------------------
 
