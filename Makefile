@@ -1513,7 +1513,8 @@ endif
 PHONY += bpftool_clean
 
 # Do not build the skeletons
-tools/bpf/bpftool: toolopts := FEATURE_DISPLAY_DEFERRED=1 feature-clang-bpf-co-re=0
+tools/bpf/bpftool: feature-clang-bpf-co-re := 0
+export feature-clang-bpf-co-re
 
 bpftool_O = $(abspath $(objtree))/tools/bpf/bpftool
 
@@ -1528,7 +1529,7 @@ tools/: FORCE
 
 tools/%: FORCE
 	$(Q)mkdir -p $(objtree)/tools
-	$(Q)$(MAKE) O=$(abspath $(objtree)) subdir=tools -C $(srctree)/tools/ $(toolopts) $*
+	$(Q)$(MAKE) O=$(abspath $(objtree)) subdir=tools -C $(srctree)/tools/ FEATURE_DISPLAY_DEFERRED=1 $*
 
 # ---------------------------------------------------------------------------
 # Kernel selftest
