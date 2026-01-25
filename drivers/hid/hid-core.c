@@ -46,6 +46,8 @@ static int hid_ignore_special_drivers = 0;
 module_param_named(ignore_special_drivers, hid_ignore_special_drivers, int, 0600);
 MODULE_PARM_DESC(ignore_special_drivers, "Ignore any special drivers and handle all devices by generic driver");
 
+static DEFINE_MUTEX(dyn_mutex);
+
 /*
  * Convert a signed n-bit integer to signed 32-bit integer.
  */
@@ -2624,9 +2626,8 @@ static ssize_t new_id_store(struct device_driver *drv, const char *buf,
 
 	init_rcu_head(&dynid->rcu);
 
-	spin_lock(&hdrv->dyn_lock);
-	list_add_tail_rcu(&dynid->list, &hdrv->dyn_list);
-	spin_unlock(&hdrv->dyn_lock);
+	scoped_guard(mutex, &dyn_mutex)
+		list_add_tail_rcu(&dynid->list, &hdrv->dyn_list);
 
 	ret = driver_attach(&hdrv->driver);
 
@@ -2644,12 +2645,12 @@ static void hid_free_dynids(struct hid_driver *hdrv)
 {
 	struct hid_dynid *dynid;
 
-	spin_lock(&hdrv->dyn_lock);
-	list_for_each_entry_rcu(dynid, &hdrv->dyn_list, list) {
-		list_del_rcu(&dynid->list);
-		kfree_rcu(dynid, rcu);
+	scoped_guard(mutex, &dyn_mutex) {
+		list_for_each_entry_rcu(dynid, &hdrv->dyn_list, list) {
+			list_del_rcu(&dynid->list);
+			kfree_rcu(dynid, rcu);
+		}
 	}
-	spin_unlock(&hdrv->dyn_lock);
 	synchronize_rcu();
 }
 
@@ -3077,7 +3078,6 @@ int __hid_register_driver(struct hid_driver *hdrv, struct module *owner,
 	hdrv->driver.mod_name = mod_name;
 
 	INIT_LIST_HEAD(&hdrv->dyn_list);
-	spin_lock_init(&hdrv->dyn_lock);
 
 	ret = driver_register(&hdrv->driver);
 

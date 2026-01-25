@@ -851,7 +851,6 @@ struct hid_driver {
 	const struct hid_device_id *id_table;
 
 	struct list_head dyn_list;
-	spinlock_t dyn_lock;
 
 	bool (*match)(struct hid_device *dev, bool ignore_special_driver);
 	int (*probe)(struct hid_device *dev, const struct hid_device_id *id);
