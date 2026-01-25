@@ -51,7 +51,7 @@ struct ccwgroup_driver {
 
 extern int  ccwgroup_driver_register   (struct ccwgroup_driver *cdriver);
 extern void ccwgroup_driver_unregister (struct ccwgroup_driver *cdriver);
-int ccwgroup_create_dev(struct device *root, struct ccwgroup_driver *gdrv,
+int ccwgroup_create_dev(struct device *root, const struct ccwgroup_driver *gdrv,
 			int num_devices, const char *buf);
 
 extern int ccwgroup_set_online(struct ccwgroup_device *gdev);
@@ -61,7 +61,7 @@ extern int ccwgroup_probe_ccwdev(struct ccw_device *cdev);
 extern void ccwgroup_remove_ccwdev(struct ccw_device *cdev);
 
 #define to_ccwgroupdev(x) container_of((x), struct ccwgroup_device, dev)
-#define to_ccwgroupdrv(x) container_of((x), struct ccwgroup_driver, driver)
+#define to_ccwgroupdrv(x) container_of_const((x), struct ccwgroup_driver, driver)
 
 #if IS_ENABLED(CONFIG_CCWGROUP)
 bool dev_is_ccwgroup(struct device *dev);

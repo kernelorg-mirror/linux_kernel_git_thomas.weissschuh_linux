@@ -57,7 +57,7 @@ static void __ccwgroup_remove_symlinks(struct ccwgroup_device *gdev)
  */
 int ccwgroup_set_online(struct ccwgroup_device *gdev)
 {
-	struct ccwgroup_driver *gdrv = to_ccwgroupdrv(gdev->dev.driver);
+	const struct ccwgroup_driver *gdrv = to_ccwgroupdrv(gdev->dev.driver);
 	int ret = -EINVAL;
 
 	if (atomic_cmpxchg(&gdev->onoff, 0, 1) != 0)
@@ -87,7 +87,7 @@ EXPORT_SYMBOL(ccwgroup_set_online);
  */
 int ccwgroup_set_offline(struct ccwgroup_device *gdev, bool call_gdrv)
 {
-	struct ccwgroup_driver *gdrv = to_ccwgroupdrv(gdev->dev.driver);
+	const struct ccwgroup_driver *gdrv = to_ccwgroupdrv(gdev->dev.driver);
 	int ret = -EINVAL;
 
 	if (atomic_cmpxchg(&gdev->onoff, 0, 1) != 0)
@@ -312,7 +312,7 @@ static int __get_next_id(const char **buf, struct ccw_dev_id *id)
  * Context:
  *  non-atomic
  */
-int ccwgroup_create_dev(struct device *parent, struct ccwgroup_driver *gdrv,
+int ccwgroup_create_dev(struct device *parent, const struct ccwgroup_driver *gdrv,
 			int num_devices, const char *buf)
 {
 	struct ccwgroup_device *gdev;
@@ -450,7 +450,7 @@ module_exit(cleanup_ccwgroup);
 static void ccwgroup_remove(struct device *dev)
 {
 	struct ccwgroup_device *gdev = to_ccwgroupdev(dev);
-	struct ccwgroup_driver *gdrv = to_ccwgroupdrv(dev->driver);
+	const struct ccwgroup_driver *gdrv = to_ccwgroupdrv(dev->driver);
 
 	if (gdrv->remove)
 		gdrv->remove(gdev);
@@ -459,7 +459,7 @@ static void ccwgroup_remove(struct device *dev)
 static void ccwgroup_shutdown(struct device *dev)
 {
 	struct ccwgroup_device *gdev = to_ccwgroupdev(dev);
-	struct ccwgroup_driver *gdrv = to_ccwgroupdrv(dev->driver);
+	const struct ccwgroup_driver *gdrv = to_ccwgroupdrv(dev->driver);
 
 	if (!dev->driver)
 		return;
