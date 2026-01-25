@@ -2654,7 +2654,7 @@ static void hid_free_dynids(struct hid_driver *hdrv)
 }
 
 const struct hid_device_id *hid_match_device(struct hid_device *hdev,
-					     struct hid_driver *hdrv)
+					     const struct hid_driver *hdrv)
 {
 	struct hid_dynid *dynid;
 
