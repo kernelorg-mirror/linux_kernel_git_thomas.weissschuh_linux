@@ -135,14 +135,14 @@ static ssize_t do_id_store(struct device_driver *drv, const char *buf,
 static ssize_t new_id_store(struct device_driver *drv, const char *buf,
 		size_t count)
 {
-	return do_id_store(drv, buf, count, ID_ADD);
+	return do_id_store(ptr_unqual(drv), buf, count, ID_ADD);
 }
 static DRIVER_ATTR_WO(new_id);
 
 static ssize_t remove_id_store(struct device_driver *drv, const char *buf,
 		size_t count)
 {
-	return do_id_store(drv, buf, count, ID_REMOVE);
+	return do_id_store(ptr_unqual(drv), buf, count, ID_REMOVE);
 }
 static DRIVER_ATTR_WO(remove_id);
 
