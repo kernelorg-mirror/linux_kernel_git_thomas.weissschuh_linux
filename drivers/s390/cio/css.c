@@ -1280,9 +1280,9 @@ out_bus:
 }
 subsys_initcall(channel_subsystem_init);
 
-static int css_settle(struct device_driver *drv, void *unused)
+static int css_settle(const struct device_driver *drv, void *unused)
 {
-	struct css_driver *cssdrv = to_cssdriver(drv);
+	const struct css_driver *cssdrv = to_cssdriver(drv);
 
 	if (cssdrv->settle)
 		return cssdrv->settle();

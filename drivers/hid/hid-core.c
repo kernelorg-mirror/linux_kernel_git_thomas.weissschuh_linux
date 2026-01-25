@@ -3039,7 +3039,7 @@ EXPORT_SYMBOL_GPL(hid_destroy_device);
 
 static int __hid_bus_reprobe_drivers(struct device *dev, void *data)
 {
-	struct hid_driver *hdrv = data;
+	const struct hid_driver *hdrv = data;
 	struct hid_device *hdev = to_hid_device(dev);
 
 	if (hdev->driver == hdrv &&
@@ -3050,19 +3050,19 @@ static int __hid_bus_reprobe_drivers(struct device *dev, void *data)
 	return 0;
 }
 
-static int __hid_bus_driver_added(struct device_driver *drv, void *data)
+static int __hid_bus_driver_added(const struct device_driver *drv, void *data)
 {
-	struct hid_driver *hdrv = to_hid_driver(drv);
+	const struct hid_driver *hdrv = to_hid_driver(drv);
 
 	if (hdrv->match) {
-		bus_for_each_dev(&hid_bus_type, NULL, hdrv,
+		bus_for_each_dev(&hid_bus_type, NULL, (void *)hdrv,
 				 __hid_bus_reprobe_drivers);
 	}
 
 	return 0;
 }
 
-static int __bus_removed_driver(struct device_driver *drv, void *data)
+static int __bus_removed_driver(const struct device_driver *drv, void *data)
 {
 	return bus_rescan_devices(&hid_bus_type);
 }

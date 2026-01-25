@@ -483,8 +483,8 @@ static struct device_driver *next_driver(struct klist_iter *i)
  * in the callback. It must also be sure to increment the refcount
  * so it doesn't disappear before returning to the caller.
  */
-int bus_for_each_drv(const struct bus_type *bus, struct device_driver *start,
-		     void *data, int (*fn)(struct device_driver *, void *))
+int bus_for_each_drv(const struct bus_type *bus, const struct device_driver *start,
+		     void *data, int (*fn)(const struct device_driver *, void *))
 {
 	struct subsys_private *sp = bus_to_subsys(bus);
 	struct klist_iter i;

@@ -154,7 +154,7 @@ struct pardevice {
 	void * sysctl_table;
 };
 
-#define to_pardevice(n) container_of(n, struct pardevice, dev)
+#define to_pardevice(n) container_of_const(n, struct pardevice, dev)
 
 /* IEEE1284 information */
 
@@ -246,7 +246,7 @@ struct parport {
 	struct parport *slaves[3];
 };
 
-#define to_parport_dev(n) container_of(n, struct parport, bus_dev)
+#define to_parport_dev(n) container_of_const(n, struct parport, bus_dev)
 
 #define DEFAULT_SPIN_TIME 500 /* us */
 
@@ -258,7 +258,7 @@ struct parport_driver {
 	struct device_driver driver;
 };
 
-#define to_parport_driver(n) container_of(n, struct parport_driver, driver)
+#define to_parport_driver(n) container_of_const(n, struct parport_driver, driver)
 
 int parport_bus_init(void);
 void parport_bus_exit(void);

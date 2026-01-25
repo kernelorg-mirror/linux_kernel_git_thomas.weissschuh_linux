@@ -921,7 +921,7 @@ struct device_attach_data {
 	bool have_async;
 };
 
-static int __device_attach_driver(struct device_driver *drv, void *_data)
+static int __device_attach_driver(const struct device_driver *drv, void *_data)
 {
 	struct device_attach_data *data = _data;
 	struct device *dev = data->dev;

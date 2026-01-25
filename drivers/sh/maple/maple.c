@@ -309,10 +309,10 @@ finish:
 }
 
 /* check if there is a driver registered likely to match this device */
-static int maple_check_matching_driver(struct device_driver *driver,
+static int maple_check_matching_driver(const struct device_driver *driver,
 					void *devptr)
 {
-	struct maple_driver *maple_drv;
+	const struct maple_driver *maple_drv;
 	struct maple_device *mdev;
 
 	mdev = devptr;

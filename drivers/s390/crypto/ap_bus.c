@@ -1501,7 +1501,7 @@ static ssize_t apmask_show(const struct bus_type *bus, char *buf)
 	return rc;
 }
 
-static int __verify_card_reservations(struct device_driver *drv, void *data)
+static int __verify_card_reservations(const struct device_driver *drv, void *data)
 {
 	int rc = 0;
 	struct ap_driver *ap_drv = to_ap_drv(drv);
@@ -1608,10 +1608,10 @@ static ssize_t aqmask_show(const struct bus_type *bus, char *buf)
 	return rc;
 }
 
-static int __verify_queue_reservations(struct device_driver *drv, void *data)
+static int __verify_queue_reservations(const struct device_driver *drv, void *data)
 {
 	int rc = 0;
-	struct ap_driver *ap_drv = to_ap_drv(drv);
+	const struct ap_driver *ap_drv = to_ap_drv(drv);
 	unsigned long *newaqm = (unsigned long *)data;
 	unsigned long apm_any[BITS_TO_LONGS(AP_DEVICES)];
 
@@ -1919,9 +1919,9 @@ static int __match_queue_device_with_queue_id(struct device *dev, const void *da
 }
 
 /* Helper function for notify_config_changed */
-static int __drv_notify_config_changed(struct device_driver *drv, void *data)
+static int __drv_notify_config_changed(const struct device_driver *drv, void *data)
 {
-	struct ap_driver *ap_drv = to_ap_drv(drv);
+	const struct ap_driver *ap_drv = to_ap_drv(drv);
 
 	if (try_module_get(drv->owner)) {
 		if (ap_drv->on_config_changed)
@@ -1940,9 +1940,9 @@ static inline void notify_config_changed(void)
 }
 
 /* Helper function for notify_scan_complete */
-static int __drv_notify_scan_complete(struct device_driver *drv, void *data)
+static int __drv_notify_scan_complete(const struct device_driver *drv, void *data)
 {
-	struct ap_driver *ap_drv = to_ap_drv(drv);
+	const struct ap_driver *ap_drv = to_ap_drv(drv);
 
 	if (try_module_get(drv->owner)) {
 		if (ap_drv->on_scan_complete)

@@ -149,10 +149,10 @@ void parport_bus_exit(void)
  * know about the new port that just registered with the bus and decide if it
  * wants to use this new port.
  */
-static int driver_check(struct device_driver *dev_drv, void *_port)
+static int driver_check(const struct device_driver *dev_drv, void *_port)
 {
 	struct parport *port = _port;
-	struct parport_driver *drv = to_parport_driver(dev_drv);
+	const struct parport_driver *drv = to_parport_driver(dev_drv);
 
 	if (drv->match_port)
 		drv->match_port(port);
@@ -172,10 +172,10 @@ static void attach_driver_chain(struct parport *port)
 	bus_for_each_drv(&parport_bus_type, NULL, port, driver_check);
 }
 
-static int driver_detach(struct device_driver *_drv, void *_port)
+static int driver_detach(const struct device_driver *_drv, void *_port)
 {
 	struct parport *port = _port;
-	struct parport_driver *drv = to_parport_driver(_drv);
+	const struct parport_driver *drv = to_parport_driver(_drv);
 
 	if (drv->detach)
 		drv->detach(port);

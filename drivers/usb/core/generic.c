@@ -207,10 +207,10 @@ int usb_choose_configuration(struct usb_device *udev)
 }
 EXPORT_SYMBOL_GPL(usb_choose_configuration);
 
-static int __check_for_non_generic_match(struct device_driver *drv, void *data)
+static int __check_for_non_generic_match(const struct device_driver *drv, void *data)
 {
 	struct usb_device *udev = data;
-	struct usb_device_driver *udrv;
+	const struct usb_device_driver *udrv;
 
 	if (!is_usb_device_driver(drv))
 		return 0;

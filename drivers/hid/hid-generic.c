@@ -23,9 +23,9 @@
 
 static struct hid_driver hid_generic;
 
-static int __check_hid_generic(struct device_driver *drv, void *data)
+static int __check_hid_generic(const struct device_driver *drv, void *data)
 {
-	struct hid_driver *hdrv = to_hid_driver(drv);
+	const struct hid_driver *hdrv = to_hid_driver(drv);
 	struct hid_device *hdev = data;
 
 	if (hdrv == &hid_generic)
