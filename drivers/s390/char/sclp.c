@@ -1206,14 +1206,14 @@ static struct notifier_block sclp_reboot_notifier = {
 	.priority      = INT_MIN,
 };
 
-static ssize_t con_pages_show(struct device_driver *dev, char *buf)
+static ssize_t con_pages_show(const struct device_driver *dev, char *buf)
 {
 	return sysfs_emit(buf, "%i\n", sclp_console_pages);
 }
 
-static DRIVER_ATTR_RO(con_pages);
+static const DRIVER_ATTR_RO(con_pages);
 
-static ssize_t con_drop_store(struct device_driver *dev, const char *buf, size_t count)
+static ssize_t con_drop_store(const struct device_driver *dev, const char *buf, size_t count)
 {
 	int rc;
 
@@ -1221,28 +1221,28 @@ static ssize_t con_drop_store(struct device_driver *dev, const char *buf, size_t
 	return rc ?: count;
 }
 
-static ssize_t con_drop_show(struct device_driver *dev, char *buf)
+static ssize_t con_drop_show(const struct device_driver *dev, char *buf)
 {
 	return sysfs_emit(buf, "%i\n", sclp_console_drop);
 }
 
-static DRIVER_ATTR_RW(con_drop);
+static const DRIVER_ATTR_RW(con_drop);
 
-static ssize_t con_full_show(struct device_driver *dev, char *buf)
+static ssize_t con_full_show(const struct device_driver *dev, char *buf)
 {
 	return sysfs_emit(buf, "%lu\n", sclp_console_full);
 }
 
-static DRIVER_ATTR_RO(con_full);
+static const DRIVER_ATTR_RO(con_full);
 
-static struct attribute *sclp_drv_attrs[] = {
+static const struct attribute *const sclp_drv_attrs[] = {
 	&driver_attr_con_pages.attr,
 	&driver_attr_con_drop.attr,
 	&driver_attr_con_full.attr,
 	NULL,
 };
 static struct attribute_group sclp_drv_attr_group = {
-	.attrs = sclp_drv_attrs,
+	.attrs_const = sclp_drv_attrs,
 };
 static const struct attribute_group *sclp_drv_attr_groups[] = {
 	&sclp_drv_attr_group,

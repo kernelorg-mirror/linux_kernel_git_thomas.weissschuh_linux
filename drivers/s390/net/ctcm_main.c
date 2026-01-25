@@ -1681,7 +1681,7 @@ static struct ccwgroup_driver ctcm_group_driver = {
 	.set_offline = ctcm_shutdown_device,
 };
 
-static ssize_t group_store(struct device_driver *ddrv, const char *buf,
+static ssize_t group_store(const struct device_driver *ddrv, const char *buf,
 			   size_t count)
 {
 	int err;
@@ -1689,13 +1689,13 @@ static ssize_t group_store(struct device_driver *ddrv, const char *buf,
 	err = ccwgroup_create_dev(ctcm_root_dev, &ctcm_group_driver, 2, buf);
 	return err ? err : count;
 }
-static DRIVER_ATTR_WO(group);
+static const DRIVER_ATTR_WO(group);
 
-static struct attribute *ctcm_drv_attrs[] = {
+static const struct attribute *const ctcm_drv_attrs[] = {
 	&driver_attr_group.attr,
 	NULL,
 };
-static struct attribute_group ctcm_drv_attr_group = {
+static const struct attribute_group ctcm_drv_attr_group = {
 	.attrs = ctcm_drv_attrs,
 };
 static const struct attribute_group *ctcm_drv_attr_groups[] = {

@@ -143,8 +143,8 @@ void __init wait_for_init_devices_probe(void);
 
 struct driver_attribute {
 	struct attribute attr;
-	ssize_t (*show)(struct device_driver *driver, char *buf);
-	ssize_t (*store)(struct device_driver *driver, const char *buf,
+	ssize_t (*show)(const struct device_driver *driver, char *buf);
+	ssize_t (*store)(const struct device_driver *driver, const char *buf,
 			 size_t count);
 };
 

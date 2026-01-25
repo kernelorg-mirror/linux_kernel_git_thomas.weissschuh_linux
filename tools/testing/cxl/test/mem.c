@@ -1279,12 +1279,12 @@ static bool mock_poison_list_empty(void)
 	return true;
 }
 
-static ssize_t poison_inject_max_show(struct device_driver *drv, char *buf)
+static ssize_t poison_inject_max_show(const struct device_driver *drv, char *buf)
 {
 	return sysfs_emit(buf, "%u\n", poison_inject_dev_max);
 }
 
-static ssize_t poison_inject_max_store(struct device_driver *drv,
+static ssize_t poison_inject_max_store(const struct device_driver *drv,
 				       const char *buf, size_t len)
 {
 	int val;
@@ -1303,9 +1303,9 @@ static ssize_t poison_inject_max_store(struct device_driver *drv,
 	return len;
 }
 
-static DRIVER_ATTR_RW(poison_inject_max);
+static const DRIVER_ATTR_RW(poison_inject_max);
 
-static struct attribute *cxl_mock_mem_core_attrs[] = {
+static const struct attribute *const cxl_mock_mem_core_attrs[] = {
 	&driver_attr_poison_inject_max.attr,
 	NULL
 };

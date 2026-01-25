@@ -8684,38 +8684,38 @@ static struct pci_driver megasas_pci_driver = {
 /*
  * Sysfs driver attributes
  */
-static ssize_t version_show(struct device_driver *dd, char *buf)
+static ssize_t version_show(const struct device_driver *dd, char *buf)
 {
 	return snprintf(buf, strlen(MEGASAS_VERSION) + 2, "%s\n",
 			MEGASAS_VERSION);
 }
-static DRIVER_ATTR_RO(version);
+static const DRIVER_ATTR_RO(version);
 
-static ssize_t release_date_show(struct device_driver *dd, char *buf)
+static ssize_t release_date_show(const struct device_driver *dd, char *buf)
 {
 	return snprintf(buf, strlen(MEGASAS_RELDATE) + 2, "%s\n",
 		MEGASAS_RELDATE);
 }
-static DRIVER_ATTR_RO(release_date);
+static const DRIVER_ATTR_RO(release_date);
 
-static ssize_t support_poll_for_event_show(struct device_driver *dd, char *buf)
+static ssize_t support_poll_for_event_show(const struct device_driver *dd, char *buf)
 {
 	return sprintf(buf, "%u\n", support_poll_for_event);
 }
-static DRIVER_ATTR_RO(support_poll_for_event);
+static const DRIVER_ATTR_RO(support_poll_for_event);
 
-static ssize_t support_device_change_show(struct device_driver *dd, char *buf)
+static ssize_t support_device_change_show(const struct device_driver *dd, char *buf)
 {
 	return sprintf(buf, "%u\n", support_device_change);
 }
-static DRIVER_ATTR_RO(support_device_change);
+static const DRIVER_ATTR_RO(support_device_change);
 
-static ssize_t dbg_lvl_show(struct device_driver *dd, char *buf)
+static ssize_t dbg_lvl_show(const struct device_driver *dd, char *buf)
 {
 	return sprintf(buf, "%u\n", megasas_dbg_lvl);
 }
 
-static ssize_t dbg_lvl_store(struct device_driver *dd, const char *buf,
+static ssize_t dbg_lvl_store(const struct device_driver *dd, const char *buf,
 			     size_t count)
 {
 	int retval = count;
@@ -8726,23 +8726,23 @@ static ssize_t dbg_lvl_store(struct device_driver *dd, const char *buf,
 	}
 	return retval;
 }
-static DRIVER_ATTR_RW(dbg_lvl);
+static const DRIVER_ATTR_RW(dbg_lvl);
 
 static ssize_t
-support_nvme_encapsulation_show(struct device_driver *dd, char *buf)
+support_nvme_encapsulation_show(const struct device_driver *dd, char *buf)
 {
 	return sprintf(buf, "%u\n", support_nvme_encapsulation);
 }
 
-static DRIVER_ATTR_RO(support_nvme_encapsulation);
+static const DRIVER_ATTR_RO(support_nvme_encapsulation);
 
 static ssize_t
-support_pci_lane_margining_show(struct device_driver *dd, char *buf)
+support_pci_lane_margining_show(const struct device_driver *dd, char *buf)
 {
 	return sprintf(buf, "%u\n", support_pci_lane_margining);
 }
 
-static DRIVER_ATTR_RO(support_pci_lane_margining);
+static const DRIVER_ATTR_RO(support_pci_lane_margining);
 
 static inline void megasas_remove_scsi_device(struct scsi_device *sdev)
 {

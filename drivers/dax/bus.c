@@ -132,21 +132,21 @@ static ssize_t do_id_store(struct device_driver *drv, const char *buf,
 	return count;
 }
 
-static ssize_t new_id_store(struct device_driver *drv, const char *buf,
+static ssize_t new_id_store(const struct device_driver *drv, const char *buf,
 		size_t count)
 {
 	return do_id_store(ptr_unqual(drv), buf, count, ID_ADD);
 }
 static DRIVER_ATTR_WO(new_id);
 
-static ssize_t remove_id_store(struct device_driver *drv, const char *buf,
+static ssize_t remove_id_store(const struct device_driver *drv, const char *buf,
 		size_t count)
 {
 	return do_id_store(ptr_unqual(drv), buf, count, ID_REMOVE);
 }
-static DRIVER_ATTR_WO(remove_id);
+static const DRIVER_ATTR_WO(remove_id);
 
-static struct attribute *dax_drv_attrs[] = {
+static const struct attribute *const dax_drv_attrs[] = {
 	&driver_attr_new_id.attr,
 	&driver_attr_remove_id.attr,
 	NULL,

@@ -785,7 +785,7 @@ static void vmbus_free_dynids(struct hv_driver *drv)
  *
  * Allow GUIDs to be added to an existing driver via sysfs.
  */
-static ssize_t new_id_store(struct device_driver *driver, const char *buf,
+static ssize_t new_id_store(const struct device_driver *driver, const char *buf,
 			    size_t count)
 {
 	struct hv_driver *drv = ptr_unqual(drv_to_hv_drv(driver));
@@ -804,14 +804,14 @@ static ssize_t new_id_store(struct device_driver *driver, const char *buf,
 		return retval;
 	return count;
 }
-static DRIVER_ATTR_WO(new_id);
+static const DRIVER_ATTR_WO(new_id);
 
 /*
  * store_remove_id - remove a PCI device ID from this driver
  *
  * Removes a dynamic pci device ID to this driver.
  */
-static ssize_t remove_id_store(struct device_driver *driver, const char *buf,
+static ssize_t remove_id_store(const struct device_driver *driver, const char *buf,
 			       size_t count)
 {
 	struct hv_driver *drv = ptr_unqual(drv_to_hv_drv(driver));
@@ -839,9 +839,9 @@ static ssize_t remove_id_store(struct device_driver *driver, const char *buf,
 
 	return retval;
 }
-static DRIVER_ATTR_WO(remove_id);
+static const DRIVER_ATTR_WO(remove_id);
 
-static struct attribute *vmbus_drv_attrs[] = {
+static const struct attribute *const vmbus_drv_attrs[] = {
 	&driver_attr_new_id.attr,
 	&driver_attr_remove_id.attr,
 	NULL,

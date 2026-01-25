@@ -1168,12 +1168,12 @@ static void ipw_led_shutdown(struct ipw_priv *priv)
  *
  * See the level definitions in ipw for details.
  */
-static ssize_t debug_level_show(struct device_driver *d, char *buf)
+static ssize_t debug_level_show(const struct device_driver *d, char *buf)
 {
 	return sprintf(buf, "0x%08X\n", ipw_debug_level);
 }
 
-static ssize_t debug_level_store(struct device_driver *d, const char *buf,
+static ssize_t debug_level_store(const struct device_driver *d, const char *buf,
 				 size_t count)
 {
 	unsigned long val;
@@ -1191,7 +1191,7 @@ static ssize_t debug_level_store(struct device_driver *d, const char *buf,
 
 	return count;
 }
-static DRIVER_ATTR_RW(debug_level);
+static const DRIVER_ATTR_RW(debug_level);
 
 static inline u32 ipw_get_event_log_len(struct ipw_priv *priv)
 {

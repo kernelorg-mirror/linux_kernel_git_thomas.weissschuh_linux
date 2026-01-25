@@ -5986,11 +5986,11 @@ static struct pci_driver mpi3mr_pci_driver = {
 	.driver.pm = &mpi3mr_pm_ops,
 };
 
-static ssize_t event_counter_show(struct device_driver *dd, char *buf)
+static ssize_t event_counter_show(const struct device_driver *dd, char *buf)
 {
 	return sprintf(buf, "%llu\n", atomic64_read(&event_counter));
 }
-static DRIVER_ATTR_RO(event_counter);
+static const DRIVER_ATTR_RO(event_counter);
 
 static int __init mpi3mr_init(void)
 {

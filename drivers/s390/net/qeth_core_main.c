@@ -6470,7 +6470,7 @@ static int qeth_core_set_offline(struct ccwgroup_device *gdev)
 	return rc;
 }
 
-static void qeth_core_shutdown(struct ccwgroup_device *gdev)
+static void qeth_core_shutdown(const struct ccwgroup_device *gdev)
 {
 	struct qeth_card *card = dev_get_drvdata(&gdev->dev);
 
@@ -6482,7 +6482,7 @@ static void qeth_core_shutdown(struct ccwgroup_device *gdev)
 	qdio_free(CARD_DDEV(card));
 }
 
-static ssize_t group_store(struct device_driver *ddrv, const char *buf,
+static ssize_t group_store(const struct device_driver *ddrv, const char *buf,
 			   size_t count)
 {
 	int err;
@@ -6492,14 +6492,14 @@ static ssize_t group_store(struct device_driver *ddrv, const char *buf,
 
 	return err ? err : count;
 }
-static DRIVER_ATTR_WO(group);
+static const DRIVER_ATTR_WO(group);
 
-static struct attribute *qeth_drv_attrs[] = {
+static const struct attribute *const qeth_drv_attrs[] = {
 	&driver_attr_group.attr,
 	NULL,
 };
 static struct attribute_group qeth_drv_attr_group = {
-	.attrs = qeth_drv_attrs,
+	.attrs_const = qeth_drv_attrs,
 };
 static const struct attribute_group *qeth_drv_attr_groups[] = {
 	&qeth_drv_attr_group,

@@ -533,12 +533,12 @@ static const struct cvp_priv cvp_priv_v2 = {
 	.user_time_us	= V2_USER_TIMEOUT_US,
 };
 
-static ssize_t chkcfg_show(struct device_driver *dev, char *buf)
+static ssize_t chkcfg_show(const struct device_driver *dev, char *buf)
 {
 	return snprintf(buf, 3, "%d\n", altera_cvp_chkcfg);
 }
 
-static ssize_t chkcfg_store(struct device_driver *drv, const char *buf,
+static ssize_t chkcfg_store(const struct device_driver *drv, const char *buf,
 			    size_t count)
 {
 	int ret;
@@ -550,7 +550,7 @@ static ssize_t chkcfg_store(struct device_driver *drv, const char *buf,
 	return count;
 }
 
-static DRIVER_ATTR_RW(chkcfg);
+static const DRIVER_ATTR_RW(chkcfg);
 
 static int altera_cvp_probe(struct pci_dev *pdev,
 			    const struct pci_device_id *dev_id);

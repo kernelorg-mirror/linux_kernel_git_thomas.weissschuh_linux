@@ -4605,32 +4605,32 @@ module_exit(exit_st);
 
 
 /* The sysfs driver interface. Read-only at the moment */
-static ssize_t try_direct_io_show(struct device_driver *ddp, char *buf)
+static ssize_t try_direct_io_show(const struct device_driver *ddp, char *buf)
 {
 	return scnprintf(buf, PAGE_SIZE, "%d\n", try_direct_io);
 }
-static DRIVER_ATTR_RO(try_direct_io);
+static const DRIVER_ATTR_RO(try_direct_io);
 
-static ssize_t fixed_buffer_size_show(struct device_driver *ddp, char *buf)
+static ssize_t fixed_buffer_size_show(const struct device_driver *ddp, char *buf)
 {
 	return scnprintf(buf, PAGE_SIZE, "%d\n", st_fixed_buffer_size);
 }
-static DRIVER_ATTR_RO(fixed_buffer_size);
+static const DRIVER_ATTR_RO(fixed_buffer_size);
 
-static ssize_t max_sg_segs_show(struct device_driver *ddp, char *buf)
+static ssize_t max_sg_segs_show(const struct device_driver *ddp, char *buf)
 {
 	return scnprintf(buf, PAGE_SIZE, "%d\n", st_max_sg_segs);
 }
-static DRIVER_ATTR_RO(max_sg_segs);
+static const DRIVER_ATTR_RO(max_sg_segs);
 
-static ssize_t version_show(struct device_driver *ddd, char *buf)
+static ssize_t version_show(const struct device_driver *ddd, char *buf)
 {
 	return scnprintf(buf, PAGE_SIZE, "[%s]\n", verstr);
 }
-static DRIVER_ATTR_RO(version);
+static const DRIVER_ATTR_RO(version);
 
 #if DEBUG
-static ssize_t debug_flag_store(struct device_driver *ddp,
+static ssize_t debug_flag_store(const struct device_driver *ddp,
 	const char *buf, size_t count)
 {
 /* We only care what the first byte of the data is the rest is unused.
@@ -4649,14 +4649,14 @@ static ssize_t debug_flag_store(struct device_driver *ddp,
 	return -EINVAL;
 }
 
-static ssize_t debug_flag_show(struct device_driver *ddp, char *buf)
+static ssize_t debug_flag_show(const struct device_driver *ddp, char *buf)
 {
 	return scnprintf(buf, PAGE_SIZE, "%d\n", debugging);
 }
-static DRIVER_ATTR_RW(debug_flag);
+static const DRIVER_ATTR_RW(debug_flag);
 #endif
 
-static struct attribute *st_drv_attrs[] = {
+static const struct attribute *const st_drv_attrs[] = {
 	&driver_attr_try_direct_io.attr,
 	&driver_attr_fixed_buffer_size.attr,
 	&driver_attr_max_sg_segs.attr,

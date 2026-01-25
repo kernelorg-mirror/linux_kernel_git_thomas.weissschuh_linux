@@ -924,11 +924,11 @@ static int asd_scan_finished(struct Scsi_Host *shost, unsigned long time)
 	return 1;
 }
 
-static ssize_t version_show(struct device_driver *driver, char *buf)
+static ssize_t version_show(const struct device_driver *driver, char *buf)
 {
 	return snprintf(buf, PAGE_SIZE, "%s\n", ASD_DRIVER_VERSION);
 }
-static DRIVER_ATTR_RO(version);
+static const DRIVER_ATTR_RO(version);
 
 static int asd_create_driver_attrs(struct device_driver *driver)
 {

@@ -504,7 +504,7 @@ static const struct bus_type mostbus = {
 	.match = most_match,
 };
 
-static ssize_t links_show(struct device_driver *drv, char *buf)
+static ssize_t links_show(const struct device_driver *drv, char *buf)
 {
 	struct show_links_data d = { .buf = buf };
 
@@ -512,7 +512,7 @@ static ssize_t links_show(struct device_driver *drv, char *buf)
 	return d.offs;
 }
 
-static ssize_t components_show(struct device_driver *drv, char *buf)
+static ssize_t components_show(const struct device_driver *drv, char *buf)
 {
 	struct most_component *comp;
 	int offs = 0;
@@ -709,17 +709,17 @@ int most_remove_link(char *mdev, char *mdev_ch, char *comp_name)
 
 #define DRV_ATTR(_name)  (&driver_attr_##_name.attr)
 
-static DRIVER_ATTR_RO(links);
-static DRIVER_ATTR_RO(components);
+static const DRIVER_ATTR_RO(links);
+static const DRIVER_ATTR_RO(components);
 
-static struct attribute *mc_attrs[] = {
+static const struct attribute *const mc_attrs[] = {
 	DRV_ATTR(links),
 	DRV_ATTR(components),
 	NULL,
 };
 
 static const struct attribute_group mc_attr_group = {
-	.attrs = mc_attrs,
+	.attrs_const = mc_attrs,
 };
 
 static const struct attribute_group *mc_attr_groups[] = {

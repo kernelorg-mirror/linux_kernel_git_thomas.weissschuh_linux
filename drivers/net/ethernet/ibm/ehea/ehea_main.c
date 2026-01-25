@@ -3520,12 +3520,12 @@ static int check_module_parm(void)
 	return ret;
 }
 
-static ssize_t capabilities_show(struct device_driver *drv, char *buf)
+static ssize_t capabilities_show(const struct device_driver *drv, char *buf)
 {
 	return sprintf(buf, "%d", EHEA_CAPABILITIES);
 }
 
-static DRIVER_ATTR_RO(capabilities);
+static const DRIVER_ATTR_RO(capabilities);
 
 static int __init ehea_module_init(void)
 {

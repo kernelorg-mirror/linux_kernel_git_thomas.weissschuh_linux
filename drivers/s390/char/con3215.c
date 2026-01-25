@@ -779,7 +779,7 @@ static struct ccw_device_id raw3215_id[] = {
 	{ /* end of list */ },
 };
 
-static ssize_t con_drop_store(struct device_driver *dev, const char *buf, size_t count)
+static ssize_t con_drop_store(const struct device_driver *dev, const char *buf, size_t count)
 {
 	bool drop;
 	int rc;
@@ -790,20 +790,20 @@ static ssize_t con_drop_store(struct device_driver *dev, const char *buf, size_t
 	return rc ?: count;
 }
 
-static ssize_t con_drop_show(struct device_driver *dev, char *buf)
+static ssize_t con_drop_show(const struct device_driver *dev, char *buf)
 {
 	return sysfs_emit(buf, "%d\n", con3215_drop ? 1 : 0);
 }
 
-static DRIVER_ATTR_RW(con_drop);
+static const DRIVER_ATTR_RW(con_drop);
 
-static struct attribute *con3215_drv_attrs[] = {
+static const struct attribute *const con3215_drv_attrs[] = {
 	&driver_attr_con_drop.attr,
 	NULL,
 };
 
-static struct attribute_group con3215_drv_attr_group = {
-	.attrs = con3215_drv_attrs,
+static const struct attribute_group con3215_drv_attr_group = {
+	.attrs_const = con3215_drv_attrs,
 };
 
 static const struct attribute_group *con3215_drv_attr_groups[] = {

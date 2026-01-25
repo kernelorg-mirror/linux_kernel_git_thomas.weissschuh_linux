@@ -309,7 +309,7 @@ struct usb_serial_driver {
 						void *dest, size_t size);
 };
 #define to_usb_serial_driver(d) \
-	container_of(d, struct usb_serial_driver, driver)
+	container_of_const(d, struct usb_serial_driver, driver)
 
 #define usb_serial_register_drivers(serial_drivers, name, id_table) \
 	__usb_serial_register_drivers(serial_drivers, THIS_MODULE, name, id_table)

@@ -1369,19 +1369,19 @@ static int tpacpi_rfk_procfs_write(const enum tpacpi_rfk_id id, char *buf)
  */
 
 /* interface_version --------------------------------------------------- */
-static ssize_t interface_version_show(struct device_driver *drv, char *buf)
+static ssize_t interface_version_show(const struct device_driver *drv, char *buf)
 {
 	return sysfs_emit(buf, "0x%08x\n", TPACPI_SYSFS_VERSION);
 }
-static DRIVER_ATTR_RO(interface_version);
+static const DRIVER_ATTR_RO(interface_version);
 
 /* debug_level --------------------------------------------------------- */
-static ssize_t debug_level_show(struct device_driver *drv, char *buf)
+static ssize_t debug_level_show(const struct device_driver *drv, char *buf)
 {
 	return sysfs_emit(buf, "0x%04x\n", dbg_level);
 }
 
-static ssize_t debug_level_store(struct device_driver *drv, const char *buf,
+static ssize_t debug_level_store(const struct device_driver *drv, const char *buf,
 				 size_t count)
 {
 	unsigned long t;
@@ -1393,27 +1393,27 @@ static ssize_t debug_level_store(struct device_driver *drv, const char *buf,
 
 	return count;
 }
-static DRIVER_ATTR_RW(debug_level);
+static const DRIVER_ATTR_RW(debug_level);
 
 /* version ------------------------------------------------------------- */
-static ssize_t version_show(struct device_driver *drv, char *buf)
+static ssize_t version_show(const struct device_driver *drv, char *buf)
 {
 	return sysfs_emit(buf, "%s v%s\n",
 			TPACPI_DESC, TPACPI_VERSION);
 }
-static DRIVER_ATTR_RO(version);
+static const DRIVER_ATTR_RO(version);
 
 /* --------------------------------------------------------------------- */
 
 #ifdef CONFIG_THINKPAD_ACPI_DEBUGFACILITIES
 
 /* wlsw_emulstate ------------------------------------------------------ */
-static ssize_t wlsw_emulstate_show(struct device_driver *drv, char *buf)
+static ssize_t wlsw_emulstate_show(const struct device_driver *drv, char *buf)
 {
 	return sysfs_emit(buf, "%d\n", !!tpacpi_wlsw_emulstate);
 }
 
-static ssize_t wlsw_emulstate_store(struct device_driver *drv, const char *buf,
+static ssize_t wlsw_emulstate_store(const struct device_driver *drv, const char *buf,
 				    size_t count)
 {
 	unsigned long t;
@@ -1428,15 +1428,15 @@ static ssize_t wlsw_emulstate_store(struct device_driver *drv, const char *buf,
 
 	return count;
 }
-static DRIVER_ATTR_RW(wlsw_emulstate);
+static const DRIVER_ATTR_RW(wlsw_emulstate);
 
 /* bluetooth_emulstate ------------------------------------------------- */
-static ssize_t bluetooth_emulstate_show(struct device_driver *drv, char *buf)
+static ssize_t bluetooth_emulstate_show(const struct device_driver *drv, char *buf)
 {
 	return sysfs_emit(buf, "%d\n", !!tpacpi_bluetooth_emulstate);
 }
 
-static ssize_t bluetooth_emulstate_store(struct device_driver *drv,
+static ssize_t bluetooth_emulstate_store(const struct device_driver *drv,
 					 const char *buf, size_t count)
 {
 	unsigned long t;
@@ -1448,15 +1448,15 @@ static ssize_t bluetooth_emulstate_store(struct device_driver *drv,
 
 	return count;
 }
-static DRIVER_ATTR_RW(bluetooth_emulstate);
+static const DRIVER_ATTR_RW(bluetooth_emulstate);
 
 /* wwan_emulstate ------------------------------------------------- */
-static ssize_t wwan_emulstate_show(struct device_driver *drv, char *buf)
+static ssize_t wwan_emulstate_show(const struct device_driver *drv, char *buf)
 {
 	return sysfs_emit(buf, "%d\n", !!tpacpi_wwan_emulstate);
 }
 
-static ssize_t wwan_emulstate_store(struct device_driver *drv, const char *buf,
+static ssize_t wwan_emulstate_store(const struct device_driver *drv, const char *buf,
 				    size_t count)
 {
 	unsigned long t;
@@ -1468,15 +1468,15 @@ static ssize_t wwan_emulstate_store(struct device_driver *drv, const char *buf,
 
 	return count;
 }
-static DRIVER_ATTR_RW(wwan_emulstate);
+static const DRIVER_ATTR_RW(wwan_emulstate);
 
 /* uwb_emulstate ------------------------------------------------- */
-static ssize_t uwb_emulstate_show(struct device_driver *drv, char *buf)
+static ssize_t uwb_emulstate_show(const struct device_driver *drv, char *buf)
 {
 	return sysfs_emit(buf, "%d\n", !!tpacpi_uwb_emulstate);
 }
 
-static ssize_t uwb_emulstate_store(struct device_driver *drv, const char *buf,
+static ssize_t uwb_emulstate_store(const struct device_driver *drv, const char *buf,
 				   size_t count)
 {
 	unsigned long t;
@@ -1488,7 +1488,7 @@ static ssize_t uwb_emulstate_store(struct device_driver *drv, const char *buf,
 
 	return count;
 }
-static DRIVER_ATTR_RW(uwb_emulstate);
+static const DRIVER_ATTR_RW(uwb_emulstate);
 #endif
 
 /*************************************************************************
@@ -8754,12 +8754,12 @@ static ssize_t fan_fan2_input_show(struct device *dev,
 static DEVICE_ATTR(fan2_input, S_IRUGO, fan_fan2_input_show, NULL);
 
 /* sysfs fan fan_watchdog (hwmon driver) ------------------------------- */
-static ssize_t fan_watchdog_show(struct device_driver *drv, char *buf)
+static ssize_t fan_watchdog_show(const struct device_driver *drv, char *buf)
 {
 	return sysfs_emit(buf, "%u\n", fan_watchdog_maxinterval);
 }
 
-static ssize_t fan_watchdog_store(struct device_driver *drv, const char *buf,
+static ssize_t fan_watchdog_store(const struct device_driver *drv, const char *buf,
 				  size_t count)
 {
 	unsigned long t;
@@ -8777,7 +8777,7 @@ static ssize_t fan_watchdog_store(struct device_driver *drv, const char *buf,
 
 	return count;
 }
-static DRIVER_ATTR_RW(fan_watchdog);
+static const DRIVER_ATTR_RW(fan_watchdog);
 
 /* --------------------------------------------------------------------- */
 
@@ -8809,14 +8809,14 @@ static const struct attribute_group fan_attr_group = {
 	.attrs = fan_attributes,
 };
 
-static struct attribute *fan_driver_attributes[] = {
+static const struct attribute *const fan_driver_attributes[] = {
 	&driver_attr_fan_watchdog.attr,
 	NULL
 };
 
 static const struct attribute_group fan_driver_attr_group = {
 	.is_visible = fan_attr_is_visible,
-	.attrs = fan_driver_attributes,
+	.attrs_const = fan_driver_attributes,
 };
 
 #define TPACPI_FAN_Q1		0x0001		/* Uninitialized HFSP */
@@ -11082,7 +11082,7 @@ static const struct attribute_group auxmac_attr_group = {
 
 /* --------------------------------------------------------------------- */
 
-static struct attribute *tpacpi_driver_attributes[] = {
+static const struct attribute *const tpacpi_driver_attributes[] = {
 	&driver_attr_debug_level.attr,
 	&driver_attr_version.attr,
 	&driver_attr_interface_version.attr,
@@ -11097,7 +11097,7 @@ static struct attribute *tpacpi_driver_attributes[] = {
 
 #ifdef CONFIG_THINKPAD_ACPI_DEBUGFACILITIES
 static umode_t tpacpi_attr_is_visible(struct kobject *kobj,
-				      struct attribute *attr, int n)
+				      const struct attribute *attr, int n)
 {
 	if (attr == &driver_attr_wlsw_emulstate.attr) {
 		if (!dbg_wlswemul)
@@ -11119,9 +11119,9 @@ static umode_t tpacpi_attr_is_visible(struct kobject *kobj,
 
 static const struct attribute_group tpacpi_driver_attr_group = {
 #ifdef CONFIG_THINKPAD_ACPI_DEBUGFACILITIES
-	.is_visible = tpacpi_attr_is_visible,
+	.is_visible_const = tpacpi_attr_is_visible,
 #endif
-	.attrs = tpacpi_driver_attributes,
+	.attrs_const = tpacpi_driver_attributes,
 };
 
 static const struct attribute_group *tpacpi_driver_groups[] = {

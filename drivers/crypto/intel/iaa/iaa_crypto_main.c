@@ -94,12 +94,12 @@ static bool iaa_crypto_registered;
 /* Verify results of IAA compress or not */
 static bool iaa_verify_compress = true;
 
-static ssize_t verify_compress_show(struct device_driver *driver, char *buf)
+static ssize_t verify_compress_show(const struct device_driver *driver, char *buf)
 {
 	return sprintf(buf, "%d\n", iaa_verify_compress);
 }
 
-static ssize_t verify_compress_store(struct device_driver *driver,
+static ssize_t verify_compress_store(const struct device_driver *driver,
 				     const char *buf, size_t count)
 {
 	int ret = -EBUSY;
@@ -119,7 +119,7 @@ out:
 
 	return ret;
 }
-static DRIVER_ATTR_RW(verify_compress);
+static const DRIVER_ATTR_RW(verify_compress);
 
 /*
  * The iaa crypto driver supports three 'sync' methods determining how
@@ -183,7 +183,7 @@ static int set_iaa_sync_mode(const char *name)
 	return ret;
 }
 
-static ssize_t sync_mode_show(struct device_driver *driver, char *buf)
+static ssize_t sync_mode_show(const struct device_driver *driver, char *buf)
 {
 	int ret = 0;
 
@@ -197,7 +197,7 @@ static ssize_t sync_mode_show(struct device_driver *driver, char *buf)
 	return ret;
 }
 
-static ssize_t sync_mode_store(struct device_driver *driver,
+static ssize_t sync_mode_store(const struct device_driver *driver,
 			       const char *buf, size_t count)
 {
 	int ret = -EBUSY;
@@ -215,7 +215,7 @@ out:
 
 	return ret;
 }
-static DRIVER_ATTR_RW(sync_mode);
+static const DRIVER_ATTR_RW(sync_mode);
 
 static struct iaa_compression_mode *iaa_compression_modes[IAA_COMP_MODES_MAX];
 

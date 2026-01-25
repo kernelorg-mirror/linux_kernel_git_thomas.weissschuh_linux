@@ -445,13 +445,13 @@ static struct attribute *hvcs_dev_attrs[] = {
 
 ATTRIBUTE_GROUPS(hvcs_dev);
 
-static ssize_t rescan_show(struct device_driver *ddp, char *buf)
+static ssize_t rescan_show(const struct device_driver *ddp, char *buf)
 {
 	/* A 1 means it is updating, a 0 means it is done updating */
 	return snprintf(buf, PAGE_SIZE, "%d\n", hvcs_rescan_status);
 }
 
-static ssize_t rescan_store(struct device_driver *ddp, const char * buf,
+static ssize_t rescan_store(const struct device_driver *ddp, const char * buf,
 		size_t count)
 {
 	if ((simple_strtol(buf, NULL, 0) != 1)
@@ -466,9 +466,9 @@ static ssize_t rescan_store(struct device_driver *ddp, const char * buf,
 	return count;
 }
 
-static DRIVER_ATTR_RW(rescan);
+static const DRIVER_ATTR_RW(rescan);
 
-static struct attribute *hvcs_attrs[] = {
+static const struct attribute *const hvcs_attrs[] = {
 	&driver_attr_rescan.attr,
 	NULL,
 };

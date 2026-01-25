@@ -103,7 +103,7 @@ static void usb_serial_device_remove(struct device *dev)
 		usb_autopm_put_interface(port->serial->interface);
 }
 
-static ssize_t new_id_store(struct device_driver *driver,
+static ssize_t new_id_store(const struct device_driver *driver,
 			    const char *buf, size_t count)
 {
 	struct usb_serial_driver *usb_drv = ptr_unqual(to_usb_serial_driver(driver));
@@ -118,7 +118,7 @@ static ssize_t new_id_store(struct device_driver *driver,
 	return retval;
 }
 
-static ssize_t new_id_show(struct device_driver *driver, char *buf)
+static ssize_t new_id_show(const struct device_driver *driver, char *buf)
 {
 	struct usb_serial_driver *usb_drv = ptr_unqual(to_usb_serial_driver(driver));
 

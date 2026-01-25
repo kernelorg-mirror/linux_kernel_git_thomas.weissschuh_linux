@@ -185,7 +185,7 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
  *
  * Allow PCI IDs to be added to an existing driver via sysfs.
  */
-static ssize_t new_id_store(struct device_driver *driver, const char *buf,
+static ssize_t new_id_store(const struct device_driver *driver, const char *buf,
 			    size_t count)
 {
 	struct pci_driver *pdrv = ptr_unqual(to_pci_driver(driver));
@@ -243,7 +243,7 @@ static ssize_t new_id_store(struct device_driver *driver, const char *buf,
 		return retval;
 	return count;
 }
-static DRIVER_ATTR_WO(new_id);
+static const DRIVER_ATTR_WO(new_id);
 
 /**
  * remove_id_store - remove a PCI device ID from this driver
@@ -253,7 +253,7 @@ static DRIVER_ATTR_WO(new_id);
  *
  * Removes a dynamic pci device ID to this driver.
  */
-static ssize_t remove_id_store(struct device_driver *driver, const char *buf,
+static ssize_t remove_id_store(const struct device_driver *driver, const char *buf,
 			       size_t count)
 {
 	struct pci_dynid *dynid, *n;
@@ -287,9 +287,9 @@ static ssize_t remove_id_store(struct device_driver *driver, const char *buf,
 
 	return retval;
 }
-static DRIVER_ATTR_WO(remove_id);
+static const DRIVER_ATTR_WO(remove_id);
 
-static struct attribute *pci_drv_attrs[] = {
+static const struct attribute *const pci_drv_attrs[] = {
 	&driver_attr_new_id.attr,
 	&driver_attr_remove_id.attr,
 	NULL,

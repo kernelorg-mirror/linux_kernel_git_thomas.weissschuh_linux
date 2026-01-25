@@ -92,7 +92,7 @@ struct pcmcia_dynid {
  * and causes the driver to probe for all devices again.
  */
 static ssize_t
-new_id_store(struct device_driver *driver, const char *buf, size_t count)
+new_id_store(const struct device_driver *driver, const char *buf, size_t count)
 {
 	struct pcmcia_dynid *dynid;
 	struct pcmcia_driver *pdrv = to_pcmcia_drv(driver);
@@ -130,7 +130,7 @@ new_id_store(struct device_driver *driver, const char *buf, size_t count)
 		return retval;
 	return count;
 }
-static DRIVER_ATTR_WO(new_id);
+static const DRIVER_ATTR_WO(new_id);
 
 static void
 pcmcia_free_dynids(struct pcmcia_driver *drv)

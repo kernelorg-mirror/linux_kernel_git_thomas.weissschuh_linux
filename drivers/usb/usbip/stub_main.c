@@ -146,7 +146,7 @@ out:
 	return ret;
 }
 
-static ssize_t match_busid_show(struct device_driver *drv, char *buf)
+static ssize_t match_busid_show(const struct device_driver *drv, char *buf)
 {
 	int i;
 	char *out = buf;
@@ -164,7 +164,7 @@ static ssize_t match_busid_show(struct device_driver *drv, char *buf)
 	return out - buf;
 }
 
-static ssize_t match_busid_store(struct device_driver *dev, const char *buf,
+static ssize_t match_busid_store(const struct device_driver *dev, const char *buf,
 				 size_t count)
 {
 	char busid[BUSID_SIZE];
@@ -194,7 +194,7 @@ static ssize_t match_busid_store(struct device_driver *dev, const char *buf,
 
 	return -EINVAL;
 }
-static DRIVER_ATTR_RW(match_busid);
+static const DRIVER_ATTR_RW(match_busid);
 
 static int do_rebind(char *busid, struct bus_id_priv *busid_priv)
 {
@@ -239,7 +239,7 @@ static void stub_device_rebind(void)
 #endif
 }
 
-static ssize_t rebind_store(struct device_driver *dev, const char *buf,
+static ssize_t rebind_store(const struct device_driver *dev, const char *buf,
 				 size_t count)
 {
 	int ret;
@@ -271,7 +271,7 @@ static ssize_t rebind_store(struct device_driver *dev, const char *buf,
 	return count;
 }
 
-static DRIVER_ATTR_WO(rebind);
+static const DRIVER_ATTR_WO(rebind);
 
 static struct stub_priv *stub_priv_pop_from_listhead(struct list_head *listhead)
 {

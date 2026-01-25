@@ -707,14 +707,14 @@ EXPORT_SYMBOL(gameport_unregister_port);
  * Gameport driver operations
  */
 
-static ssize_t description_show(struct device_driver *drv, char *buf)
+static ssize_t description_show(const struct device_driver *drv, char *buf)
 {
 	struct gameport_driver *driver = to_gameport_driver(drv);
 	return sprintf(buf, "%s\n", driver->description ? driver->description : "(none)");
 }
-static DRIVER_ATTR_RO(description);
+static const DRIVER_ATTR_RO(description);
 
-static struct attribute *gameport_driver_attrs[] = {
+static const struct attribute *const gameport_driver_attrs[] = {
 	&driver_attr_description.attr,
 	NULL
 };

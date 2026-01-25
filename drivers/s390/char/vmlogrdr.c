@@ -641,7 +641,7 @@ static ssize_t vmlogrdr_recording_store(struct device * dev,
 static DEVICE_ATTR(recording, 0200, NULL, vmlogrdr_recording_store);
 
 
-static ssize_t recording_status_show(struct device_driver *driver, char *buf)
+static ssize_t recording_status_show(const struct device_driver *driver, char *buf)
 {
 	static const char cp_command[] = "QUERY RECORDING ";
 	int len;
@@ -650,13 +650,13 @@ static ssize_t recording_status_show(struct device_driver *driver, char *buf)
 	len = strlen(buf);
 	return len;
 }
-static DRIVER_ATTR_RO(recording_status);
-static struct attribute *vmlogrdr_drv_attrs[] = {
+static const DRIVER_ATTR_RO(recording_status);
+static const struct attribute *const vmlogrdr_drv_attrs[] = {
 	&driver_attr_recording_status.attr,
 	NULL,
 };
 static struct attribute_group vmlogrdr_drv_attr_group = {
-	.attrs = vmlogrdr_drv_attrs,
+	.attrs_const = vmlogrdr_drv_attrs,
 };
 static const struct attribute_group *vmlogrdr_drv_attr_groups[] = {
 	&vmlogrdr_drv_attr_group,

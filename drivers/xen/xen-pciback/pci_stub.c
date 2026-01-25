@@ -1212,7 +1212,7 @@ out:
 	return err;
 }
 
-static ssize_t new_slot_store(struct device_driver *drv, const char *buf,
+static ssize_t new_slot_store(const struct device_driver *drv, const char *buf,
 			      size_t count)
 {
 	int domain, bus, slot, func;
@@ -1229,9 +1229,9 @@ out:
 		err = count;
 	return err;
 }
-static DRIVER_ATTR_WO(new_slot);
+static const DRIVER_ATTR_WO(new_slot);
 
-static ssize_t remove_slot_store(struct device_driver *drv, const char *buf,
+static ssize_t remove_slot_store(const struct device_driver *drv, const char *buf,
 				 size_t count)
 {
 	int domain, bus, slot, func;
@@ -1248,9 +1248,9 @@ out:
 		err = count;
 	return err;
 }
-static DRIVER_ATTR_WO(remove_slot);
+static const DRIVER_ATTR_WO(remove_slot);
 
-static ssize_t slots_show(struct device_driver *drv, char *buf)
+static ssize_t slots_show(const struct device_driver *drv, char *buf)
 {
 	struct pcistub_device_id *pci_dev_id;
 	size_t count = 0;
@@ -1271,9 +1271,9 @@ static ssize_t slots_show(struct device_driver *drv, char *buf)
 
 	return count;
 }
-static DRIVER_ATTR_RO(slots);
+static const DRIVER_ATTR_RO(slots);
 
-static ssize_t irq_handlers_show(struct device_driver *drv, char *buf)
+static ssize_t irq_handlers_show(const struct device_driver *drv, char *buf)
 {
 	struct pcistub_device *psdev;
 	struct xen_pcibk_dev_data *dev_data;
@@ -1300,9 +1300,9 @@ static ssize_t irq_handlers_show(struct device_driver *drv, char *buf)
 	spin_unlock_irqrestore(&pcistub_devices_lock, flags);
 	return count;
 }
-static DRIVER_ATTR_RO(irq_handlers);
+static const DRIVER_ATTR_RO(irq_handlers);
 
-static ssize_t irq_handler_state_store(struct device_driver *drv,
+static ssize_t irq_handler_state_store(const struct device_driver *drv,
 				       const char *buf, size_t count)
 {
 	struct pcistub_device *psdev;
@@ -1340,9 +1340,9 @@ out:
 		err = count;
 	return err;
 }
-static DRIVER_ATTR_WO(irq_handler_state);
+static const DRIVER_ATTR_WO(irq_handler_state);
 
-static ssize_t quirks_store(struct device_driver *drv, const char *buf,
+static ssize_t quirks_store(const struct device_driver *drv, const char *buf,
 			    size_t count)
 {
 	int domain, bus, slot, func, reg, size, mask;
@@ -1361,7 +1361,7 @@ out:
 	return err;
 }
 
-static ssize_t quirks_show(struct device_driver *drv, char *buf)
+static ssize_t quirks_show(const struct device_driver *drv, char *buf)
 {
 	int count = 0;
 	unsigned long flags;
@@ -1404,9 +1404,9 @@ out:
 
 	return count;
 }
-static DRIVER_ATTR_RW(quirks);
+static const DRIVER_ATTR_RW(quirks);
 
-static ssize_t permissive_store(struct device_driver *drv, const char *buf,
+static ssize_t permissive_store(const struct device_driver *drv, const char *buf,
 				size_t count)
 {
 	int domain, bus, slot, func;
@@ -1446,7 +1446,7 @@ out:
 	return err;
 }
 
-static ssize_t permissive_show(struct device_driver *drv, char *buf)
+static ssize_t permissive_show(const struct device_driver *drv, char *buf)
 {
 	struct pcistub_device *psdev;
 	struct xen_pcibk_dev_data *dev_data;
@@ -1468,9 +1468,9 @@ static ssize_t permissive_show(struct device_driver *drv, char *buf)
 	spin_unlock_irqrestore(&pcistub_devices_lock, flags);
 	return count;
 }
-static DRIVER_ATTR_RW(permissive);
+static const DRIVER_ATTR_RW(permissive);
 
-static ssize_t allow_interrupt_control_store(struct device_driver *drv,
+static ssize_t allow_interrupt_control_store(const struct device_driver *drv,
 					     const char *buf, size_t count)
 {
 	int domain, bus, slot, func;
@@ -1503,7 +1503,7 @@ out:
 	return err;
 }
 
-static ssize_t allow_interrupt_control_show(struct device_driver *drv,
+static ssize_t allow_interrupt_control_show(const struct device_driver *drv,
 					    char *buf)
 {
 	struct pcistub_device *psdev;
@@ -1527,7 +1527,7 @@ static ssize_t allow_interrupt_control_show(struct device_driver *drv,
 	spin_unlock_irqrestore(&pcistub_devices_lock, flags);
 	return count;
 }
-static DRIVER_ATTR_RW(allow_interrupt_control);
+static const DRIVER_ATTR_RW(allow_interrupt_control);
 
 static void pcistub_exit(void)
 {

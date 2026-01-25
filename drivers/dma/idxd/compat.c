@@ -13,7 +13,7 @@ extern void device_driver_detach(struct device *dev);
 	struct driver_attribute driver_attr_##_name =		\
 	__ATTR_IGNORE_LOCKDEP(_name, _mode, _show, _store)
 
-static ssize_t unbind_store(struct device_driver *drv, const char *buf, size_t count)
+static ssize_t unbind_store(const struct device_driver *drv, const char *buf, size_t count)
 {
 	const struct bus_type *bus = drv->bus;
 	struct device *dev;
@@ -32,9 +32,9 @@ static ssize_t unbind_store(struct device_driver *drv, const char *buf, size_t c
 
 	return rc;
 }
-static DRIVER_ATTR_IGNORE_LOCKDEP(unbind, 0200, NULL, unbind_store);
+static const DRIVER_ATTR_IGNORE_LOCKDEP(unbind, 0200, NULL, unbind_store);
 
-static ssize_t bind_store(struct device_driver *drv, const char *buf, size_t count)
+static ssize_t bind_store(const struct device_driver *drv, const char *buf, size_t count)
 {
 	const struct bus_type *bus = drv->bus;
 	struct device *dev;
@@ -76,16 +76,16 @@ err_put_dev:
 
 	return rc;
 }
-static DRIVER_ATTR_IGNORE_LOCKDEP(bind, 0200, NULL, bind_store);
+static const DRIVER_ATTR_IGNORE_LOCKDEP(bind, 0200, NULL, bind_store);
 
-static struct attribute *dsa_drv_compat_attrs[] = {
+static const struct attribute *const dsa_drv_compat_attrs[] = {
 	&driver_attr_bind.attr,
 	&driver_attr_unbind.attr,
 	NULL,
 };
 
 static const struct attribute_group dsa_drv_compat_attr_group = {
-	.attrs = dsa_drv_compat_attrs,
+	.attrs_const = dsa_drv_compat_attrs,
 };
 
 static const struct attribute_group *dsa_drv_compat_groups[] = {
