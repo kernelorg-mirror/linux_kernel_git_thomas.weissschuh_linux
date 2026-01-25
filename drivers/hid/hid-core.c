@@ -18,6 +18,7 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/list.h>
+#include <linux/rculist.h>
 #include <linux/mm.h>
 #include <linux/spinlock.h>
 #include <linux/unaligned.h>
@@ -2584,6 +2585,7 @@ EXPORT_SYMBOL_GPL(hid_driver_resume);
 
 struct hid_dynid {
 	struct list_head list;
+	struct rcu_head rcu;
 	struct hid_device_id id;
 };
 
@@ -2620,8 +2622,10 @@ static ssize_t new_id_store(struct device_driver *drv, const char *buf,
 	dynid->id.product = product;
 	dynid->id.driver_data = driver_data;
 
+	init_rcu_head(&dynid->rcu);
+
 	spin_lock(&hdrv->dyn_lock);
-	list_add_tail(&dynid->list, &hdrv->dyn_list);
+	list_add_tail_rcu(&dynid->list, &hdrv->dyn_list);
 	spin_unlock(&hdrv->dyn_lock);
 
 	ret = driver_attach(&hdrv->driver);
@@ -2638,14 +2642,15 @@ ATTRIBUTE_GROUPS(hid_drv);
 
 static void hid_free_dynids(struct hid_driver *hdrv)
 {
-	struct hid_dynid *dynid, *n;
+	struct hid_dynid *dynid;
 
 	spin_lock(&hdrv->dyn_lock);
-	list_for_each_entry_safe(dynid, n, &hdrv->dyn_list, list) {
-		list_del(&dynid->list);
-		kfree(dynid);
+	list_for_each_entry_rcu(dynid, &hdrv->dyn_list, list) {
+		list_del_rcu(&dynid->list);
+		kfree_rcu(dynid, rcu);
 	}
 	spin_unlock(&hdrv->dyn_lock);
+	synchronize_rcu();
 }
 
 const struct hid_device_id *hid_match_device(struct hid_device *hdev,
@@ -2653,14 +2658,12 @@ const struct hid_device_id *hid_match_device(struct hid_device *hdev,
 {
 	struct hid_dynid *dynid;
 
-	spin_lock(&hdrv->dyn_lock);
-	list_for_each_entry(dynid, &hdrv->dyn_list, list) {
-		if (hid_match_one_id(hdev, &dynid->id)) {
-			spin_unlock(&hdrv->dyn_lock);
-			return &dynid->id;
+	scoped_guard(rcu) {
+		list_for_each_entry_rcu(dynid, &hdrv->dyn_list, list) {
+			if (hid_match_one_id(hdev, &dynid->id))
+				return &dynid->id;
 		}
 	}
-	spin_unlock(&hdrv->dyn_lock);
 
 	return hid_match_id(hdev, hdrv->id_table);
 }
