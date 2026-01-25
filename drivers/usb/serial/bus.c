@@ -106,7 +106,7 @@ static void usb_serial_device_remove(struct device *dev)
 static ssize_t new_id_store(struct device_driver *driver,
 			    const char *buf, size_t count)
 {
-	struct usb_serial_driver *usb_drv = to_usb_serial_driver(driver);
+	struct usb_serial_driver *usb_drv = ptr_unqual(to_usb_serial_driver(driver));
 	ssize_t retval = usb_store_new_id(&usb_drv->dynids, usb_drv->id_table,
 					 driver, buf, count);
 
@@ -120,7 +120,7 @@ static ssize_t new_id_store(struct device_driver *driver,
 
 static ssize_t new_id_show(struct device_driver *driver, char *buf)
 {
-	struct usb_serial_driver *usb_drv = to_usb_serial_driver(driver);
+	struct usb_serial_driver *usb_drv = ptr_unqual(to_usb_serial_driver(driver));
 
 	return usb_show_dynids(&usb_drv->dynids, buf);
 }

@@ -131,7 +131,7 @@ EXPORT_SYMBOL_GPL(usb_show_dynids);
 
 static ssize_t new_id_show(struct device_driver *driver, char *buf)
 {
-	struct usb_driver *usb_drv = to_usb_driver(driver);
+	struct usb_driver *usb_drv = ptr_unqual(to_usb_driver(driver));
 
 	return usb_show_dynids(&usb_drv->dynids, buf);
 }
@@ -139,7 +139,7 @@ static ssize_t new_id_show(struct device_driver *driver, char *buf)
 static ssize_t new_id_store(struct device_driver *driver,
 			    const char *buf, size_t count)
 {
-	struct usb_driver *usb_drv = to_usb_driver(driver);
+	struct usb_driver *usb_drv = ptr_unqual(to_usb_driver(driver));
 
 	return usb_store_new_id(&usb_drv->dynids, usb_drv->id_table, driver, buf, count);
 }
@@ -152,7 +152,7 @@ static ssize_t remove_id_store(struct device_driver *driver, const char *buf,
 			       size_t count)
 {
 	struct usb_dynid *dynid, *n;
-	struct usb_driver *usb_driver = to_usb_driver(driver);
+	struct usb_driver *usb_driver = ptr_unqual(to_usb_driver(driver));
 	u32 idVendor;
 	u32 idProduct;
 	int fields;
