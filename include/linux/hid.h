@@ -890,7 +890,7 @@ struct hid_driver {
 };
 
 #define to_hid_driver(pdrv) \
-	container_of(pdrv, struct hid_driver, driver)
+	container_of_const(pdrv, struct hid_driver, driver)
 
 /**
  * struct hid_ll_driver - low level driver callbacks
