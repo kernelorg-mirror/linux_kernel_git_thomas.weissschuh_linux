@@ -788,7 +788,7 @@ static void vmbus_free_dynids(struct hv_driver *drv)
 static ssize_t new_id_store(struct device_driver *driver, const char *buf,
 			    size_t count)
 {
-	struct hv_driver *drv = drv_to_hv_drv(driver);
+	struct hv_driver *drv = ptr_unqual(drv_to_hv_drv(driver));
 	guid_t guid;
 	ssize_t retval;
 
@@ -814,7 +814,7 @@ static DRIVER_ATTR_WO(new_id);
 static ssize_t remove_id_store(struct device_driver *driver, const char *buf,
 			       size_t count)
 {
-	struct hv_driver *drv = drv_to_hv_drv(driver);
+	struct hv_driver *drv = ptr_unqual(drv_to_hv_drv(driver));
 	struct vmbus_dynid *dynid, *n;
 	guid_t guid;
 	ssize_t retval;
