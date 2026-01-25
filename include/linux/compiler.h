@@ -250,6 +250,8 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 # define TYPEOF_UNQUAL(exp) __typeof__(exp)
 #endif
 
+#define ptr_unqual(_ptr) ((TYPEOF_UNQUAL(*(_ptr)) *)(_ptr))
+
 #endif /* __KERNEL__ */
 
 #if defined(CONFIG_CFI) && !defined(__DISABLE_EXPORTS) && !defined(BUILD_VDSO)
