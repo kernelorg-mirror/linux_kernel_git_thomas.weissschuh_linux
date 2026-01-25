@@ -2603,7 +2603,7 @@ struct hid_dynid {
 static ssize_t new_id_store(struct device_driver *drv, const char *buf,
 		size_t count)
 {
-	struct hid_driver *hdrv = to_hid_driver(drv);
+	struct hid_driver *hdrv = ptr_unqual(to_hid_driver(drv));
 	struct hid_dynid *dynid;
 	__u32 bus, vendor, product;
 	unsigned long driver_data = 0;
