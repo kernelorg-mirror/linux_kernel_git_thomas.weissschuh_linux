@@ -41,7 +41,7 @@
  */
 ssize_t usb_store_new_id(struct usb_dynids *dynids,
 			 const struct usb_device_id *id_table,
-			 struct device_driver *driver,
+			 const struct device_driver *driver,
 			 const char *buf, size_t count)
 {
 	struct usb_dynid *dynid;
