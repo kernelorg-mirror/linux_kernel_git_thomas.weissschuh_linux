@@ -188,7 +188,7 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
 static ssize_t new_id_store(struct device_driver *driver, const char *buf,
 			    size_t count)
 {
-	struct pci_driver *pdrv = to_pci_driver(driver);
+	struct pci_driver *pdrv = ptr_unqual(to_pci_driver(driver));
 	const struct pci_device_id *ids = pdrv->id_table;
 	u32 vendor, device, subvendor = PCI_ANY_ID,
 		subdevice = PCI_ANY_ID, class = 0, class_mask = 0;
@@ -257,7 +257,7 @@ static ssize_t remove_id_store(struct device_driver *driver, const char *buf,
 			       size_t count)
 {
 	struct pci_dynid *dynid, *n;
-	struct pci_driver *pdrv = to_pci_driver(driver);
+	struct pci_driver *pdrv = ptr_unqual(to_pci_driver(driver));
 	u32 vendor, device, subvendor = PCI_ANY_ID,
 		subdevice = PCI_ANY_ID, class = 0, class_mask = 0;
 	int fields;
