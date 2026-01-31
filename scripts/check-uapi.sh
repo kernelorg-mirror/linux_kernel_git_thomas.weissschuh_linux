@@ -186,7 +186,9 @@ do_compile() {
 		  -std=c90 \
 		  -fno-eliminate-unused-debug-types \
 		  -g \
+		  -nostdinc \
 		  "-I${inc_dir}" \
+		  "-I${inc_dir}/../dummy-include" \
 		  -include "$header" \
 		  -
 }
@@ -197,6 +199,7 @@ run_make_headers_install() {
 	local -r install_dir="$(get_header_tree "$ref")"
 	make -j "$MAX_THREADS" ARCH="$ARCH" INSTALL_HDR_PATH="$install_dir" \
 		headers_install > /dev/null
+	rsync -a usr/dummy-include/ "$install_dir"/dummy-include/
 }
 
 # Install headers for both git refs
