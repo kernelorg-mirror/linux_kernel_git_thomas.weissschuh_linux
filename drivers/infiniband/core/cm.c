@@ -4267,10 +4267,10 @@ int ib_cm_init_qp_attr(struct ib_cm_id *cm_id,
 EXPORT_SYMBOL(ib_cm_init_qp_attr);
 
 static ssize_t cm_show_counter(struct ib_device *ibdev, u32 port_num,
-			       struct ib_port_attribute *attr, char *buf)
+			       const struct ib_port_attribute *attr, char *buf)
 {
-	struct cm_counter_attribute *cm_attr =
-		container_of(attr, struct cm_counter_attribute, attr);
+	const struct cm_counter_attribute *cm_attr =
+		container_of_const(attr, struct cm_counter_attribute, attr);
 	struct cm_device *cm_dev = ib_get_client_data(ibdev, &cm_client);
 
 	if (WARN_ON(!cm_dev))
@@ -4290,7 +4290,7 @@ static ssize_t cm_show_counter(struct ib_device *ibdev, u32 port_num,
 	}
 
 #define CM_COUNTER_GROUP(_group, _name)                                        \
-	static struct cm_counter_attribute cm_counter_attr_##_group[] = {      \
+	static const struct cm_counter_attribute cm_counter_attr_##_group[] = {\
 		CM_COUNTER_ATTR(req, _group, CM_REQ_COUNTER),                  \
 		CM_COUNTER_ATTR(mra, _group, CM_MRA_COUNTER),                  \
 		CM_COUNTER_ATTR(rej, _group, CM_REJ_COUNTER),                  \
@@ -4303,7 +4303,7 @@ static ssize_t cm_show_counter(struct ib_device *ibdev, u32 port_num,
 		CM_COUNTER_ATTR(lap, _group, CM_LAP_COUNTER),                  \
 		CM_COUNTER_ATTR(apr, _group, CM_APR_COUNTER),                  \
 	};                                                                     \
-	static struct attribute *cm_counter_attrs_##_group[] = {               \
+	static const struct attribute *const cm_counter_attrs_##_group[] = {   \
 		&cm_counter_attr_##_group[0].attr.attr,                        \
 		&cm_counter_attr_##_group[1].attr.attr,                        \
 		&cm_counter_attr_##_group[2].attr.attr,                        \
@@ -4319,7 +4319,7 @@ static ssize_t cm_show_counter(struct ib_device *ibdev, u32 port_num,
 	};                                                                     \
 	static const struct attribute_group cm_counter_group_##_group = {      \
 		.name = _name,                                                 \
-		.attrs = cm_counter_attrs_##_group,                            \
+		.attrs_const = cm_counter_attrs_##_group,                      \
 	};
 
 CM_COUNTER_GROUP(CM_XMIT, "cm_tx_msgs")
@@ -4327,7 +4327,7 @@ CM_COUNTER_GROUP(CM_XMIT_RETRIES, "cm_tx_retries")
 CM_COUNTER_GROUP(CM_RECV, "cm_rx_msgs")
 CM_COUNTER_GROUP(CM_RECV_DUPLICATES, "cm_rx_duplicates")
 
-static const struct attribute_group *cm_counter_groups[] = {
+static const struct attribute_group *const cm_counter_groups[] = {
 	&cm_counter_group_CM_XMIT,
 	&cm_counter_group_CM_XMIT_RETRIES,
 	&cm_counter_group_CM_RECV,

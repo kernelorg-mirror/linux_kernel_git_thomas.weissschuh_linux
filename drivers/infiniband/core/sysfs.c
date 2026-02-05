@@ -105,8 +105,8 @@ struct hw_stats_port_data {
 static ssize_t port_attr_show(struct kobject *kobj,
 			      struct attribute *attr, char *buf)
 {
-	struct ib_port_attribute *port_attr =
-		container_of(attr, struct ib_port_attribute, attr);
+	const struct ib_port_attribute *port_attr =
+		container_of_const(attr, struct ib_port_attribute, attr);
 	struct ib_port *p = container_of(kobj, struct ib_port, kobj);
 
 	if (!port_attr->show)
@@ -119,8 +119,8 @@ static ssize_t port_attr_store(struct kobject *kobj,
 			       struct attribute *attr,
 			       const char *buf, size_t count)
 {
-	struct ib_port_attribute *port_attr =
-		container_of(attr, struct ib_port_attribute, attr);
+	const struct ib_port_attribute *port_attr =
+		container_of_const(attr, struct ib_port_attribute, attr);
 	struct ib_port *p = container_of(kobj, struct ib_port, kobj);
 
 	if (!port_attr->store)
@@ -146,8 +146,8 @@ static const struct sysfs_ops port_sysfs_ops = {
 static ssize_t hw_stat_device_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
-	struct hw_stats_device_attribute *stat_attr =
-		container_of(attr, struct hw_stats_device_attribute, attr);
+	const struct hw_stats_device_attribute *stat_attr =
+		container_of_const(attr, struct hw_stats_device_attribute, attr);
 	struct ib_device *ibdev = container_of(dev, struct ib_device, dev);
 
 	return stat_attr->show(ibdev, ibdev->hw_stats_data->stats,
@@ -158,8 +158,8 @@ static ssize_t hw_stat_device_store(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t count)
 {
-	struct hw_stats_device_attribute *stat_attr =
-		container_of(attr, struct hw_stats_device_attribute, attr);
+	const struct hw_stats_device_attribute *stat_attr =
+		container_of_const(attr, struct hw_stats_device_attribute, attr);
 	struct ib_device *ibdev = container_of(dev, struct ib_device, dev);
 
 	return stat_attr->store(ibdev, ibdev->hw_stats_data->stats,
@@ -168,10 +168,10 @@ static ssize_t hw_stat_device_store(struct device *dev,
 }
 
 static ssize_t hw_stat_port_show(struct ib_device *ibdev, u32 port_num,
-				 struct ib_port_attribute *attr, char *buf)
+				 const struct ib_port_attribute *attr, char *buf)
 {
-	struct hw_stats_port_attribute *stat_attr =
-		container_of(attr, struct hw_stats_port_attribute, attr);
+	const struct hw_stats_port_attribute *stat_attr =
+		container_of_const(attr, struct hw_stats_port_attribute, attr);
 	struct ib_port *port = ibdev->port_data[port_num].sysfs;
 
 	return stat_attr->show(ibdev, port->hw_stats_data->stats,
@@ -180,11 +180,11 @@ static ssize_t hw_stat_port_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t hw_stat_port_store(struct ib_device *ibdev, u32 port_num,
-				  struct ib_port_attribute *attr,
+				  const struct ib_port_attribute *attr,
 				  const char *buf, size_t count)
 {
-	struct hw_stats_port_attribute *stat_attr =
-		container_of(attr, struct hw_stats_port_attribute, attr);
+	const struct hw_stats_port_attribute *stat_attr =
+		container_of_const(attr, struct hw_stats_port_attribute, attr);
 	struct ib_port *port = ibdev->port_data[port_num].sysfs;
 
 	return stat_attr->store(ibdev, port->hw_stats_data->stats,
@@ -195,8 +195,8 @@ static ssize_t hw_stat_port_store(struct ib_device *ibdev, u32 port_num,
 static ssize_t gid_attr_show(struct kobject *kobj,
 			     struct attribute *attr, char *buf)
 {
-	struct ib_port_attribute *port_attr =
-		container_of(attr, struct ib_port_attribute, attr);
+	const struct ib_port_attribute *port_attr =
+		container_of_const(attr, struct ib_port_attribute, attr);
 	struct ib_port *p = container_of(kobj, struct gid_attr_group,
 					 kobj)->port;
 
@@ -211,7 +211,7 @@ static const struct sysfs_ops gid_attr_sysfs_ops = {
 };
 
 static ssize_t state_show(struct ib_device *ibdev, u32 port_num,
-			  struct ib_port_attribute *unused, char *buf)
+			  const struct ib_port_attribute *unused, char *buf)
 {
 	struct ib_port_attr attr;
 	ssize_t ret;
@@ -225,7 +225,7 @@ static ssize_t state_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t lid_show(struct ib_device *ibdev, u32 port_num,
-			struct ib_port_attribute *unused, char *buf)
+			const struct ib_port_attribute *unused, char *buf)
 {
 	struct ib_port_attr attr;
 	ssize_t ret;
@@ -238,7 +238,7 @@ static ssize_t lid_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t lid_mask_count_show(struct ib_device *ibdev, u32 port_num,
-				   struct ib_port_attribute *unused, char *buf)
+				   const struct ib_port_attribute *unused, char *buf)
 {
 	struct ib_port_attr attr;
 	ssize_t ret;
@@ -251,7 +251,7 @@ static ssize_t lid_mask_count_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t sm_lid_show(struct ib_device *ibdev, u32 port_num,
-			   struct ib_port_attribute *unused, char *buf)
+			   const struct ib_port_attribute *unused, char *buf)
 {
 	struct ib_port_attr attr;
 	ssize_t ret;
@@ -264,7 +264,7 @@ static ssize_t sm_lid_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t sm_sl_show(struct ib_device *ibdev, u32 port_num,
-			  struct ib_port_attribute *unused, char *buf)
+			  const struct ib_port_attribute *unused, char *buf)
 {
 	struct ib_port_attr attr;
 	ssize_t ret;
@@ -277,7 +277,7 @@ static ssize_t sm_sl_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t cap_mask_show(struct ib_device *ibdev, u32 port_num,
-			     struct ib_port_attribute *unused, char *buf)
+			     const struct ib_port_attribute *unused, char *buf)
 {
 	struct ib_port_attr attr;
 	ssize_t ret;
@@ -290,7 +290,7 @@ static ssize_t cap_mask_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t rate_show(struct ib_device *ibdev, u32 port_num,
-			 struct ib_port_attribute *unused, char *buf)
+			 const struct ib_port_attribute *unused, char *buf)
 {
 	struct ib_port_speed_info speed_info;
 	struct ib_port_attr attr;
@@ -329,7 +329,7 @@ static const char *phys_state_to_str(enum ib_port_phys_state phys_state)
 }
 
 static ssize_t phys_state_show(struct ib_device *ibdev, u32 port_num,
-			       struct ib_port_attribute *unused, char *buf)
+			       const struct ib_port_attribute *unused, char *buf)
 {
 	struct ib_port_attr attr;
 
@@ -344,7 +344,7 @@ static ssize_t phys_state_show(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t link_layer_show(struct ib_device *ibdev, u32 port_num,
-			       struct ib_port_attribute *unused, char *buf)
+			       const struct ib_port_attribute *unused, char *buf)
 {
 	const char *output;
 
@@ -363,17 +363,17 @@ static ssize_t link_layer_show(struct ib_device *ibdev, u32 port_num,
 	return sysfs_emit(buf, "%s\n", output);
 }
 
-static IB_PORT_ATTR_RO(state);
-static IB_PORT_ATTR_RO(lid);
-static IB_PORT_ATTR_RO(lid_mask_count);
-static IB_PORT_ATTR_RO(sm_lid);
-static IB_PORT_ATTR_RO(sm_sl);
-static IB_PORT_ATTR_RO(cap_mask);
-static IB_PORT_ATTR_RO(rate);
-static IB_PORT_ATTR_RO(phys_state);
-static IB_PORT_ATTR_RO(link_layer);
+static const IB_PORT_ATTR_RO(state);
+static const IB_PORT_ATTR_RO(lid);
+static const IB_PORT_ATTR_RO(lid_mask_count);
+static const IB_PORT_ATTR_RO(sm_lid);
+static const IB_PORT_ATTR_RO(sm_sl);
+static const IB_PORT_ATTR_RO(cap_mask);
+static const IB_PORT_ATTR_RO(rate);
+static const IB_PORT_ATTR_RO(phys_state);
+static const IB_PORT_ATTR_RO(link_layer);
 
-static struct attribute *port_default_attrs[] = {
+static const struct attribute *const port_default_attrs[] = {
 	&ib_port_attr_state.attr,
 	&ib_port_attr_lid.attr,
 	&ib_port_attr_lid_mask_count.attr,
@@ -407,12 +407,12 @@ static ssize_t print_gid_type(const struct ib_gid_attr *gid_attr, char *buf)
 }
 
 static ssize_t _show_port_gid_attr(
-	struct ib_device *ibdev, u32 port_num, struct ib_port_attribute *attr,
+	struct ib_device *ibdev, u32 port_num, const struct ib_port_attribute *attr,
 	char *buf,
 	ssize_t (*print)(const struct ib_gid_attr *gid_attr, char *buf))
 {
-	struct port_table_attribute *tab_attr =
-		container_of(attr, struct port_table_attribute, attr);
+	const struct port_table_attribute *tab_attr =
+		container_of_const(attr, struct port_table_attribute, attr);
 	const struct ib_gid_attr *gid_attr;
 	ssize_t ret;
 
@@ -427,10 +427,10 @@ static ssize_t _show_port_gid_attr(
 }
 
 static ssize_t show_port_gid(struct ib_device *ibdev, u32 port_num,
-			     struct ib_port_attribute *attr, char *buf)
+			     const struct ib_port_attribute *attr, char *buf)
 {
-	struct port_table_attribute *tab_attr =
-		container_of(attr, struct port_table_attribute, attr);
+	const struct port_table_attribute *tab_attr =
+		container_of_const(attr, struct port_table_attribute, attr);
 	const struct ib_gid_attr *gid_attr;
 	int len;
 
@@ -456,7 +456,7 @@ static ssize_t show_port_gid(struct ib_device *ibdev, u32 port_num,
 }
 
 static ssize_t show_port_gid_attr_ndev(struct ib_device *ibdev, u32 port_num,
-				       struct ib_port_attribute *attr,
+				       const struct ib_port_attribute *attr,
 				       char *buf)
 {
 	return _show_port_gid_attr(ibdev, port_num, attr, buf, print_ndev);
@@ -464,17 +464,17 @@ static ssize_t show_port_gid_attr_ndev(struct ib_device *ibdev, u32 port_num,
 
 static ssize_t show_port_gid_attr_gid_type(struct ib_device *ibdev,
 					   u32 port_num,
-					   struct ib_port_attribute *attr,
+					   const struct ib_port_attribute *attr,
 					   char *buf)
 {
 	return _show_port_gid_attr(ibdev, port_num, attr, buf, print_gid_type);
 }
 
 static ssize_t show_port_pkey(struct ib_device *ibdev, u32 port_num,
-			      struct ib_port_attribute *attr, char *buf)
+			      const struct ib_port_attribute *attr, char *buf)
 {
-	struct port_table_attribute *tab_attr =
-		container_of(attr, struct port_table_attribute, attr);
+	const struct port_table_attribute *tab_attr =
+		container_of_const(attr, struct port_table_attribute, attr);
 	u16 pkey;
 	int ret;
 
@@ -548,10 +548,10 @@ out:
 }
 
 static ssize_t show_pma_counter(struct ib_device *ibdev, u32 port_num,
-				struct ib_port_attribute *attr, char *buf)
+				const struct ib_port_attribute *attr, char *buf)
 {
-	struct port_table_attribute *tab_attr =
-		container_of(attr, struct port_table_attribute, attr);
+	const struct port_table_attribute *tab_attr =
+		container_of_const(attr, struct port_table_attribute, attr);
 	int offset = tab_attr->index & 0xffff;
 	int width  = (tab_attr->index >> 16) & 0xff;
 	int ret;
@@ -588,37 +588,37 @@ static ssize_t show_pma_counter(struct ib_device *ibdev, u32 port_num,
 	return len;
 }
 
-static PORT_PMA_ATTR(symbol_error		    ,  0, 16,  32);
-static PORT_PMA_ATTR(link_error_recovery	    ,  1,  8,  48);
-static PORT_PMA_ATTR(link_downed		    ,  2,  8,  56);
-static PORT_PMA_ATTR(port_rcv_errors		    ,  3, 16,  64);
-static PORT_PMA_ATTR(port_rcv_remote_physical_errors,  4, 16,  80);
-static PORT_PMA_ATTR(port_rcv_switch_relay_errors   ,  5, 16,  96);
-static PORT_PMA_ATTR(port_xmit_discards		    ,  6, 16, 112);
-static PORT_PMA_ATTR(port_xmit_constraint_errors    ,  7,  8, 128);
-static PORT_PMA_ATTR(port_rcv_constraint_errors	    ,  8,  8, 136);
-static PORT_PMA_ATTR(local_link_integrity_errors    ,  9,  4, 152);
-static PORT_PMA_ATTR(excessive_buffer_overrun_errors, 10,  4, 156);
-static PORT_PMA_ATTR(VL15_dropped		    , 11, 16, 176);
-static PORT_PMA_ATTR(port_xmit_data		    , 12, 32, 192);
-static PORT_PMA_ATTR(port_rcv_data		    , 13, 32, 224);
-static PORT_PMA_ATTR(port_xmit_packets		    , 14, 32, 256);
-static PORT_PMA_ATTR(port_rcv_packets		    , 15, 32, 288);
-static PORT_PMA_ATTR(port_xmit_wait		    ,  0, 32, 320);
+static const PORT_PMA_ATTR(symbol_error				,  0, 16,  32);
+static const PORT_PMA_ATTR(link_error_recovery			,  1,  8,  48);
+static const PORT_PMA_ATTR(link_downed				,  2,  8,  56);
+static const PORT_PMA_ATTR(port_rcv_errors			,  3, 16,  64);
+static const PORT_PMA_ATTR(port_rcv_remote_physical_errors	,  4, 16,  80);
+static const PORT_PMA_ATTR(port_rcv_switch_relay_errors		,  5, 16,  96);
+static const PORT_PMA_ATTR(port_xmit_discards			,  6, 16, 112);
+static const PORT_PMA_ATTR(port_xmit_constraint_errors		,  7,  8, 128);
+static const PORT_PMA_ATTR(port_rcv_constraint_errors		,  8,  8, 136);
+static const PORT_PMA_ATTR(local_link_integrity_errors		,  9,  4, 152);
+static const PORT_PMA_ATTR(excessive_buffer_overrun_errors	, 10,  4, 156);
+static const PORT_PMA_ATTR(VL15_dropped				, 11, 16, 176);
+static const PORT_PMA_ATTR(port_xmit_data			, 12, 32, 192);
+static const PORT_PMA_ATTR(port_rcv_data			, 13, 32, 224);
+static const PORT_PMA_ATTR(port_xmit_packets			, 14, 32, 256);
+static const PORT_PMA_ATTR(port_rcv_packets			, 15, 32, 288);
+static const PORT_PMA_ATTR(port_xmit_wait			,  0, 32, 320);
 
 /*
  * Counters added by extended set
  */
-static PORT_PMA_ATTR_EXT(port_xmit_data		    , 64,  64);
-static PORT_PMA_ATTR_EXT(port_rcv_data		    , 64, 128);
-static PORT_PMA_ATTR_EXT(port_xmit_packets	    , 64, 192);
-static PORT_PMA_ATTR_EXT(port_rcv_packets	    , 64, 256);
-static PORT_PMA_ATTR_EXT(unicast_xmit_packets	    , 64, 320);
-static PORT_PMA_ATTR_EXT(unicast_rcv_packets	    , 64, 384);
-static PORT_PMA_ATTR_EXT(multicast_xmit_packets	    , 64, 448);
-static PORT_PMA_ATTR_EXT(multicast_rcv_packets	    , 64, 512);
+static const PORT_PMA_ATTR_EXT(port_xmit_data		, 64,  64);
+static const PORT_PMA_ATTR_EXT(port_rcv_data		, 64, 128);
+static const PORT_PMA_ATTR_EXT(port_xmit_packets	, 64, 192);
+static const PORT_PMA_ATTR_EXT(port_rcv_packets		, 64, 256);
+static const PORT_PMA_ATTR_EXT(unicast_xmit_packets	, 64, 320);
+static const PORT_PMA_ATTR_EXT(unicast_rcv_packets	, 64, 384);
+static const PORT_PMA_ATTR_EXT(multicast_xmit_packets	, 64, 448);
+static const PORT_PMA_ATTR_EXT(multicast_rcv_packets	, 64, 512);
 
-static struct attribute *pma_attrs[] = {
+static const struct attribute *const pma_attrs[] = {
 	&port_pma_attr_symbol_error.attr.attr,
 	&port_pma_attr_link_error_recovery.attr.attr,
 	&port_pma_attr_link_downed.attr.attr,
@@ -639,7 +639,7 @@ static struct attribute *pma_attrs[] = {
 	NULL
 };
 
-static struct attribute *pma_attrs_ext[] = {
+static const struct attribute *const pma_attrs_ext[] = {
 	&port_pma_attr_symbol_error.attr.attr,
 	&port_pma_attr_link_error_recovery.attr.attr,
 	&port_pma_attr_link_downed.attr.attr,
@@ -664,7 +664,7 @@ static struct attribute *pma_attrs_ext[] = {
 	NULL
 };
 
-static struct attribute *pma_attrs_noietf[] = {
+static const struct attribute *const pma_attrs_noietf[] = {
 	&port_pma_attr_symbol_error.attr.attr,
 	&port_pma_attr_link_error_recovery.attr.attr,
 	&port_pma_attr_link_downed.attr.attr,
@@ -687,17 +687,17 @@ static struct attribute *pma_attrs_noietf[] = {
 
 static const struct attribute_group pma_group = {
 	.name  = "counters",
-	.attrs  = pma_attrs
+	.attrs_const  = pma_attrs
 };
 
 static const struct attribute_group pma_group_ext = {
 	.name  = "counters",
-	.attrs  = pma_attrs_ext
+	.attrs_const  = pma_attrs_ext
 };
 
 static const struct attribute_group pma_group_noietf = {
 	.name  = "counters",
-	.attrs  = pma_attrs_noietf
+	.attrs_const  = pma_attrs_noietf
 };
 
 static void ib_port_release(struct kobject *kobj)
@@ -1046,7 +1046,7 @@ static int
 alloc_port_table_group(const char *name, struct attribute_group *group,
 		       struct port_table_attribute *attrs, size_t num,
 		       ssize_t (*show)(struct ib_device *ibdev, u32 port_num,
-				       struct ib_port_attribute *, char *buf))
+				       const struct ib_port_attribute *, char *buf))
 {
 	struct attribute **attr_list;
 	int i;
@@ -1412,7 +1412,7 @@ err_put:
  * Do not use. Only for legacy sysfs compatibility.
  */
 int ib_port_register_client_groups(struct ib_device *ibdev, u32 port_num,
-				   const struct attribute_group **groups)
+				   const struct attribute_group *const *groups)
 {
 	return sysfs_create_groups(&ibdev->port_data[port_num].sysfs->kobj,
 				   groups);
@@ -1420,7 +1420,7 @@ int ib_port_register_client_groups(struct ib_device *ibdev, u32 port_num,
 EXPORT_SYMBOL(ib_port_register_client_groups);
 
 void ib_port_unregister_client_groups(struct ib_device *ibdev, u32 port_num,
-				      const struct attribute_group **groups)
+				      const struct attribute_group *const *groups)
 {
 	return sysfs_remove_groups(&ibdev->port_data[port_num].sysfs->kobj,
 				   groups);
