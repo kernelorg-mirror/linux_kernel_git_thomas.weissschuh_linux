@@ -92,7 +92,7 @@ static void nilfs_sysfs_delete_##name##_group(struct the_nilfs *nilfs) \
  ************************************************************************/
 
 static ssize_t
-nilfs_snapshot_inodes_count_show(struct nilfs_snapshot_attr *attr,
+nilfs_snapshot_inodes_count_show(const struct nilfs_snapshot_attr *attr,
 				 struct nilfs_root *root, char *buf)
 {
 	return sysfs_emit(buf, "%llu\n",
@@ -100,7 +100,7 @@ nilfs_snapshot_inodes_count_show(struct nilfs_snapshot_attr *attr,
 }
 
 static ssize_t
-nilfs_snapshot_blocks_count_show(struct nilfs_snapshot_attr *attr,
+nilfs_snapshot_blocks_count_show(const struct nilfs_snapshot_attr *attr,
 				 struct nilfs_root *root, char *buf)
 {
 	return sysfs_emit(buf, "%llu\n",
@@ -113,7 +113,7 @@ static const char snapshot_readme_str[] =
 	"(2) blocks_count\n\tshow number of blocks for snapshot.\n\n";
 
 static ssize_t
-nilfs_snapshot_README_show(struct nilfs_snapshot_attr *attr,
+nilfs_snapshot_README_show(const struct nilfs_snapshot_attr *attr,
 			    struct nilfs_root *root, char *buf)
 {
 	return sysfs_emit(buf, snapshot_readme_str);
@@ -123,7 +123,7 @@ NILFS_SNAPSHOT_RO_ATTR(inodes_count);
 NILFS_SNAPSHOT_RO_ATTR(blocks_count);
 NILFS_SNAPSHOT_RO_ATTR(README);
 
-static struct attribute *nilfs_snapshot_attrs[] = {
+static const struct attribute *const nilfs_snapshot_attrs[] = {
 	NILFS_SNAPSHOT_ATTR_LIST(inodes_count),
 	NILFS_SNAPSHOT_ATTR_LIST(blocks_count),
 	NILFS_SNAPSHOT_ATTR_LIST(README),
@@ -215,7 +215,7 @@ static const char mounted_snapshots_readme_str[] =
 	"every mounted snapshot.\n";
 
 static ssize_t
-nilfs_mounted_snapshots_README_show(struct nilfs_mounted_snapshots_attr *attr,
+nilfs_mounted_snapshots_README_show(const struct nilfs_mounted_snapshots_attr *attr,
 				    struct the_nilfs *nilfs, char *buf)
 {
 	return sysfs_emit(buf, mounted_snapshots_readme_str);
@@ -223,7 +223,7 @@ nilfs_mounted_snapshots_README_show(struct nilfs_mounted_snapshots_attr *attr,
 
 NILFS_MOUNTED_SNAPSHOTS_RO_ATTR(README);
 
-static struct attribute *nilfs_mounted_snapshots_attrs[] = {
+static const struct attribute *const nilfs_mounted_snapshots_attrs[] = {
 	NILFS_MOUNTED_SNAPSHOTS_ATTR_LIST(README),
 	NULL,
 };
@@ -238,7 +238,7 @@ NILFS_DEV_INT_GROUP_FNS(mounted_snapshots, dev);
  ************************************************************************/
 
 static ssize_t
-nilfs_checkpoints_checkpoints_number_show(struct nilfs_checkpoints_attr *attr,
+nilfs_checkpoints_checkpoints_number_show(const struct nilfs_checkpoints_attr *attr,
 					    struct the_nilfs *nilfs,
 					    char *buf)
 {
@@ -261,7 +261,7 @@ nilfs_checkpoints_checkpoints_number_show(struct nilfs_checkpoints_attr *attr,
 }
 
 static ssize_t
-nilfs_checkpoints_snapshots_number_show(struct nilfs_checkpoints_attr *attr,
+nilfs_checkpoints_snapshots_number_show(const struct nilfs_checkpoints_attr *attr,
 					struct the_nilfs *nilfs,
 					char *buf)
 {
@@ -284,7 +284,7 @@ nilfs_checkpoints_snapshots_number_show(struct nilfs_checkpoints_attr *attr,
 }
 
 static ssize_t
-nilfs_checkpoints_last_seg_checkpoint_show(struct nilfs_checkpoints_attr *attr,
+nilfs_checkpoints_last_seg_checkpoint_show(const struct nilfs_checkpoints_attr *attr,
 					    struct the_nilfs *nilfs,
 					    char *buf)
 {
@@ -298,7 +298,7 @@ nilfs_checkpoints_last_seg_checkpoint_show(struct nilfs_checkpoints_attr *attr,
 }
 
 static ssize_t
-nilfs_checkpoints_next_checkpoint_show(struct nilfs_checkpoints_attr *attr,
+nilfs_checkpoints_next_checkpoint_show(const struct nilfs_checkpoints_attr *attr,
 					struct the_nilfs *nilfs,
 					char *buf)
 {
@@ -321,7 +321,7 @@ static const char checkpoints_readme_str[] =
 	"(4) next_checkpoint\n\tshow next checkpoint number.\n\n";
 
 static ssize_t
-nilfs_checkpoints_README_show(struct nilfs_checkpoints_attr *attr,
+nilfs_checkpoints_README_show(const struct nilfs_checkpoints_attr *attr,
 				struct the_nilfs *nilfs, char *buf)
 {
 	return sysfs_emit(buf, checkpoints_readme_str);
@@ -333,7 +333,7 @@ NILFS_CHECKPOINTS_RO_ATTR(last_seg_checkpoint);
 NILFS_CHECKPOINTS_RO_ATTR(next_checkpoint);
 NILFS_CHECKPOINTS_RO_ATTR(README);
 
-static struct attribute *nilfs_checkpoints_attrs[] = {
+static const struct attribute *const nilfs_checkpoints_attrs[] = {
 	NILFS_CHECKPOINTS_ATTR_LIST(checkpoints_number),
 	NILFS_CHECKPOINTS_ATTR_LIST(snapshots_number),
 	NILFS_CHECKPOINTS_ATTR_LIST(last_seg_checkpoint),
@@ -352,7 +352,7 @@ NILFS_DEV_INT_GROUP_FNS(checkpoints, dev);
  ************************************************************************/
 
 static ssize_t
-nilfs_segments_segments_number_show(struct nilfs_segments_attr *attr,
+nilfs_segments_segments_number_show(const struct nilfs_segments_attr *attr,
 				     struct the_nilfs *nilfs,
 				     char *buf)
 {
@@ -360,7 +360,7 @@ nilfs_segments_segments_number_show(struct nilfs_segments_attr *attr,
 }
 
 static ssize_t
-nilfs_segments_blocks_per_segment_show(struct nilfs_segments_attr *attr,
+nilfs_segments_blocks_per_segment_show(const struct nilfs_segments_attr *attr,
 					struct the_nilfs *nilfs,
 					char *buf)
 {
@@ -368,7 +368,7 @@ nilfs_segments_blocks_per_segment_show(struct nilfs_segments_attr *attr,
 }
 
 static ssize_t
-nilfs_segments_clean_segments_show(struct nilfs_segments_attr *attr,
+nilfs_segments_clean_segments_show(const struct nilfs_segments_attr *attr,
 				    struct the_nilfs *nilfs,
 				    char *buf)
 {
@@ -382,7 +382,7 @@ nilfs_segments_clean_segments_show(struct nilfs_segments_attr *attr,
 }
 
 static ssize_t
-nilfs_segments_dirty_segments_show(struct nilfs_segments_attr *attr,
+nilfs_segments_dirty_segments_show(const struct nilfs_segments_attr *attr,
 				    struct the_nilfs *nilfs,
 				    char *buf)
 {
@@ -410,7 +410,7 @@ static const char segments_readme_str[] =
 	"(4) dirty_segments\n\tshow count of dirty segments.\n\n";
 
 static ssize_t
-nilfs_segments_README_show(struct nilfs_segments_attr *attr,
+nilfs_segments_README_show(const struct nilfs_segments_attr *attr,
 			    struct the_nilfs *nilfs,
 			    char *buf)
 {
@@ -423,7 +423,7 @@ NILFS_SEGMENTS_RO_ATTR(clean_segments);
 NILFS_SEGMENTS_RO_ATTR(dirty_segments);
 NILFS_SEGMENTS_RO_ATTR(README);
 
-static struct attribute *nilfs_segments_attrs[] = {
+static const struct attribute *const nilfs_segments_attrs[] = {
 	NILFS_SEGMENTS_ATTR_LIST(segments_number),
 	NILFS_SEGMENTS_ATTR_LIST(blocks_per_segment),
 	NILFS_SEGMENTS_ATTR_LIST(clean_segments),
@@ -442,7 +442,7 @@ NILFS_DEV_INT_GROUP_FNS(segments, dev);
  ************************************************************************/
 
 static ssize_t
-nilfs_segctor_last_pseg_block_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_last_pseg_block_show(const struct nilfs_segctor_attr *attr,
 				    struct the_nilfs *nilfs,
 				    char *buf)
 {
@@ -457,7 +457,7 @@ nilfs_segctor_last_pseg_block_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_last_seg_sequence_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_last_seg_sequence_show(const struct nilfs_segctor_attr *attr,
 					struct the_nilfs *nilfs,
 					char *buf)
 {
@@ -471,7 +471,7 @@ nilfs_segctor_last_seg_sequence_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_last_seg_checkpoint_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_last_seg_checkpoint_show(const struct nilfs_segctor_attr *attr,
 					struct the_nilfs *nilfs,
 					char *buf)
 {
@@ -485,7 +485,7 @@ nilfs_segctor_last_seg_checkpoint_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_current_seg_sequence_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_current_seg_sequence_show(const struct nilfs_segctor_attr *attr,
 					struct the_nilfs *nilfs,
 					char *buf)
 {
@@ -499,7 +499,7 @@ nilfs_segctor_current_seg_sequence_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_current_last_full_seg_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_current_last_full_seg_show(const struct nilfs_segctor_attr *attr,
 					 struct the_nilfs *nilfs,
 					 char *buf)
 {
@@ -513,7 +513,7 @@ nilfs_segctor_current_last_full_seg_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_next_full_seg_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_next_full_seg_show(const struct nilfs_segctor_attr *attr,
 				 struct the_nilfs *nilfs,
 				 char *buf)
 {
@@ -527,7 +527,7 @@ nilfs_segctor_next_full_seg_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_next_pseg_offset_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_next_pseg_offset_show(const struct nilfs_segctor_attr *attr,
 					struct the_nilfs *nilfs,
 					char *buf)
 {
@@ -541,7 +541,7 @@ nilfs_segctor_next_pseg_offset_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_next_checkpoint_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_next_checkpoint_show(const struct nilfs_segctor_attr *attr,
 					struct the_nilfs *nilfs,
 					char *buf)
 {
@@ -555,7 +555,7 @@ nilfs_segctor_next_checkpoint_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_last_seg_write_time_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_last_seg_write_time_show(const struct nilfs_segctor_attr *attr,
 					struct the_nilfs *nilfs,
 					char *buf)
 {
@@ -569,7 +569,7 @@ nilfs_segctor_last_seg_write_time_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_last_seg_write_time_secs_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_last_seg_write_time_secs_show(const struct nilfs_segctor_attr *attr,
 					    struct the_nilfs *nilfs,
 					    char *buf)
 {
@@ -583,7 +583,7 @@ nilfs_segctor_last_seg_write_time_secs_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_last_nongc_write_time_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_last_nongc_write_time_show(const struct nilfs_segctor_attr *attr,
 					 struct the_nilfs *nilfs,
 					 char *buf)
 {
@@ -597,7 +597,7 @@ nilfs_segctor_last_nongc_write_time_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_last_nongc_write_time_secs_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_last_nongc_write_time_secs_show(const struct nilfs_segctor_attr *attr,
 						struct the_nilfs *nilfs,
 						char *buf)
 {
@@ -611,7 +611,7 @@ nilfs_segctor_last_nongc_write_time_secs_show(struct nilfs_segctor_attr *attr,
 }
 
 static ssize_t
-nilfs_segctor_dirty_data_blocks_count_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_dirty_data_blocks_count_show(const struct nilfs_segctor_attr *attr,
 					    struct the_nilfs *nilfs,
 					    char *buf)
 {
@@ -655,7 +655,7 @@ static const char segctor_readme_str[] =
 	"\tshow number of dirty data blocks.\n\n";
 
 static ssize_t
-nilfs_segctor_README_show(struct nilfs_segctor_attr *attr,
+nilfs_segctor_README_show(const struct nilfs_segctor_attr *attr,
 			  struct the_nilfs *nilfs, char *buf)
 {
 	return sysfs_emit(buf, segctor_readme_str);
@@ -676,7 +676,7 @@ NILFS_SEGCTOR_RO_ATTR(last_nongc_write_time_secs);
 NILFS_SEGCTOR_RO_ATTR(dirty_data_blocks_count);
 NILFS_SEGCTOR_RO_ATTR(README);
 
-static struct attribute *nilfs_segctor_attrs[] = {
+static const struct attribute *const nilfs_segctor_attrs[] = {
 	NILFS_SEGCTOR_ATTR_LIST(last_pseg_block),
 	NILFS_SEGCTOR_ATTR_LIST(last_seg_sequence),
 	NILFS_SEGCTOR_ATTR_LIST(last_seg_checkpoint),
@@ -704,7 +704,7 @@ NILFS_DEV_INT_GROUP_FNS(segctor, dev);
  ************************************************************************/
 
 static ssize_t
-nilfs_superblock_sb_write_time_show(struct nilfs_superblock_attr *attr,
+nilfs_superblock_sb_write_time_show(const struct nilfs_superblock_attr *attr,
 				     struct the_nilfs *nilfs,
 				     char *buf)
 {
@@ -718,7 +718,7 @@ nilfs_superblock_sb_write_time_show(struct nilfs_superblock_attr *attr,
 }
 
 static ssize_t
-nilfs_superblock_sb_write_time_secs_show(struct nilfs_superblock_attr *attr,
+nilfs_superblock_sb_write_time_secs_show(const struct nilfs_superblock_attr *attr,
 					 struct the_nilfs *nilfs,
 					 char *buf)
 {
@@ -732,7 +732,7 @@ nilfs_superblock_sb_write_time_secs_show(struct nilfs_superblock_attr *attr,
 }
 
 static ssize_t
-nilfs_superblock_sb_write_count_show(struct nilfs_superblock_attr *attr,
+nilfs_superblock_sb_write_count_show(const struct nilfs_superblock_attr *attr,
 				      struct the_nilfs *nilfs,
 				      char *buf)
 {
@@ -746,7 +746,7 @@ nilfs_superblock_sb_write_count_show(struct nilfs_superblock_attr *attr,
 }
 
 static ssize_t
-nilfs_superblock_sb_update_frequency_show(struct nilfs_superblock_attr *attr,
+nilfs_superblock_sb_update_frequency_show(const struct nilfs_superblock_attr *attr,
 					    struct the_nilfs *nilfs,
 					    char *buf)
 {
@@ -760,7 +760,7 @@ nilfs_superblock_sb_update_frequency_show(struct nilfs_superblock_attr *attr,
 }
 
 static ssize_t
-nilfs_superblock_sb_update_frequency_store(struct nilfs_superblock_attr *attr,
+nilfs_superblock_sb_update_frequency_store(const struct nilfs_superblock_attr *attr,
 					    struct the_nilfs *nilfs,
 					    const char *buf, size_t count)
 {
@@ -801,7 +801,7 @@ static const char sb_readme_str[] =
 	"\t'echo <val> > /sys/fs/<nilfs>/<dev>/superblock/sb_update_frequency'\n";
 
 static ssize_t
-nilfs_superblock_README_show(struct nilfs_superblock_attr *attr,
+nilfs_superblock_README_show(const struct nilfs_superblock_attr *attr,
 				struct the_nilfs *nilfs, char *buf)
 {
 	return sysfs_emit(buf, sb_readme_str);
@@ -813,7 +813,7 @@ NILFS_SUPERBLOCK_RO_ATTR(sb_write_count);
 NILFS_SUPERBLOCK_RW_ATTR(sb_update_frequency);
 NILFS_SUPERBLOCK_RO_ATTR(README);
 
-static struct attribute *nilfs_superblock_attrs[] = {
+static const struct attribute *const nilfs_superblock_attrs[] = {
 	NILFS_SUPERBLOCK_ATTR_LIST(sb_write_time),
 	NILFS_SUPERBLOCK_ATTR_LIST(sb_write_time_secs),
 	NILFS_SUPERBLOCK_ATTR_LIST(sb_write_count),
@@ -832,7 +832,7 @@ NILFS_DEV_INT_GROUP_FNS(superblock, dev);
  ************************************************************************/
 
 static
-ssize_t nilfs_dev_revision_show(struct nilfs_dev_attr *attr,
+ssize_t nilfs_dev_revision_show(const struct nilfs_dev_attr *attr,
 				struct the_nilfs *nilfs,
 				char *buf)
 {
@@ -850,7 +850,7 @@ ssize_t nilfs_dev_revision_show(struct nilfs_dev_attr *attr,
 }
 
 static
-ssize_t nilfs_dev_blocksize_show(struct nilfs_dev_attr *attr,
+ssize_t nilfs_dev_blocksize_show(const struct nilfs_dev_attr *attr,
 				 struct the_nilfs *nilfs,
 				 char *buf)
 {
@@ -858,7 +858,7 @@ ssize_t nilfs_dev_blocksize_show(struct nilfs_dev_attr *attr,
 }
 
 static
-ssize_t nilfs_dev_device_size_show(struct nilfs_dev_attr *attr,
+ssize_t nilfs_dev_device_size_show(const struct nilfs_dev_attr *attr,
 				    struct the_nilfs *nilfs,
 				    char *buf)
 {
@@ -874,7 +874,7 @@ ssize_t nilfs_dev_device_size_show(struct nilfs_dev_attr *attr,
 }
 
 static
-ssize_t nilfs_dev_free_blocks_show(struct nilfs_dev_attr *attr,
+ssize_t nilfs_dev_free_blocks_show(const struct nilfs_dev_attr *attr,
 				   struct the_nilfs *nilfs,
 				   char *buf)
 {
@@ -886,7 +886,7 @@ ssize_t nilfs_dev_free_blocks_show(struct nilfs_dev_attr *attr,
 }
 
 static
-ssize_t nilfs_dev_uuid_show(struct nilfs_dev_attr *attr,
+ssize_t nilfs_dev_uuid_show(const struct nilfs_dev_attr *attr,
 			    struct the_nilfs *nilfs,
 			    char *buf)
 {
@@ -902,7 +902,7 @@ ssize_t nilfs_dev_uuid_show(struct nilfs_dev_attr *attr,
 }
 
 static
-ssize_t nilfs_dev_volume_name_show(struct nilfs_dev_attr *attr,
+ssize_t nilfs_dev_volume_name_show(const struct nilfs_dev_attr *attr,
 				    struct the_nilfs *nilfs,
 				    char *buf)
 {
@@ -928,7 +928,7 @@ static const char dev_readme_str[] =
 	"(5) uuid\n\tshow volume's UUID.\n\n"
 	"(6) volume_name\n\tshow volume's name.\n\n";
 
-static ssize_t nilfs_dev_README_show(struct nilfs_dev_attr *attr,
+static ssize_t nilfs_dev_README_show(const struct nilfs_dev_attr *attr,
 				     struct the_nilfs *nilfs,
 				     char *buf)
 {
@@ -943,7 +943,7 @@ NILFS_DEV_RO_ATTR(uuid);
 NILFS_DEV_RO_ATTR(volume_name);
 NILFS_DEV_RO_ATTR(README);
 
-static struct attribute *nilfs_dev_attrs[] = {
+static const struct attribute *const nilfs_dev_attrs[] = {
 	NILFS_DEV_ATTR_LIST(revision),
 	NILFS_DEV_ATTR_LIST(blocksize),
 	NILFS_DEV_ATTR_LIST(device_size),
@@ -1096,7 +1096,7 @@ static ssize_t nilfs_feature_README_show(struct kobject *kobj,
 NILFS_FEATURE_RO_ATTR(revision);
 NILFS_FEATURE_RO_ATTR(README);
 
-static struct attribute *nilfs_feature_attrs[] = {
+static const struct attribute *const nilfs_feature_attrs[] = {
 	NILFS_FEATURE_ATTR_LIST(revision),
 	NILFS_FEATURE_ATTR_LIST(README),
 	NULL,
@@ -1104,7 +1104,7 @@ static struct attribute *nilfs_feature_attrs[] = {
 
 static const struct attribute_group nilfs_feature_attr_group = {
 	.name = "features",
-	.attrs = nilfs_feature_attrs,
+	.attrs_const = nilfs_feature_attrs,
 };
 
 int __init nilfs_sysfs_init(void)

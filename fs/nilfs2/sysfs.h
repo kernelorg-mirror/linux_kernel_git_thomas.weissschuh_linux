@@ -60,9 +60,9 @@ NILFS_KOBJ_ATTR_STRUCT(feature);
 #define NILFS_DEV_ATTR_STRUCT(name) \
 struct nilfs_##name##_attr { \
 	struct attribute attr; \
-	ssize_t (*show)(struct nilfs_##name##_attr *, struct the_nilfs *, \
+	ssize_t (*show)(const struct nilfs_##name##_attr *, struct the_nilfs *, \
 			char *); \
-	ssize_t (*store)(struct nilfs_##name##_attr *, struct the_nilfs *, \
+	ssize_t (*store)(const struct nilfs_##name##_attr *, struct the_nilfs *, \
 			 const char *, size_t); \
 }
 
@@ -76,16 +76,16 @@ NILFS_DEV_ATTR_STRUCT(segctor);
 #define NILFS_CP_ATTR_STRUCT(name) \
 struct nilfs_##name##_attr { \
 	struct attribute attr; \
-	ssize_t (*show)(struct nilfs_##name##_attr *, struct nilfs_root *, \
+	ssize_t (*show)(const struct nilfs_##name##_attr *, struct nilfs_root *, \
 			char *); \
-	ssize_t (*store)(struct nilfs_##name##_attr *, struct nilfs_root *, \
+	ssize_t (*store)(const struct nilfs_##name##_attr *, struct nilfs_root *, \
 			 const char *, size_t); \
 }
 
 NILFS_CP_ATTR_STRUCT(snapshot);
 
 #define NILFS_ATTR(type, name, mode, show, store) \
-	static struct nilfs_##type##_attr nilfs_##type##_attr_##name = \
+	static const struct nilfs_##type##_attr nilfs_##type##_attr_##name = \
 		__ATTR(name, mode, show, store)
 
 #define NILFS_INFO_ATTR(type, name) \
