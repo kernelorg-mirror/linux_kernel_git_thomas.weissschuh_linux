@@ -165,10 +165,10 @@
 struct orangefs_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct kobject *kobj,
-			struct orangefs_attribute *attr,
+			const struct orangefs_attribute *attr,
 			char *buf);
 	ssize_t (*store)(struct kobject *kobj,
-			 struct orangefs_attribute *attr,
+			 const struct orangefs_attribute *attr,
 			 const char *buf,
 			 size_t count);
 };
@@ -177,9 +177,9 @@ static ssize_t orangefs_attr_show(struct kobject *kobj,
 				  struct attribute *attr,
 				  char *buf)
 {
-	struct orangefs_attribute *attribute;
+	const struct orangefs_attribute *attribute;
 
-	attribute = container_of(attr, struct orangefs_attribute, attr);
+	attribute = container_of_const(attr, struct orangefs_attribute, attr);
 	if (!attribute->show)
 		return -EIO;
 	return attribute->show(kobj, attribute, buf);
@@ -190,13 +190,13 @@ static ssize_t orangefs_attr_store(struct kobject *kobj,
 				   const char *buf,
 				   size_t len)
 {
-	struct orangefs_attribute *attribute;
+	const struct orangefs_attribute *attribute;
 
 	if (!strcmp(kobj->name, PC_KOBJ_ID) ||
 	    !strcmp(kobj->name, STATS_KOBJ_ID))
 		return -EPERM;
 
-	attribute = container_of(attr, struct orangefs_attribute, attr);
+	attribute = container_of_const(attr, struct orangefs_attribute, attr);
 	if (!attribute->store)
 		return -EIO;
 	return attribute->store(kobj, attribute, buf, len);
@@ -208,7 +208,7 @@ static const struct sysfs_ops orangefs_sysfs_ops = {
 };
 
 static ssize_t sysfs_int_show(struct kobject *kobj,
-    struct orangefs_attribute *attr, char *buf)
+    const struct orangefs_attribute *attr, char *buf)
 {
 	int rc = -EIO;
 
@@ -271,7 +271,7 @@ out:
 }
 
 static ssize_t sysfs_int_store(struct kobject *kobj,
-    struct orangefs_attribute *attr, const char *buf, size_t count)
+    const struct orangefs_attribute *attr, const char *buf, size_t count)
 {
 	int rc = 0;
 
@@ -311,7 +311,7 @@ out:
  * obtain attribute values from userspace with a service operation.
  */
 static ssize_t sysfs_service_op_show(struct kobject *kobj,
-    struct orangefs_attribute *attr, char *buf)
+    const struct orangefs_attribute *attr, char *buf)
 {
 	struct orangefs_kernel_op_s *new_op = NULL;
 	int rc = 0;
@@ -525,7 +525,7 @@ out:
  * EINVAL if not.
  */
 static ssize_t sysfs_service_op_store(struct kobject *kobj,
-    struct orangefs_attribute *attr, const char *buf, size_t count)
+    const struct orangefs_attribute *attr, const char *buf, size_t count)
 {
 	struct orangefs_kernel_op_s *new_op = NULL;
 	int val = 0;
@@ -822,56 +822,56 @@ out:
 	return rc;
 }
 
-static struct orangefs_attribute op_timeout_secs_attribute =
+static const struct orangefs_attribute op_timeout_secs_attribute =
 	__ATTR(op_timeout_secs, 0664, sysfs_int_show, sysfs_int_store);
 
-static struct orangefs_attribute slot_timeout_secs_attribute =
+static const struct orangefs_attribute slot_timeout_secs_attribute =
 	__ATTR(slot_timeout_secs, 0664, sysfs_int_show, sysfs_int_store);
 
-static struct orangefs_attribute cache_timeout_msecs_attribute =
+static const struct orangefs_attribute cache_timeout_msecs_attribute =
 	__ATTR(cache_timeout_msecs, 0664, sysfs_int_show, sysfs_int_store);
 
-static struct orangefs_attribute dcache_timeout_msecs_attribute =
+static const struct orangefs_attribute dcache_timeout_msecs_attribute =
 	__ATTR(dcache_timeout_msecs, 0664, sysfs_int_show, sysfs_int_store);
 
-static struct orangefs_attribute getattr_timeout_msecs_attribute =
+static const struct orangefs_attribute getattr_timeout_msecs_attribute =
 	__ATTR(getattr_timeout_msecs, 0664, sysfs_int_show, sysfs_int_store);
 
-static struct orangefs_attribute readahead_count_attribute =
+static const struct orangefs_attribute readahead_count_attribute =
 	__ATTR(readahead_count, 0664, sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute readahead_size_attribute =
+static const struct orangefs_attribute readahead_size_attribute =
 	__ATTR(readahead_size, 0664, sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute readahead_count_size_attribute =
+static const struct orangefs_attribute readahead_count_size_attribute =
 	__ATTR(readahead_count_size, 0664, sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute readahead_readcnt_attribute =
+static const struct orangefs_attribute readahead_readcnt_attribute =
 	__ATTR(readahead_readcnt, 0664, sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute perf_counter_reset_attribute =
+static const struct orangefs_attribute perf_counter_reset_attribute =
 	__ATTR(perf_counter_reset,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute perf_history_size_attribute =
+static const struct orangefs_attribute perf_history_size_attribute =
 	__ATTR(perf_history_size,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute perf_time_interval_secs_attribute =
+static const struct orangefs_attribute perf_time_interval_secs_attribute =
 	__ATTR(perf_time_interval_secs,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct attribute *orangefs_default_attrs[] = {
+static const struct attribute *const orangefs_default_attrs[] = {
 	&op_timeout_secs_attribute.attr,
 	&slot_timeout_secs_attribute.attr,
 	&cache_timeout_msecs_attribute.attr,
@@ -902,31 +902,31 @@ static const struct kobj_type orangefs_ktype = {
 	.release = orangefs_obj_release,
 };
 
-static struct orangefs_attribute acache_hard_limit_attribute =
+static const struct orangefs_attribute acache_hard_limit_attribute =
 	__ATTR(hard_limit,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute acache_reclaim_percent_attribute =
+static const struct orangefs_attribute acache_reclaim_percent_attribute =
 	__ATTR(reclaim_percentage,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute acache_soft_limit_attribute =
+static const struct orangefs_attribute acache_soft_limit_attribute =
 	__ATTR(soft_limit,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute acache_timeout_msecs_attribute =
+static const struct orangefs_attribute acache_timeout_msecs_attribute =
 	__ATTR(timeout_msecs,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct attribute *acache_orangefs_default_attrs[] = {
+static const struct attribute *const acache_orangefs_default_attrs[] = {
 	&acache_hard_limit_attribute.attr,
 	&acache_reclaim_percent_attribute.attr,
 	&acache_soft_limit_attribute.attr,
@@ -949,31 +949,31 @@ static const struct kobj_type acache_orangefs_ktype = {
 	.release = acache_orangefs_obj_release,
 };
 
-static struct orangefs_attribute capcache_hard_limit_attribute =
+static const struct orangefs_attribute capcache_hard_limit_attribute =
 	__ATTR(hard_limit,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute capcache_reclaim_percent_attribute =
+static const struct orangefs_attribute capcache_reclaim_percent_attribute =
 	__ATTR(reclaim_percentage,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute capcache_soft_limit_attribute =
+static const struct orangefs_attribute capcache_soft_limit_attribute =
 	__ATTR(soft_limit,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute capcache_timeout_secs_attribute =
+static const struct orangefs_attribute capcache_timeout_secs_attribute =
 	__ATTR(timeout_secs,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct attribute *capcache_orangefs_default_attrs[] = {
+static const struct attribute *const capcache_orangefs_default_attrs[] = {
 	&capcache_hard_limit_attribute.attr,
 	&capcache_reclaim_percent_attribute.attr,
 	&capcache_soft_limit_attribute.attr,
@@ -996,31 +996,31 @@ static const struct kobj_type capcache_orangefs_ktype = {
 	.release = capcache_orangefs_obj_release,
 };
 
-static struct orangefs_attribute ccache_hard_limit_attribute =
+static const struct orangefs_attribute ccache_hard_limit_attribute =
 	__ATTR(hard_limit,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute ccache_reclaim_percent_attribute =
+static const struct orangefs_attribute ccache_reclaim_percent_attribute =
 	__ATTR(reclaim_percentage,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute ccache_soft_limit_attribute =
+static const struct orangefs_attribute ccache_soft_limit_attribute =
 	__ATTR(soft_limit,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute ccache_timeout_secs_attribute =
+static const struct orangefs_attribute ccache_timeout_secs_attribute =
 	__ATTR(timeout_secs,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct attribute *ccache_orangefs_default_attrs[] = {
+static const struct attribute *const ccache_orangefs_default_attrs[] = {
 	&ccache_hard_limit_attribute.attr,
 	&ccache_reclaim_percent_attribute.attr,
 	&ccache_soft_limit_attribute.attr,
@@ -1043,31 +1043,31 @@ static const struct kobj_type ccache_orangefs_ktype = {
 	.release = ccache_orangefs_obj_release,
 };
 
-static struct orangefs_attribute ncache_hard_limit_attribute =
+static const struct orangefs_attribute ncache_hard_limit_attribute =
 	__ATTR(hard_limit,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute ncache_reclaim_percent_attribute =
+static const struct orangefs_attribute ncache_reclaim_percent_attribute =
 	__ATTR(reclaim_percentage,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute ncache_soft_limit_attribute =
+static const struct orangefs_attribute ncache_soft_limit_attribute =
 	__ATTR(soft_limit,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct orangefs_attribute ncache_timeout_msecs_attribute =
+static const struct orangefs_attribute ncache_timeout_msecs_attribute =
 	__ATTR(timeout_msecs,
 	       0664,
 	       sysfs_service_op_show,
 	       sysfs_service_op_store);
 
-static struct attribute *ncache_orangefs_default_attrs[] = {
+static const struct attribute *const ncache_orangefs_default_attrs[] = {
 	&ncache_hard_limit_attribute.attr,
 	&ncache_reclaim_percent_attribute.attr,
 	&ncache_soft_limit_attribute.attr,
@@ -1090,25 +1090,25 @@ static const struct kobj_type ncache_orangefs_ktype = {
 	.release = ncache_orangefs_obj_release,
 };
 
-static struct orangefs_attribute pc_acache_attribute =
+static const struct orangefs_attribute pc_acache_attribute =
 	__ATTR(acache,
 	       0664,
 	       sysfs_service_op_show,
 	       NULL);
 
-static struct orangefs_attribute pc_capcache_attribute =
+static const struct orangefs_attribute pc_capcache_attribute =
 	__ATTR(capcache,
 	       0664,
 	       sysfs_service_op_show,
 	       NULL);
 
-static struct orangefs_attribute pc_ncache_attribute =
+static const struct orangefs_attribute pc_ncache_attribute =
 	__ATTR(ncache,
 	       0664,
 	       sysfs_service_op_show,
 	       NULL);
 
-static struct attribute *pc_orangefs_default_attrs[] = {
+static const struct attribute *const pc_orangefs_default_attrs[] = {
 	&pc_acache_attribute.attr,
 	&pc_capcache_attribute.attr,
 	&pc_ncache_attribute.attr,
@@ -1130,19 +1130,19 @@ static const struct kobj_type pc_orangefs_ktype = {
 	.release = pc_orangefs_obj_release,
 };
 
-static struct orangefs_attribute stats_reads_attribute =
+static const struct orangefs_attribute stats_reads_attribute =
 	__ATTR(reads,
 	       0664,
 	       sysfs_int_show,
 	       NULL);
 
-static struct orangefs_attribute stats_writes_attribute =
+static const struct orangefs_attribute stats_writes_attribute =
 	__ATTR(writes,
 	       0664,
 	       sysfs_int_show,
 	       NULL);
 
-static struct attribute *stats_orangefs_default_attrs[] = {
+static const struct attribute *const stats_orangefs_default_attrs[] = {
 	&stats_reads_attribute.attr,
 	&stats_writes_attribute.attr,
 	NULL,
