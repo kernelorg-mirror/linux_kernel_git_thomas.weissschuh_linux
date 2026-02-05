@@ -916,7 +916,7 @@ static bool wireless_group_needed(struct net_device *ndev)
 
 #ifdef CONFIG_SYSFS
 #define to_rx_queue_attr(_attr) \
-	container_of(_attr, struct rx_queue_attribute, attr)
+	container_of_const(_attr, struct rx_queue_attribute, attr)
 
 #define to_rx_queue(obj) container_of(obj, struct netdev_rx_queue, kobj)
 
@@ -1121,15 +1121,15 @@ static ssize_t store_rps_dev_flow_table_cnt(struct netdev_rx_queue *queue,
 	return len;
 }
 
-static struct rx_queue_attribute rps_cpus_attribute __ro_after_init
+static const struct rx_queue_attribute rps_cpus_attribute
 	= __ATTR(rps_cpus, 0644, show_rps_map, store_rps_map);
 
-static struct rx_queue_attribute rps_dev_flow_table_cnt_attribute __ro_after_init
+static const struct rx_queue_attribute rps_dev_flow_table_cnt_attribute
 	= __ATTR(rps_flow_cnt, 0644,
 		 show_rps_dev_flow_table_cnt, store_rps_dev_flow_table_cnt);
 #endif /* CONFIG_RPS */
 
-static struct attribute *rx_queue_default_attrs[] __ro_after_init = {
+static const struct attribute *const rx_queue_default_attrs[] = {
 #ifdef CONFIG_RPS
 	&rps_cpus_attribute.attr,
 	&rps_dev_flow_table_cnt_attribute.attr,

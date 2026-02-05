@@ -6579,17 +6579,17 @@ static ssize_t mergeable_rx_buffer_size_show(struct netdev_rx_queue *queue,
 				       SKB_DATA_ALIGN(headroom + tailroom)));
 }
 
-static struct rx_queue_attribute mergeable_rx_buffer_size_attribute =
+static const struct rx_queue_attribute mergeable_rx_buffer_size_attribute =
 	__ATTR_RO(mergeable_rx_buffer_size);
 
-static struct attribute *virtio_net_mrg_rx_attrs[] = {
+static const struct attribute *const virtio_net_mrg_rx_attrs[] = {
 	&mergeable_rx_buffer_size_attribute.attr,
 	NULL
 };
 
 static const struct attribute_group virtio_net_mrg_rx_group = {
 	.name = "virtio_net",
-	.attrs = virtio_net_mrg_rx_attrs
+	.attrs_const = virtio_net_mrg_rx_attrs,
 };
 #endif
 
