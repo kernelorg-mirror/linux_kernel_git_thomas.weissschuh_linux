@@ -510,32 +510,23 @@ static int acpi_power_on_list(struct list_head *list)
 	return result;
 }
 
-static struct attribute *attrs[] = {
-	NULL,
-};
-
 static const struct attribute_group attr_groups[] = {
 	[ACPI_STATE_D0] = {
 		.name = "power_resources_D0",
-		.attrs = attrs,
 	},
 	[ACPI_STATE_D1] = {
 		.name = "power_resources_D1",
-		.attrs = attrs,
 	},
 	[ACPI_STATE_D2] = {
 		.name = "power_resources_D2",
-		.attrs = attrs,
 	},
 	[ACPI_STATE_D3_HOT] = {
 		.name = "power_resources_D3hot",
-		.attrs = attrs,
 	},
 };
 
 static const struct attribute_group wakeup_attr_group = {
 	.name = "power_resources_wakeup",
-	.attrs = attrs,
 };
 
 static void acpi_power_hide_list(struct acpi_device *adev,
