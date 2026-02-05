@@ -391,16 +391,16 @@ static void mlx4_port_release(struct kobject *kobj)
 
 struct port_attribute {
 	struct attribute attr;
-	ssize_t (*show)(struct mlx4_port *, struct port_attribute *, char *buf);
-	ssize_t (*store)(struct mlx4_port *, struct port_attribute *,
+	ssize_t (*show)(struct mlx4_port *, const struct port_attribute *, char *buf);
+	ssize_t (*store)(struct mlx4_port *, const struct port_attribute *,
 			 const char *buf, size_t count);
 };
 
 static ssize_t port_attr_show(struct kobject *kobj,
 			      struct attribute *attr, char *buf)
 {
-	struct port_attribute *port_attr =
-		container_of(attr, struct port_attribute, attr);
+	const struct port_attribute *port_attr =
+		container_of_const(attr, struct port_attribute, attr);
 	struct mlx4_port *p = container_of(kobj, struct mlx4_port, kobj);
 
 	if (!port_attr->show)
@@ -412,8 +412,8 @@ static ssize_t port_attr_store(struct kobject *kobj,
 			       struct attribute *attr,
 			       const char *buf, size_t size)
 {
-	struct port_attribute *port_attr =
-		container_of(attr, struct port_attribute, attr);
+	const struct port_attribute *port_attr =
+		container_of_const(attr, struct port_attribute, attr);
 	struct mlx4_port *p = container_of(kobj, struct mlx4_port, kobj);
 
 	if (!port_attr->store)
@@ -437,11 +437,11 @@ struct port_table_attribute {
 	int			index;
 };
 
-static ssize_t show_port_pkey(struct mlx4_port *p, struct port_attribute *attr,
+static ssize_t show_port_pkey(struct mlx4_port *p, const struct port_attribute *attr,
 			      char *buf)
 {
-	struct port_table_attribute *tab_attr =
-		container_of(attr, struct port_table_attribute, attr);
+	const struct port_table_attribute *tab_attr =
+		container_of_const(attr, struct port_table_attribute, attr);
 	struct pkey_mgt *m = &p->dev->pkeys;
 	u8 key = m->virt2phys_pkey[p->slave][p->port_num - 1][tab_attr->index];
 
@@ -450,11 +450,11 @@ static ssize_t show_port_pkey(struct mlx4_port *p, struct port_attribute *attr,
 	return sysfs_emit(buf, "%d\n", key);
 }
 
-static ssize_t store_port_pkey(struct mlx4_port *p, struct port_attribute *attr,
+static ssize_t store_port_pkey(struct mlx4_port *p, const struct port_attribute *attr,
 			       const char *buf, size_t count)
 {
-	struct port_table_attribute *tab_attr =
-		container_of(attr, struct port_table_attribute, attr);
+	const struct port_table_attribute *tab_attr =
+		container_of_const(attr, struct port_table_attribute, attr);
 	int idx;
 	int err;
 
@@ -483,15 +483,15 @@ static ssize_t store_port_pkey(struct mlx4_port *p, struct port_attribute *attr,
 }
 
 static ssize_t show_port_gid_idx(struct mlx4_port *p,
-				 struct port_attribute *attr, char *buf)
+				 const struct port_attribute *attr, char *buf)
 {
 	return sysfs_emit(buf, "%d\n", p->slave);
 }
 
 static struct attribute **
 alloc_group_attrs(ssize_t (*show)(struct mlx4_port *,
-				  struct port_attribute *, char *buf),
-		  ssize_t (*store)(struct mlx4_port *, struct port_attribute *,
+				  const struct port_attribute *, char *buf),
+		  ssize_t (*store)(struct mlx4_port *, const struct port_attribute *,
 				   const char *buf, size_t count),
 		  int len)
 {
