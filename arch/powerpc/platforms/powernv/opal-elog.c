@@ -29,15 +29,15 @@ struct elog_obj {
 
 struct elog_attribute {
 	struct attribute attr;
-	ssize_t (*show)(struct elog_obj *elog, struct elog_attribute *attr,
+	ssize_t (*show)(struct elog_obj *elog, const struct elog_attribute *attr,
 			char *buf);
-	ssize_t (*store)(struct elog_obj *elog, struct elog_attribute *attr,
+	ssize_t (*store)(struct elog_obj *elog, const struct elog_attribute *attr,
 			 const char *buf, size_t count);
 };
-#define to_elog_attr(x) container_of(x, struct elog_attribute, attr)
+#define to_elog_attr(x) container_of_const(x, struct elog_attribute, attr)
 
 static ssize_t elog_id_show(struct elog_obj *elog_obj,
-			    struct elog_attribute *attr,
+			    const struct elog_attribute *attr,
 			    char *buf)
 {
 	return sysfs_emit(buf, "0x%llx\n", elog_obj->id);
@@ -52,7 +52,7 @@ static const char *elog_type_to_string(uint64_t type)
 }
 
 static ssize_t elog_type_show(struct elog_obj *elog_obj,
-			      struct elog_attribute *attr,
+			      const struct elog_attribute *attr,
 			      char *buf)
 {
 	return sysfs_emit(buf, "0x%llx %s\n", elog_obj->type,
@@ -60,14 +60,14 @@ static ssize_t elog_type_show(struct elog_obj *elog_obj,
 }
 
 static ssize_t elog_ack_show(struct elog_obj *elog_obj,
-			     struct elog_attribute *attr,
+			     const struct elog_attribute *attr,
 			     char *buf)
 {
 	return sysfs_emit(buf, "ack - acknowledge log message\n");
 }
 
 static ssize_t elog_ack_store(struct elog_obj *elog_obj,
-			      struct elog_attribute *attr,
+			      const struct elog_attribute *attr,
 			      const char *buf,
 			      size_t count)
 {
@@ -82,11 +82,11 @@ static ssize_t elog_ack_store(struct elog_obj *elog_obj,
 	return count;
 }
 
-static struct elog_attribute id_attribute =
+static const struct elog_attribute id_attribute =
 	__ATTR(id, 0444, elog_id_show, NULL);
-static struct elog_attribute type_attribute =
+static const struct elog_attribute type_attribute =
 	__ATTR(type, 0444, elog_type_show, NULL);
-static struct elog_attribute ack_attribute =
+static const struct elog_attribute ack_attribute =
 	__ATTR(acknowledge, 0660, elog_ack_show, elog_ack_store);
 
 static struct kset *elog_kset;
@@ -95,7 +95,7 @@ static ssize_t elog_attr_show(struct kobject *kobj,
 			      struct attribute *attr,
 			      char *buf)
 {
-	struct elog_attribute *attribute;
+	const struct elog_attribute *attribute;
 	struct elog_obj *elog;
 
 	attribute = to_elog_attr(attr);
@@ -111,7 +111,7 @@ static ssize_t elog_attr_store(struct kobject *kobj,
 			       struct attribute *attr,
 			       const char *buf, size_t len)
 {
-	struct elog_attribute *attribute;
+	const struct elog_attribute *attribute;
 	struct elog_obj *elog;
 
 	attribute = to_elog_attr(attr);
@@ -137,7 +137,7 @@ static void elog_release(struct kobject *kobj)
 	kfree(elog);
 }
 
-static struct attribute *elog_default_attrs[] = {
+static const struct attribute *const elog_default_attrs[] = {
 	&id_attribute.attr,
 	&type_attribute.attr,
 	&ack_attribute.attr,
