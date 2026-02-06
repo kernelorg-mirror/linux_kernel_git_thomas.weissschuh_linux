@@ -14,7 +14,7 @@ extern const struct bus_type mdev_bus_type;
 extern const struct attribute_group *mdev_device_groups[];
 
 #define to_mdev_type_attr(_attr)	\
-	container_of(_attr, struct mdev_type_attribute, attr)
+	container_of_const(_attr, struct mdev_type_attribute, attr)
 #define to_mdev_type(_kobj)		\
 	container_of(_kobj, struct mdev_type, kobj)
 

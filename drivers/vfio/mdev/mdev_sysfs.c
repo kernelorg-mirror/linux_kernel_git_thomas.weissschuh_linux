@@ -17,9 +17,9 @@
 struct mdev_type_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct mdev_type *mtype,
-			struct mdev_type_attribute *attr, char *buf);
+			const struct mdev_type_attribute *attr, char *buf);
 	ssize_t (*store)(struct mdev_type *mtype,
-			 struct mdev_type_attribute *attr, const char *buf,
+			 const struct mdev_type_attribute *attr, const char *buf,
 			 size_t count);
 };
 
@@ -31,7 +31,7 @@ struct mdev_type_attribute {
 static ssize_t mdev_type_attr_show(struct kobject *kobj,
 				     struct attribute *__attr, char *buf)
 {
-	struct mdev_type_attribute *attr = to_mdev_type_attr(__attr);
+	const struct mdev_type_attribute *attr = to_mdev_type_attr(__attr);
 	struct mdev_type *type = to_mdev_type(kobj);
 	ssize_t ret = -EIO;
 
@@ -44,7 +44,7 @@ static ssize_t mdev_type_attr_store(struct kobject *kobj,
 				      struct attribute *__attr,
 				      const char *buf, size_t count)
 {
-	struct mdev_type_attribute *attr = to_mdev_type_attr(__attr);
+	const struct mdev_type_attribute *attr = to_mdev_type_attr(__attr);
 	struct mdev_type *type = to_mdev_type(kobj);
 	ssize_t ret = -EIO;
 
@@ -59,7 +59,7 @@ static const struct sysfs_ops mdev_type_sysfs_ops = {
 };
 
 static ssize_t create_store(struct mdev_type *mtype,
-			    struct mdev_type_attribute *attr, const char *buf,
+			    const struct mdev_type_attribute *attr, const char *buf,
 			    size_t count)
 {
 	char *str;
@@ -84,26 +84,26 @@ static ssize_t create_store(struct mdev_type *mtype,
 
 	return count;
 }
-static MDEV_TYPE_ATTR_WO(create);
+static const MDEV_TYPE_ATTR_WO(create);
 
 static ssize_t device_api_show(struct mdev_type *mtype,
-			       struct mdev_type_attribute *attr, char *buf)
+			       const struct mdev_type_attribute *attr, char *buf)
 {
 	return sysfs_emit(buf, "%s\n", mtype->parent->mdev_driver->device_api);
 }
-static MDEV_TYPE_ATTR_RO(device_api);
+static const MDEV_TYPE_ATTR_RO(device_api);
 
 static ssize_t name_show(struct mdev_type *mtype,
-			 struct mdev_type_attribute *attr, char *buf)
+			 const struct mdev_type_attribute *attr, char *buf)
 {
 	return sysfs_emit(buf, "%s\n",
 		mtype->pretty_name ? mtype->pretty_name : mtype->sysfs_name);
 }
 
-static MDEV_TYPE_ATTR_RO(name);
+static const MDEV_TYPE_ATTR_RO(name);
 
 static ssize_t available_instances_show(struct mdev_type *mtype,
-					struct mdev_type_attribute *attr,
+					const struct mdev_type_attribute *attr,
 					char *buf)
 {
 	struct mdev_driver *drv = mtype->parent->mdev_driver;
@@ -113,17 +113,17 @@ static ssize_t available_instances_show(struct mdev_type *mtype,
 	return sysfs_emit(buf, "%u\n",
 			  atomic_read(&mtype->parent->available_instances));
 }
-static MDEV_TYPE_ATTR_RO(available_instances);
+static const MDEV_TYPE_ATTR_RO(available_instances);
 
 static ssize_t description_show(struct mdev_type *mtype,
-				struct mdev_type_attribute *attr,
+				const struct mdev_type_attribute *attr,
 				char *buf)
 {
 	return mtype->parent->mdev_driver->show_description(mtype, buf);
 }
-static MDEV_TYPE_ATTR_RO(description);
+static const MDEV_TYPE_ATTR_RO(description);
 
-static struct attribute *mdev_types_core_attrs[] = {
+static const struct attribute *const mdev_types_core_attrs[] = {
 	&mdev_type_attr_create.attr,
 	&mdev_type_attr_device_api.attr,
 	&mdev_type_attr_name.attr,
@@ -133,7 +133,7 @@ static struct attribute *mdev_types_core_attrs[] = {
 };
 
 static umode_t mdev_types_core_is_visible(struct kobject *kobj,
-					  struct attribute *attr, int n)
+					  const struct attribute *attr, int n)
 {
 	if (attr == &mdev_type_attr_description.attr &&
 	    !to_mdev_type(kobj)->parent->mdev_driver->show_description)
@@ -141,9 +141,9 @@ static umode_t mdev_types_core_is_visible(struct kobject *kobj,
 	return attr->mode;
 }
 
-static struct attribute_group mdev_type_core_group = {
-	.attrs = mdev_types_core_attrs,
-	.is_visible = mdev_types_core_is_visible,
+static const struct attribute_group mdev_type_core_group = {
+	.attrs_const = mdev_types_core_attrs,
+	.is_visible_const = mdev_types_core_is_visible,
 };
 
 static const struct attribute_group *mdev_type_groups[] = {
