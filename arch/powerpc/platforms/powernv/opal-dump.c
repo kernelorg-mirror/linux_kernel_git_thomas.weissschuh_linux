@@ -30,15 +30,15 @@ struct dump_obj {
 
 struct dump_attribute {
 	struct attribute attr;
-	ssize_t (*show)(struct dump_obj *dump, struct dump_attribute *attr,
+	ssize_t (*show)(struct dump_obj *dump, const struct dump_attribute *attr,
 			char *buf);
-	ssize_t (*store)(struct dump_obj *dump, struct dump_attribute *attr,
+	ssize_t (*store)(struct dump_obj *dump, const struct dump_attribute *attr,
 			 const char *buf, size_t count);
 };
-#define to_dump_attr(x) container_of(x, struct dump_attribute, attr)
+#define to_dump_attr(x) container_of_const(x, struct dump_attribute, attr)
 
 static ssize_t dump_id_show(struct dump_obj *dump_obj,
-			    struct dump_attribute *attr,
+			    const struct dump_attribute *attr,
 			    char *buf)
 {
 	return sysfs_emit(buf, "0x%x\n", dump_obj->id);
@@ -55,7 +55,7 @@ static const char* dump_type_to_string(uint32_t type)
 }
 
 static ssize_t dump_type_show(struct dump_obj *dump_obj,
-			      struct dump_attribute *attr,
+			      const struct dump_attribute *attr,
 			      char *buf)
 {
 
@@ -64,7 +64,7 @@ static ssize_t dump_type_show(struct dump_obj *dump_obj,
 }
 
 static ssize_t dump_ack_show(struct dump_obj *dump_obj,
-			     struct dump_attribute *attr,
+			     const struct dump_attribute *attr,
 			     char *buf)
 {
 	return sysfs_emit(buf, "ack - acknowledge dump\n");
@@ -85,7 +85,7 @@ static int64_t dump_send_ack(uint32_t dump_id)
 }
 
 static ssize_t dump_ack_store(struct dump_obj *dump_obj,
-			      struct dump_attribute *attr,
+			      const struct dump_attribute *attr,
 			      const char *buf,
 			      size_t count)
 {
@@ -104,15 +104,15 @@ static ssize_t dump_ack_store(struct dump_obj *dump_obj,
  * The binary attribute of the dump itself is dynamic
  * due to the dynamic size of the dump
  */
-static struct dump_attribute id_attribute =
+static const struct dump_attribute id_attribute =
 	__ATTR(id, 0444, dump_id_show, NULL);
-static struct dump_attribute type_attribute =
+static const struct dump_attribute type_attribute =
 	__ATTR(type, 0444, dump_type_show, NULL);
-static struct dump_attribute ack_attribute =
+static const struct dump_attribute ack_attribute =
 	__ATTR(acknowledge, 0660, dump_ack_show, dump_ack_store);
 
 static ssize_t init_dump_show(struct dump_obj *dump_obj,
-			      struct dump_attribute *attr,
+			      const struct dump_attribute *attr,
 			      char *buf)
 {
 	return sysfs_emit(buf, "1 - initiate Service Processor(FSP) dump\n");
@@ -130,7 +130,7 @@ static int64_t dump_fips_init(uint8_t type)
 }
 
 static ssize_t init_dump_store(struct dump_obj *dump_obj,
-			       struct dump_attribute *attr,
+			       const struct dump_attribute *attr,
 			       const char *buf,
 			       size_t count)
 {
@@ -143,16 +143,16 @@ static ssize_t init_dump_store(struct dump_obj *dump_obj,
 	return count;
 }
 
-static struct dump_attribute initiate_attribute =
+static const struct dump_attribute initiate_attribute =
 	__ATTR(initiate_dump, 0600, init_dump_show, init_dump_store);
 
-static struct attribute *initiate_attrs[] = {
+static const struct attribute *const initiate_attrs[] = {
 	&initiate_attribute.attr,
 	NULL,
 };
 
 static const struct attribute_group initiate_attr_group = {
-	.attrs = initiate_attrs,
+	.attrs_const = initiate_attrs,
 };
 
 static struct kset *dump_kset;
@@ -161,7 +161,7 @@ static ssize_t dump_attr_show(struct kobject *kobj,
 			      struct attribute *attr,
 			      char *buf)
 {
-	struct dump_attribute *attribute;
+	const struct dump_attribute *attribute;
 	struct dump_obj *dump;
 
 	attribute = to_dump_attr(attr);
@@ -177,7 +177,7 @@ static ssize_t dump_attr_store(struct kobject *kobj,
 			       struct attribute *attr,
 			       const char *buf, size_t len)
 {
-	struct dump_attribute *attribute;
+	const struct dump_attribute *attribute;
 	struct dump_obj *dump;
 
 	attribute = to_dump_attr(attr);
@@ -203,7 +203,7 @@ static void dump_release(struct kobject *kobj)
 	kfree(dump);
 }
 
-static struct attribute *dump_default_attrs[] = {
+static const struct attribute *const dump_default_attrs[] = {
 	&id_attribute.attr,
 	&type_attribute.attr,
 	&ack_attribute.attr,
