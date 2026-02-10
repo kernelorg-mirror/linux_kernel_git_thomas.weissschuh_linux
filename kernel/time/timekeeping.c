@@ -3039,11 +3039,32 @@ static int aux_clock_adj(const clockid_t id, struct __kernel_timex *txc)
 	return __do_adjtimex(aux_tkd, txc, &result);
 }
 
+static int aux_clock_nsleep(const clockid_t which_clock, int flags,
+			    const struct timespec64 *rqtp)
+{
+	ktime_t kt, texp;
+
+	/*
+	 * Abort early if the clock is not enabled.
+	 *
+	 * While a clock is disabled its timers will never expire.
+	 */
+	if (!ktime_get_aux(which_clock, &kt))
+		return -ENODEV;
+
+	texp = timespec64_to_ktime(*rqtp);
+
+	return hrtimer_nanosleep(texp, flags & TIMER_ABSTIME ?
+				 HRTIMER_MODE_ABS : HRTIMER_MODE_REL,
+				 which_clock);
+}
+
 const struct k_clock clock_aux = {
 	.clock_getres		= aux_get_res,
 	.clock_get_timespec	= aux_get_timespec,
 	.clock_set		= aux_clock_set,
 	.clock_adj		= aux_clock_adj,
+	.nsleep			= aux_clock_nsleep,
 };
 
 /*
