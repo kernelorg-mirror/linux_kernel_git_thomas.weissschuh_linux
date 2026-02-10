@@ -1564,10 +1564,10 @@ static inline int hrtimer_clockid_to_base(clockid_t clock_id)
 		return HRTIMER_BASE_BOOTTIME;
 	case CLOCK_TAI:
 		return HRTIMER_BASE_TAI;
-	default:
-		WARN(1, "Invalid clockid %d. Using MONOTONIC\n", clock_id);
-		return HRTIMER_BASE_MONOTONIC;
 	}
+
+	WARN(1, "Invalid clockid %d. Using MONOTONIC\n", clock_id);
+	return HRTIMER_BASE_MONOTONIC;
 }
 
 static ktime_t __hrtimer_cb_get_time(clockid_t clock_id)
@@ -1581,10 +1581,10 @@ static ktime_t __hrtimer_cb_get_time(clockid_t clock_id)
 		return ktime_get_boottime();
 	case CLOCK_TAI:
 		return ktime_get_clocktai();
-	default:
-		WARN(1, "Invalid clockid %d. Using MONOTONIC\n", clock_id);
-		return ktime_get();
 	}
+
+	WARN(1, "Invalid clockid %d. Using MONOTONIC\n", clock_id);
+	return ktime_get();
 }
 
 ktime_t hrtimer_cb_get_time(const struct hrtimer *timer)
