@@ -44,6 +44,8 @@ KBUILD_CFLAGS += $(call cc-option, -Wno-format-truncation-non-kprintf)
 # because -Wuninitialized will still flag when an uninitialized const variable
 # is used.
 KBUILD_CFLAGS += $(call cc-option, -Wno-default-const-init-unsafe)
+
+KBUILD_CFLAGS += -Wno-null-pointer-arithmetic
 else
 
 # gcc inanely warns about local variables called 'main'
