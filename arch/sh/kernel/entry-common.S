@@ -82,7 +82,7 @@ ENTRY(ret_from_irq)
 	shll	r0
 	shll	r0		! kernel space?
 	get_current_thread_info r8, r0
-	bt	resume_kernel	! Yes, it's from kernel, go back soon
+	bsr	resume_kernel	! Yes, it's from kernel, go back soon
 
 #ifdef CONFIG_PREEMPTION
 	bra	resume_userspace
@@ -354,10 +354,10 @@ syscall_exit:
 	mov.l	@(TI_FLAGS,r8), r0		! current_thread_info->flags
 	tst	#(_TIF_ALLWORK_MASK & 0xff), r0
 	mov	#(_TIF_ALLWORK_MASK >> 8), r1
-	bf	syscall_exit_work
+	bsr	syscall_exit_work
 	shlr8	r0
 	tst	r0, r1
-	bf	syscall_exit_work
+	bsr	syscall_exit_work
 	bra	__restore_all
 	 nop
 
