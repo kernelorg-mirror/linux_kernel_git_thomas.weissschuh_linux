@@ -3141,6 +3141,12 @@ config ARCH_USERFLAGS
 	default "-mabi=64 -EB" if ARCH_CC_CAN_LINK_N64 && CPU_BIG_ENDIAN
 	default "-mabi=32 -EL" if ARCH_CC_CAN_LINK_O32 && CPU_LITTLE_ENDIAN
 	default "-mabi=32 -EB" if ARCH_CC_CAN_LINK_O32 && CPU_BIG_ENDIAN
+	default "-mabi=n32 -EL" if MIPS32_N32 && CPU_LITTLE_ENDIAN
+	default "-mabi=n32 -EB" if MIPS32_N32 && CPU_BIG_ENDIAN
+	default "-mabi=64 -EL" if 64BIT && CPU_LITTLE_ENDIAN
+	default "-mabi=64 -EB" if 64BIT && CPU_BIG_ENDIAN
+	default "-mabi=32 -EL" if (32BIT || MIPS32_O32) && CPU_LITTLE_ENDIAN
+	default "-mabi=32 -EB" if (32BIT || MIPS32_O32) && CPU_BIG_ENDIAN
 
 menu "Power management options"
 
