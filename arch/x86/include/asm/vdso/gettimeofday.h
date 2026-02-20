@@ -20,6 +20,8 @@
 #include <clocksource/hyperv_timer.h>
 #include <asm/vdso/sys_call.h>
 
+#define VDSO_HAS_TIME 1
+
 #define VDSO_HAS_CLOCK_GETRES 1
 
 /*

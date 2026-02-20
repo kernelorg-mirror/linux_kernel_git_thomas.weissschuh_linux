@@ -393,6 +393,7 @@ __cvdso_gettimeofday(struct __kernel_old_timeval *tv, struct timezone *tz)
 	return __cvdso_gettimeofday_data(__arch_get_vdso_u_time_data(), tv, tz);
 }
 
+#ifdef VDSO_HAS_TIME
 static __maybe_unused __kernel_old_time_t
 __cvdso_time_data(const struct vdso_time_data *vd, __kernel_old_time_t *time)
 {
@@ -417,6 +418,7 @@ static __maybe_unused __kernel_old_time_t __cvdso_time(__kernel_old_time_t *time
 {
 	return __cvdso_time_data(__arch_get_vdso_u_time_data(), time);
 }
+#endif /* VDSO_HAS_TIME */
 
 #ifdef VDSO_HAS_CLOCK_GETRES
 static __always_inline

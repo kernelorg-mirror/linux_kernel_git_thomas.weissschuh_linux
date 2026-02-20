@@ -11,6 +11,8 @@
 
 #define VDSO_HAS_CLOCK_GETRES		1
 
+#define VDSO_HAS_TIME			1
+
 /*
  * powerpc specific delta calculation.
  *
