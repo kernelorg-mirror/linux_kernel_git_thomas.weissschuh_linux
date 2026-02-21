@@ -29,7 +29,7 @@ struct erofs_attr {
 };
 
 #define EROFS_ATTR(_name, _mode, _id)					\
-static struct erofs_attr erofs_attr_##_name = {				\
+static const struct erofs_attr erofs_attr_##_name = {			\
 	.attr = {.name = __stringify(_name), .mode = _mode },		\
 	.attr_id = attr_##_id,						\
 }
@@ -37,7 +37,7 @@ static struct erofs_attr erofs_attr_##_name = {				\
 #define EROFS_ATTR_FEATURE(_name)	EROFS_ATTR(_name, 0444, feature)
 
 #define EROFS_ATTR_OFFSET(_name, _mode, _id, _struct)	\
-static struct erofs_attr erofs_attr_##_name = {			\
+static const struct erofs_attr erofs_attr_##_name = {		\
 	.attr = {.name = __stringify(_name), .mode = _mode },	\
 	.attr_id = attr_##_id,					\
 	.struct_type = struct_##_struct,			\
@@ -67,7 +67,7 @@ EROFS_ATTR_FUNC(accel, 0644);
 #endif
 EROFS_ATTR_RW_UI(dir_ra_bytes, erofs_sb_info);
 
-static struct attribute *erofs_sb_attrs[] = {
+static const struct attribute *const erofs_sb_attrs[] = {
 #ifdef CONFIG_EROFS_FS_ZIP
 	ATTR_LIST(sync_decompress),
 	ATTR_LIST(drop_caches),
@@ -77,7 +77,7 @@ static struct attribute *erofs_sb_attrs[] = {
 };
 ATTRIBUTE_GROUPS(erofs_sb);
 
-static struct attribute *erofs_attrs[] = {
+static const struct attribute *const erofs_attrs[] = {
 #ifdef CONFIG_EROFS_FS_ZIP_ACCEL
 	ATTR_LIST(accel),
 #endif
@@ -98,7 +98,7 @@ EROFS_ATTR_FEATURE(dedupe);
 EROFS_ATTR_FEATURE(48bit);
 EROFS_ATTR_FEATURE(metabox);
 
-static struct attribute *erofs_feat_attrs[] = {
+static const struct attribute *const erofs_feat_attrs[] = {
 	ATTR_LIST(compr_cfgs),
 	ATTR_LIST(big_pcluster),
 	ATTR_LIST(chunked_file),
@@ -129,7 +129,7 @@ static ssize_t erofs_attr_show(struct kobject *kobj,
 {
 	struct erofs_sb_info *sbi = container_of(kobj, struct erofs_sb_info,
 						s_kobj);
-	struct erofs_attr *a = container_of(attr, struct erofs_attr, attr);
+	const struct erofs_attr *a = container_of_const(attr, struct erofs_attr, attr);
 	unsigned char *ptr = __struct_ptr(sbi, a->struct_type, a->offset);
 
 	switch (a->attr_id) {
@@ -154,7 +154,7 @@ static ssize_t erofs_attr_store(struct kobject *kobj, struct attribute *attr,
 {
 	struct erofs_sb_info *sbi = container_of(kobj, struct erofs_sb_info,
 						s_kobj);
-	struct erofs_attr *a = container_of(attr, struct erofs_attr, attr);
+	const struct erofs_attr *a = container_of_const(attr, struct erofs_attr, attr);
 	unsigned char *ptr = __struct_ptr(sbi, a->struct_type, a->offset);
 	unsigned long t;
 	int ret;
