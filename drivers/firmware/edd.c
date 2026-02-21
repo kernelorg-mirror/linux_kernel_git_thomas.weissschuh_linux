@@ -64,7 +64,7 @@ static struct pci_dev *edd_get_pci_dev(struct edd_device *edev);
 static struct edd_device *edd_devices[EDD_MBR_SIG_MAX];
 
 #define EDD_DEVICE_ATTR(_name,_mode,_show,_test) \
-struct edd_attribute edd_attr_##_name = { 	\
+const struct edd_attribute edd_attr_##_name = { 	\
 	.attr = {.name = __stringify(_name), .mode = _mode },	\
 	.show	= _show,				\
 	.test	= _test,				\
@@ -98,14 +98,14 @@ edd_dev_set_info(struct edd_device *edev, int i)
 		edev->info = &edd.edd_info[i];
 }
 
-#define to_edd_attr(_attr) container_of(_attr,struct edd_attribute,attr)
+#define to_edd_attr(_attr) container_of_const(_attr,struct edd_attribute,attr)
 #define to_edd_device(obj) container_of(obj,struct edd_device,kobj)
 
 static ssize_t
 edd_attr_show(struct kobject * kobj, struct attribute *attr, char *buf)
 {
 	struct edd_device *dev = to_edd_device(kobj);
-	struct edd_attribute *edd_attr = to_edd_attr(attr);
+	const struct edd_attribute *edd_attr = to_edd_attr(attr);
 	ssize_t ret = -EIO;
 
 	if (edd_attr->show)
@@ -575,7 +575,7 @@ static EDD_DEVICE_ATTR(host_bus, 0444, edd_show_host_bus, edd_has_edd30);
 static EDD_DEVICE_ATTR(mbr_signature, 0444, edd_show_mbr_signature, edd_has_mbr_signature);
 
 /* These attributes are conditional and only added for some devices. */
-static struct edd_attribute * edd_attrs[] = {
+static const struct edd_attribute *const edd_attrs[] = {
 	&edd_attr_raw_data,
 	&edd_attr_version,
 	&edd_attr_extensions,
@@ -680,7 +680,7 @@ edd_device_unregister(struct edd_device *edev)
 
 static void edd_populate_dir(struct edd_device * edev)
 {
-	struct edd_attribute * attr;
+	const struct edd_attribute * attr;
 	int error = 0;
 	int i;
 
