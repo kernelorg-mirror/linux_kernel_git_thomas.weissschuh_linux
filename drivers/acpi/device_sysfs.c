@@ -39,7 +39,7 @@ struct acpi_data_node_attr {
 };
 
 #define DATA_NODE_ATTR(_name)			\
-	static struct acpi_data_node_attr data_node_##_name =	\
+	static const struct acpi_data_node_attr data_node_##_name =	\
 		__ATTR(_name, 0444, data_node_show_##_name, NULL)
 
 static ssize_t data_node_show_path(struct acpi_data_node *dn, char *buf)
@@ -49,20 +49,20 @@ static ssize_t data_node_show_path(struct acpi_data_node *dn, char *buf)
 
 DATA_NODE_ATTR(path);
 
-static struct attribute *acpi_data_node_default_attrs[] = {
+static const struct attribute *const acpi_data_node_default_attrs[] = {
 	&data_node_path.attr,
 	NULL
 };
 ATTRIBUTE_GROUPS(acpi_data_node_default);
 
 #define to_data_node(k) container_of(k, struct acpi_data_node, kobj)
-#define to_attr(a) container_of(a, struct acpi_data_node_attr, attr)
+#define to_attr(a) container_of_const(a, struct acpi_data_node_attr, attr)
 
 static ssize_t acpi_data_node_attr_show(struct kobject *kobj,
 					struct attribute *attr, char *buf)
 {
 	struct acpi_data_node *dn = to_data_node(kobj);
-	struct acpi_data_node_attr *dn_attr = to_attr(attr);
+	const struct acpi_data_node_attr *dn_attr = to_attr(attr);
 
 	return dn_attr->show ? dn_attr->show(dn, buf) : -ENXIO;
 }
