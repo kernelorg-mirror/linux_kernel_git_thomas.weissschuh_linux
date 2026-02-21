@@ -90,16 +90,16 @@ static struct dmi_sysfs_entry *to_entry(struct kobject *kobj)
 	return container_of(kobj, struct dmi_sysfs_entry, kobj);
 }
 
-static struct dmi_sysfs_attribute *to_attr(struct attribute *attr)
+static const struct dmi_sysfs_attribute *to_attr(const struct attribute *attr)
 {
-	return container_of(attr, struct dmi_sysfs_attribute, attr);
+	return container_of_const(attr, struct dmi_sysfs_attribute, attr);
 }
 
 static ssize_t dmi_sysfs_attr_show(struct kobject *kobj,
 				   struct attribute *_attr, char *buf)
 {
 	struct dmi_sysfs_entry *entry = to_entry(kobj);
-	struct dmi_sysfs_attribute *attr = to_attr(_attr);
+	const struct dmi_sysfs_attribute *attr = to_attr(_attr);
 
 	/* DMI stuff is only ever admin visible */
 	if (!capable(CAP_SYS_ADMIN))
@@ -505,13 +505,13 @@ static ssize_t dmi_sysfs_entry_position(struct dmi_sysfs_entry *entry,
 	return sprintf(buf, "%d\n", entry->position);
 }
 
-static DMI_SYSFS_ATTR(entry, length);
-static DMI_SYSFS_ATTR(entry, handle);
-static DMI_SYSFS_ATTR(entry, type);
-static DMI_SYSFS_ATTR(entry, instance);
-static DMI_SYSFS_ATTR(entry, position);
+static const DMI_SYSFS_ATTR(entry, length);
+static const DMI_SYSFS_ATTR(entry, handle);
+static const DMI_SYSFS_ATTR(entry, type);
+static const DMI_SYSFS_ATTR(entry, instance);
+static const DMI_SYSFS_ATTR(entry, position);
 
-static struct attribute *dmi_sysfs_entry_attrs[] = {
+static const struct attribute *const dmi_sysfs_entry_attrs[] = {
 	&dmi_sysfs_attr_entry_length.attr,
 	&dmi_sysfs_attr_entry_handle.attr,
 	&dmi_sysfs_attr_entry_type.attr,
