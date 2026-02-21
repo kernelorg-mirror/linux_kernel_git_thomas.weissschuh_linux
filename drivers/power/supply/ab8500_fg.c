@@ -2482,19 +2482,19 @@ static ssize_t charge_now_store(struct ab8500_fg *di, const char *buf,
 	return count;
 }
 
-static struct ab8500_fg_sysfs_entry charge_full_attr =
+static const struct ab8500_fg_sysfs_entry charge_full_attr =
 	__ATTR(charge_full, 0644, charge_full_show, charge_full_store);
 
-static struct ab8500_fg_sysfs_entry charge_now_attr =
+static const struct ab8500_fg_sysfs_entry charge_now_attr =
 	__ATTR(charge_now, 0644, charge_now_show, charge_now_store);
 
 static ssize_t
 ab8500_fg_show(struct kobject *kobj, struct attribute *attr, char *buf)
 {
-	struct ab8500_fg_sysfs_entry *entry;
+	const struct ab8500_fg_sysfs_entry *entry;
 	struct ab8500_fg *di;
 
-	entry = container_of(attr, struct ab8500_fg_sysfs_entry, attr);
+	entry = container_of_const(attr, struct ab8500_fg_sysfs_entry, attr);
 	di = container_of(kobj, struct ab8500_fg, fg_kobject);
 
 	if (!entry->show)
@@ -2506,10 +2506,10 @@ static ssize_t
 ab8500_fg_store(struct kobject *kobj, struct attribute *attr, const char *buf,
 		size_t count)
 {
-	struct ab8500_fg_sysfs_entry *entry;
+	const struct ab8500_fg_sysfs_entry *entry;
 	struct ab8500_fg *di;
 
-	entry = container_of(attr, struct ab8500_fg_sysfs_entry, attr);
+	entry = container_of_const(attr, struct ab8500_fg_sysfs_entry, attr);
 	di = container_of(kobj, struct ab8500_fg, fg_kobject);
 
 	if (!entry->store)
@@ -2523,7 +2523,7 @@ static const struct sysfs_ops ab8500_fg_sysfs_ops = {
 	.store = ab8500_fg_store,
 };
 
-static struct attribute *ab8500_fg_attrs[] = {
+static const struct attribute *const ab8500_fg_attrs[] = {
 	&charge_full_attr.attr,
 	&charge_now_attr.attr,
 	NULL,
