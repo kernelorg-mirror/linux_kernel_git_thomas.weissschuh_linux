@@ -23,7 +23,7 @@ struct ubifs_attr {
 };
 
 #define UBIFS_ATTR(_name, _mode, _id)					\
-static struct ubifs_attr ubifs_attr_##_name = {				\
+static const struct ubifs_attr ubifs_attr_##_name = {				\
 	.attr = {.name = __stringify(_name), .mode = _mode },		\
 	.attr_id = attr_##_id,						\
 }
@@ -36,7 +36,7 @@ UBIFS_ATTR_FUNC(errors_node, 0444);
 
 #define ATTR_LIST(name) (&ubifs_attr_##name.attr)
 
-static struct attribute *ubifs_attrs[] = {
+static const struct attribute *const ubifs_attrs[] = {
 	ATTR_LIST(errors_magic),
 	ATTR_LIST(errors_node),
 	ATTR_LIST(errors_crc),
@@ -50,7 +50,7 @@ static ssize_t ubifs_attr_show(struct kobject *kobj,
 	struct ubifs_info *sbi = container_of(kobj, struct ubifs_info,
 					      kobj);
 
-	struct ubifs_attr *a = container_of(attr, struct ubifs_attr, attr);
+	const struct ubifs_attr *a = container_of_const(attr, struct ubifs_attr, attr);
 
 	switch (a->attr_id) {
 	case attr_errors_magic:
