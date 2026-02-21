@@ -292,6 +292,8 @@ static const struct attribute_group _name##_group = {		\
 	.attrs = _Generic(_name##_attrs,			\
 			  struct attribute **:			\
 				_name##_attrs,			\
+			  const struct attribute **:		\
+				(void *)_name##_attrs,		\
 			  const struct attribute *const *:	\
 				(void *)_name##_attrs		\
 	),							\
