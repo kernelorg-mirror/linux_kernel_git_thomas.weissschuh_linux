@@ -142,14 +142,6 @@ void cpuidle_remove_interface(struct device *dev)
 	sysfs_remove_group(&dev->kobj, &cpuidle_attr_group);
 }
 
-struct cpuidle_attr {
-	struct attribute attr;
-	ssize_t (*show)(struct cpuidle_device *, char *);
-	ssize_t (*store)(struct cpuidle_device *, const char *, size_t count);
-};
-
-#define attr_to_cpuidleattr(a) container_of(a, struct cpuidle_attr, attr)
-
 struct cpuidle_device_kobj {
 	struct cpuidle_device *dev;
 	struct completion kobj_unregister;
@@ -164,41 +156,6 @@ static inline struct cpuidle_device *to_cpuidle_device(struct kobject *kobj)
 	return kdev->dev;
 }
 
-static ssize_t cpuidle_show(struct kobject *kobj, struct attribute *attr,
-			    char *buf)
-{
-	int ret = -EIO;
-	struct cpuidle_device *dev = to_cpuidle_device(kobj);
-	struct cpuidle_attr *cattr = attr_to_cpuidleattr(attr);
-
-	if (cattr->show) {
-		mutex_lock(&cpuidle_lock);
-		ret = cattr->show(dev, buf);
-		mutex_unlock(&cpuidle_lock);
-	}
-	return ret;
-}
-
-static ssize_t cpuidle_store(struct kobject *kobj, struct attribute *attr,
-			     const char *buf, size_t count)
-{
-	int ret = -EIO;
-	struct cpuidle_device *dev = to_cpuidle_device(kobj);
-	struct cpuidle_attr *cattr = attr_to_cpuidleattr(attr);
-
-	if (cattr->store) {
-		mutex_lock(&cpuidle_lock);
-		ret = cattr->store(dev, buf, count);
-		mutex_unlock(&cpuidle_lock);
-	}
-	return ret;
-}
-
-static const struct sysfs_ops cpuidle_sysfs_ops = {
-	.show = cpuidle_show,
-	.store = cpuidle_store,
-};
-
 static void cpuidle_sysfs_release(struct kobject *kobj)
 {
 	struct cpuidle_device_kobj *kdev =
@@ -208,7 +165,6 @@ static void cpuidle_sysfs_release(struct kobject *kobj)
 }
 
 static const struct kobj_type ktype_cpuidle = {
-	.sysfs_ops = &cpuidle_sysfs_ops,
 	.release = cpuidle_sysfs_release,
 };
 
