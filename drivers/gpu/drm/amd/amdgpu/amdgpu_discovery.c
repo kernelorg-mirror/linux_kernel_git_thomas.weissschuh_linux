@@ -972,18 +972,29 @@ static ssize_t base_addr_show(struct ip_hw_instance *ip_hw_instance, char *buf)
 	return at;
 }
 
-static struct ip_hw_instance_attr ip_hw_attr[] = {
-	__ATTR_RO(hw_id),
-	__ATTR_RO(num_instance),
-	__ATTR_RO(major),
-	__ATTR_RO(minor),
-	__ATTR_RO(revision),
-	__ATTR_RO(harvest),
-	__ATTR_RO(num_base_addresses),
-	__ATTR_RO(base_addr),
-};
+#define IP_HW_INSTANCE_ATTR_RO(_name) \
+	static struct ip_hw_instance_attr ip_hw_instance_attr_ ## _name = __ATTR_RO(_name)
 
-static struct attribute *ip_hw_instance_attrs[ARRAY_SIZE(ip_hw_attr) + 1];
+IP_HW_INSTANCE_ATTR_RO(hw_id);
+IP_HW_INSTANCE_ATTR_RO(num_instance);
+IP_HW_INSTANCE_ATTR_RO(major);
+IP_HW_INSTANCE_ATTR_RO(minor);
+IP_HW_INSTANCE_ATTR_RO(revision);
+IP_HW_INSTANCE_ATTR_RO(harvest);
+IP_HW_INSTANCE_ATTR_RO(num_base_addresses);
+IP_HW_INSTANCE_ATTR_RO(base_addr);
+
+static struct attribute *ip_hw_instance_attrs[] = {
+	&ip_hw_instance_attr_hw_id.attr,
+	&ip_hw_instance_attr_num_instance.attr,
+	&ip_hw_instance_attr_major.attr,
+	&ip_hw_instance_attr_minor.attr,
+	&ip_hw_instance_attr_revision.attr,
+	&ip_hw_instance_attr_harvest.attr,
+	&ip_hw_instance_attr_num_base_addresses.attr,
+	&ip_hw_instance_attr_base_addr.attr,
+	NULL
+};
 ATTRIBUTE_GROUPS(ip_hw_instance);
 
 #define to_ip_hw_instance(x) container_of(x, struct ip_hw_instance, kobj)
@@ -1333,7 +1344,7 @@ static int amdgpu_discovery_sysfs_init(struct amdgpu_device *adev)
 	uint8_t *discovery_bin = adev->discovery.bin;
 	struct ip_discovery_top *ip_top;
 	struct kset *die_kset;
-	int res, ii;
+	int res;
 
 	if (!discovery_bin)
 		return -EINVAL;
@@ -1360,10 +1371,6 @@ static int amdgpu_discovery_sysfs_init(struct amdgpu_device *adev)
 		DRM_ERROR("Couldn't register die_kset");
 		goto Err;
 	}
-
-	for (ii = 0; ii < ARRAY_SIZE(ip_hw_attr); ii++)
-		ip_hw_instance_attrs[ii] = &ip_hw_attr[ii].attr;
-	ip_hw_instance_attrs[ii] = NULL;
 
 	res = amdgpu_discovery_sysfs_recurse(adev);
 
