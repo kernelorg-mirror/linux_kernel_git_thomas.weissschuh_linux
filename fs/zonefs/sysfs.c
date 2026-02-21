@@ -16,7 +16,7 @@ struct zonefs_sysfs_attr {
 };
 
 #define ZONEFS_SYSFS_ATTR_RO(name) \
-static struct zonefs_sysfs_attr zonefs_sysfs_attr_##name = __ATTR_RO(name)
+static const struct zonefs_sysfs_attr zonefs_sysfs_attr_##name = __ATTR_RO(name)
 
 #define ATTR_LIST(name) &zonefs_sysfs_attr_##name.attr
 
@@ -25,8 +25,8 @@ static ssize_t zonefs_sysfs_attr_show(struct kobject *kobj,
 {
 	struct zonefs_sb_info *sbi =
 		container_of(kobj, struct zonefs_sb_info, s_kobj);
-	struct zonefs_sysfs_attr *zonefs_attr =
-		container_of(attr, struct zonefs_sysfs_attr, attr);
+	const struct zonefs_sysfs_attr *zonefs_attr =
+		container_of_const(attr, struct zonefs_sysfs_attr, attr);
 
 	if (!zonefs_attr->show)
 		return 0;
@@ -58,7 +58,7 @@ static ssize_t nr_active_seq_files_show(struct zonefs_sb_info *sbi, char *buf)
 }
 ZONEFS_SYSFS_ATTR_RO(nr_active_seq_files);
 
-static struct attribute *zonefs_sysfs_attrs[] = {
+static const struct attribute *const zonefs_sysfs_attrs[] = {
 	ATTR_LIST(max_wro_seq_files),
 	ATTR_LIST(nr_wro_seq_files),
 	ATTR_LIST(max_active_seq_files),
