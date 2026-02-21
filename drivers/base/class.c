@@ -23,7 +23,7 @@
 /* /sys/class */
 static struct kset *class_kset;
 
-#define to_class_attr(_attr) container_of(_attr, struct class_attribute, attr)
+#define to_class_attr(_attr) container_of_const(_attr, struct class_attribute, attr)
 
 /**
  * class_to_subsys - Turn a struct class into a struct subsys_private
@@ -69,7 +69,7 @@ done:
 static ssize_t class_attr_show(struct kobject *kobj, struct attribute *attr,
 			       char *buf)
 {
-	struct class_attribute *class_attr = to_class_attr(attr);
+	const struct class_attribute *class_attr = to_class_attr(attr);
 	struct subsys_private *cp = to_subsys_private(kobj);
 	ssize_t ret = -EIO;
 
@@ -81,7 +81,7 @@ static ssize_t class_attr_show(struct kobject *kobj, struct attribute *attr,
 static ssize_t class_attr_store(struct kobject *kobj, struct attribute *attr,
 				const char *buf, size_t count)
 {
-	struct class_attribute *class_attr = to_class_attr(attr);
+	const struct class_attribute *class_attr = to_class_attr(attr);
 	struct subsys_private *cp = to_subsys_private(kobj);
 	ssize_t ret = -EIO;
 
