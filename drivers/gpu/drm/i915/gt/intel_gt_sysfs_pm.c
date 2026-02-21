@@ -506,9 +506,7 @@ static ssize_t slpc_power_profile_store(struct kobject *kobj,
 }
 
 struct intel_gt_bool_throttle_attr {
-	struct attribute attr;
-	ssize_t (*show)(struct kobject *kobj, struct kobj_attribute *attr,
-			char *buf);
+	struct kobj_attribute kobj_attr;
 	i915_reg_t (*reg32)(struct intel_gt *gt);
 	u32 mask;
 };
@@ -519,7 +517,7 @@ static ssize_t throttle_reason_bool_show(struct kobject *kobj,
 {
 	struct intel_gt *gt = intel_gt_sysfs_get_drvdata(kobj, attr->attr.name);
 	struct intel_gt_bool_throttle_attr *t_attr =
-				(struct intel_gt_bool_throttle_attr *) attr;
+			container_of_const(attr, struct intel_gt_bool_throttle_attr, kobj_attr);
 	bool val = rps_read_mask_mmio(&gt->rps, t_attr->reg32(gt), t_attr->mask);
 
 	return sysfs_emit(buff, "%u\n", val);
@@ -527,8 +525,8 @@ static ssize_t throttle_reason_bool_show(struct kobject *kobj,
 
 #define INTEL_GT_RPS_BOOL_ATTR_RO(sysfs_func__, mask__) \
 struct intel_gt_bool_throttle_attr attr_##sysfs_func__ = { \
-	.attr = { .name = __stringify(sysfs_func__), .mode = 0444 }, \
-	.show = throttle_reason_bool_show, \
+	.kobj_attr.attr = { .name = __stringify(sysfs_func__), .mode = 0444 }, \
+	.kobj_attr.show = throttle_reason_bool_show, \
 	.reg32 = intel_gt_perf_limit_reasons_reg, \
 	.mask = mask__, \
 }
@@ -545,15 +543,15 @@ static INTEL_GT_RPS_BOOL_ATTR_RO(throttle_reason_vr_thermalert, VR_THERMALERT_MA
 static INTEL_GT_RPS_BOOL_ATTR_RO(throttle_reason_vr_tdc, VR_TDC_MASK);
 
 static const struct attribute *throttle_reason_attrs[] = {
-	&attr_throttle_reason_status.attr,
-	&attr_throttle_reason_pl1.attr,
-	&attr_throttle_reason_pl2.attr,
-	&attr_throttle_reason_pl4.attr,
-	&attr_throttle_reason_thermal.attr,
-	&attr_throttle_reason_prochot.attr,
-	&attr_throttle_reason_ratl.attr,
-	&attr_throttle_reason_vr_thermalert.attr,
-	&attr_throttle_reason_vr_tdc.attr,
+	&attr_throttle_reason_status.kobj_attr.attr,
+	&attr_throttle_reason_pl1.kobj_attr.attr,
+	&attr_throttle_reason_pl2.kobj_attr.attr,
+	&attr_throttle_reason_pl4.kobj_attr.attr,
+	&attr_throttle_reason_thermal.kobj_attr.attr,
+	&attr_throttle_reason_prochot.kobj_attr.attr,
+	&attr_throttle_reason_ratl.kobj_attr.attr,
+	&attr_throttle_reason_vr_thermalert.kobj_attr.attr,
+	&attr_throttle_reason_vr_tdc.kobj_attr.attr,
 	NULL
 };
 
