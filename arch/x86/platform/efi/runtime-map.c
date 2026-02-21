@@ -25,9 +25,9 @@ struct map_attribute {
 	ssize_t (*show)(struct efi_runtime_map_entry *entry, char *buf);
 };
 
-static inline struct map_attribute *to_map_attr(struct attribute *attr)
+static inline const struct map_attribute *to_map_attr(const struct attribute *attr)
 {
-	return container_of(attr, struct map_attribute, attr);
+	return container_of_const(attr, struct map_attribute, attr);
 }
 
 static ssize_t type_show(struct efi_runtime_map_entry *entry, char *buf)
@@ -57,21 +57,21 @@ static ssize_t map_attr_show(struct kobject *kobj, struct attribute *attr,
 			      char *buf)
 {
 	struct efi_runtime_map_entry *entry = to_map_entry(kobj);
-	struct map_attribute *map_attr = to_map_attr(attr);
+	const struct map_attribute *map_attr = to_map_attr(attr);
 
 	return map_attr->show(entry, buf);
 }
 
-static struct map_attribute map_type_attr = __ATTR_RO_MODE(type, 0400);
-static struct map_attribute map_phys_addr_attr = __ATTR_RO_MODE(phys_addr, 0400);
-static struct map_attribute map_virt_addr_attr = __ATTR_RO_MODE(virt_addr, 0400);
-static struct map_attribute map_num_pages_attr = __ATTR_RO_MODE(num_pages, 0400);
-static struct map_attribute map_attribute_attr = __ATTR_RO_MODE(attribute, 0400);
+static const struct map_attribute map_type_attr = __ATTR_RO_MODE(type, 0400);
+static const struct map_attribute map_phys_addr_attr = __ATTR_RO_MODE(phys_addr, 0400);
+static const struct map_attribute map_virt_addr_attr = __ATTR_RO_MODE(virt_addr, 0400);
+static const struct map_attribute map_num_pages_attr = __ATTR_RO_MODE(num_pages, 0400);
+static const struct map_attribute map_attribute_attr = __ATTR_RO_MODE(attribute, 0400);
 
 /*
  * These are default attributes that are added for every memmap entry.
  */
-static struct attribute *def_attrs[] = {
+static const struct attribute *const def_attrs[] = {
 	&map_type_attr.attr,
 	&map_phys_addr_attr.attr,
 	&map_virt_addr_attr.attr,
