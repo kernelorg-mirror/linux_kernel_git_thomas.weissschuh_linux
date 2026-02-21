@@ -467,22 +467,22 @@ static ssize_t kfd_sysfs_counters_show(struct kobject *kobj,
 	return 0;
 }
 
-static struct attribute attr_queue_size = {
+static const struct attribute attr_queue_size = {
 	.name = "size",
 	.mode = KFD_SYSFS_FILE_MODE
 };
 
-static struct attribute attr_queue_type = {
+static const struct attribute attr_queue_type = {
 	.name = "type",
 	.mode = KFD_SYSFS_FILE_MODE
 };
 
-static struct attribute attr_queue_gpuid = {
+static const struct attribute attr_queue_gpuid = {
 	.name = "gpuid",
 	.mode = KFD_SYSFS_FILE_MODE
 };
 
-static struct attribute *procfs_queue_attrs[] = {
+static const struct attribute *const procfs_queue_attrs[] = {
 	&attr_queue_size,
 	&attr_queue_type,
 	&attr_queue_gpuid,
