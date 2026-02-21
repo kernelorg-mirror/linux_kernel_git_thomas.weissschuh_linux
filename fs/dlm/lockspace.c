@@ -115,39 +115,39 @@ struct dlm_attr {
 	ssize_t (*store)(struct dlm_ls *, const char *, size_t);
 };
 
-static struct dlm_attr dlm_attr_control = {
+static const struct dlm_attr dlm_attr_control = {
 	.attr  = {.name = "control", .mode = S_IWUSR},
 	.store = dlm_control_store
 };
 
-static struct dlm_attr dlm_attr_event = {
+static const struct dlm_attr dlm_attr_event = {
 	.attr  = {.name = "event_done", .mode = S_IWUSR},
 	.store = dlm_event_store
 };
 
-static struct dlm_attr dlm_attr_id = {
+static const struct dlm_attr dlm_attr_id = {
 	.attr  = {.name = "id", .mode = S_IRUGO | S_IWUSR},
 	.show  = dlm_id_show,
 	.store = dlm_id_store
 };
 
-static struct dlm_attr dlm_attr_nodir = {
+static const struct dlm_attr dlm_attr_nodir = {
 	.attr  = {.name = "nodir", .mode = S_IRUGO | S_IWUSR},
 	.show  = dlm_nodir_show,
 	.store = dlm_nodir_store
 };
 
-static struct dlm_attr dlm_attr_recover_status = {
+static const struct dlm_attr dlm_attr_recover_status = {
 	.attr  = {.name = "recover_status", .mode = S_IRUGO},
 	.show  = dlm_recover_status_show
 };
 
-static struct dlm_attr dlm_attr_recover_nodeid = {
+static const struct dlm_attr dlm_attr_recover_nodeid = {
 	.attr  = {.name = "recover_nodeid", .mode = S_IRUGO},
 	.show  = dlm_recover_nodeid_show
 };
 
-static struct attribute *dlm_attrs[] = {
+static const struct attribute *const dlm_attrs[] = {
 	&dlm_attr_control.attr,
 	&dlm_attr_event.attr,
 	&dlm_attr_id.attr,
@@ -161,16 +161,16 @@ ATTRIBUTE_GROUPS(dlm);
 static ssize_t dlm_attr_show(struct kobject *kobj, struct attribute *attr,
 			     char *buf)
 {
+	const struct dlm_attr *a = container_of_const(attr, struct dlm_attr, attr);
 	struct dlm_ls *ls  = container_of(kobj, struct dlm_ls, ls_kobj);
-	struct dlm_attr *a = container_of(attr, struct dlm_attr, attr);
 	return a->show ? a->show(ls, buf) : 0;
 }
 
 static ssize_t dlm_attr_store(struct kobject *kobj, struct attribute *attr,
 			      const char *buf, size_t len)
 {
+	const struct dlm_attr *a = container_of_const(attr, struct dlm_attr, attr);
 	struct dlm_ls *ls  = container_of(kobj, struct dlm_ls, ls_kobj);
-	struct dlm_attr *a = container_of(attr, struct dlm_attr, attr);
 	return a->store ? a->store(ls, buf, len) : len;
 }
 
