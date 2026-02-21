@@ -154,20 +154,20 @@ struct hub_sysfs_entry {
 	ssize_t (*store)(struct uv_bios_hub_info *hub_info, const char *buf, size_t sz);
 };
 
-static struct hub_sysfs_entry name_attribute =
+static const struct hub_sysfs_entry name_attribute =
 	__ATTR(name, 0444, hub_name_show, NULL);
-static struct hub_sysfs_entry location_attribute =
+static const struct hub_sysfs_entry location_attribute =
 	__ATTR(location, 0444, hub_location_show, NULL);
-static struct hub_sysfs_entry partition_attribute =
+static const struct hub_sysfs_entry partition_attribute =
 	__ATTR(this_partition, 0444, hub_partition_show, NULL);
-static struct hub_sysfs_entry shared_attribute =
+static const struct hub_sysfs_entry shared_attribute =
 	__ATTR(shared, 0444, hub_shared_show, NULL);
-static struct hub_sysfs_entry nasid_attribute =
+static const struct hub_sysfs_entry nasid_attribute =
 	__ATTR(nasid, 0444, hub_nasid_show, NULL);
-static struct hub_sysfs_entry cnode_attribute =
+static const struct hub_sysfs_entry cnode_attribute =
 	__ATTR(cnode, 0444, hub_cnode_show, NULL);
 
-static struct attribute *uv_hub_attrs[] = {
+static const struct attribute *const uv_hub_attrs[] = {
 	&name_attribute.attr,
 	&location_attribute.attr,
 	&partition_attribute.attr,
@@ -190,9 +190,9 @@ static ssize_t hub_type_show(struct kobject *kobj, struct attribute *attr,
 {
 	struct uv_hub *hub = to_uv_hub(kobj);
 	struct uv_bios_hub_info *bios_hub_info = hub->hub_info;
-	struct hub_sysfs_entry *entry;
+	const struct hub_sysfs_entry *entry;
 
-	entry = container_of(attr, struct hub_sysfs_entry, attr);
+	entry = container_of_const(attr, struct hub_sysfs_entry, attr);
 
 	if (!entry->show)
 		return -EIO;
