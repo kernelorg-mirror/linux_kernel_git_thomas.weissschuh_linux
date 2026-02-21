@@ -358,9 +358,9 @@ struct fw_cfg_sysfs_attribute {
 };
 
 /* get fw_cfg_sysfs_attribute from attribute member */
-static inline struct fw_cfg_sysfs_attribute *to_attr(struct attribute *attr)
+static inline const struct fw_cfg_sysfs_attribute *to_attr(const struct attribute *attr)
 {
-	return container_of(attr, struct fw_cfg_sysfs_attribute, attr);
+	return container_of_const(attr, struct fw_cfg_sysfs_attribute, attr);
 }
 
 /* global cache of fw_cfg_sysfs_entry objects */
@@ -397,7 +397,7 @@ static void fw_cfg_sysfs_cache_cleanup(void)
 /* per-entry attributes and show methods */
 
 #define FW_CFG_SYSFS_ATTR(_attr) \
-struct fw_cfg_sysfs_attribute fw_cfg_sysfs_attr_##_attr = { \
+const struct fw_cfg_sysfs_attribute fw_cfg_sysfs_attr_##_attr = { \
 	.attr = { .name = __stringify(_attr), .mode = S_IRUSR }, \
 	.show = fw_cfg_sysfs_show_##_attr, \
 }
@@ -421,7 +421,7 @@ static FW_CFG_SYSFS_ATTR(size);
 static FW_CFG_SYSFS_ATTR(key);
 static FW_CFG_SYSFS_ATTR(name);
 
-static struct attribute *fw_cfg_sysfs_entry_attrs[] = {
+static const struct attribute *const fw_cfg_sysfs_entry_attrs[] = {
 	&fw_cfg_sysfs_attr_size.attr,
 	&fw_cfg_sysfs_attr_key.attr,
 	&fw_cfg_sysfs_attr_name.attr,
@@ -434,7 +434,7 @@ static ssize_t fw_cfg_sysfs_attr_show(struct kobject *kobj, struct attribute *a,
 				      char *buf)
 {
 	struct fw_cfg_sysfs_entry *entry = to_entry(kobj);
-	struct fw_cfg_sysfs_attribute *attr = to_attr(a);
+	const struct fw_cfg_sysfs_attribute *attr = to_attr(a);
 
 	return attr->show(entry, buf);
 }
