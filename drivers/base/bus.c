@@ -34,7 +34,7 @@ static struct kset *bus_kset;
  * sysfs bindings for drivers
  */
 
-#define to_drv_attr(_attr) container_of(_attr, struct driver_attribute, attr)
+#define to_drv_attr(_attr) container_of_const(_attr, struct driver_attribute, attr)
 
 #define DRIVER_ATTR_IGNORE_LOCKDEP(_name, _mode, _show, _store) \
 	struct driver_attribute driver_attr_##_name =		\
@@ -105,7 +105,7 @@ static void bus_put(const struct bus_type *bus)
 static ssize_t drv_attr_show(struct kobject *kobj, struct attribute *attr,
 			     char *buf)
 {
-	struct driver_attribute *drv_attr = to_drv_attr(attr);
+	const struct driver_attribute *drv_attr = to_drv_attr(attr);
 	struct driver_private *drv_priv = to_driver(kobj);
 	ssize_t ret = -EIO;
 
@@ -117,7 +117,7 @@ static ssize_t drv_attr_show(struct kobject *kobj, struct attribute *attr,
 static ssize_t drv_attr_store(struct kobject *kobj, struct attribute *attr,
 			      const char *buf, size_t count)
 {
-	struct driver_attribute *drv_attr = to_drv_attr(attr);
+	const struct driver_attribute *drv_attr = to_drv_attr(attr);
 	struct driver_private *drv_priv = to_driver(kobj);
 	ssize_t ret = -EIO;
 
