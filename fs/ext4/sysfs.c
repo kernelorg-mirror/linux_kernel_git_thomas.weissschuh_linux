@@ -170,7 +170,7 @@ static ssize_t journal_task_show(struct ext4_sb_info *sbi, char *buf)
 }
 
 #define EXT4_ATTR(_name,_mode,_id)					\
-static struct ext4_attr ext4_attr_##_name = {				\
+static const struct ext4_attr ext4_attr_##_name = {			\
 	.attr = {.name = __stringify(_name), .mode = _mode },		\
 	.attr_id = attr_##_id,						\
 }
@@ -180,7 +180,7 @@ static struct ext4_attr ext4_attr_##_name = {				\
 #define EXT4_ATTR_FEATURE(_name)   EXT4_ATTR(_name, 0444, feature)
 
 #define EXT4_ATTR_OFFSET(_name,_mode,_id,_struct,_elname)	\
-static struct ext4_attr ext4_attr_##_name = {			\
+static const struct ext4_attr ext4_attr_##_name = {		\
 	.attr = {.name = __stringify(_name), .mode = _mode },	\
 	.attr_id = attr_##_id,					\
 	.attr_ptr = ptr_##_struct##_offset,			\
@@ -190,7 +190,7 @@ static struct ext4_attr ext4_attr_##_name = {			\
 }
 
 #define EXT4_ATTR_STRING(_name,_mode,_size,_struct,_elname)	\
-static struct ext4_attr ext4_attr_##_name = {			\
+static const struct ext4_attr ext4_attr_##_name = {		\
 	.attr = {.name = __stringify(_name), .mode = _mode },	\
 	.attr_id = attr_pointer_string,				\
 	.attr_size = _size,					\
@@ -225,7 +225,7 @@ static struct ext4_attr ext4_attr_##_name = {			\
 	EXT4_ATTR_OFFSET(_name, 0444, pointer_atomic, ext4_sb_info, _elname)
 
 #define EXT4_ATTR_PTR(_name,_mode,_id,_ptr) \
-static struct ext4_attr ext4_attr_##_name = {			\
+static const struct ext4_attr ext4_attr_##_name = {		\
 	.attr = {.name = __stringify(_name), .mode = _mode },	\
 	.attr_id = attr_##_id,					\
 	.attr_ptr = ptr_explicit,				\
@@ -292,7 +292,7 @@ EXT4_RW_ATTR_SBI_UI(sb_update_kb, s_sb_update_kb);
 static unsigned int old_bump_val = 128;
 EXT4_ATTR_PTR(max_writeback_mb_bump, 0444, pointer_ui, &old_bump_val);
 
-static struct attribute *ext4_attrs[] = {
+static const struct attribute *const ext4_attrs[] = {
 	ATTR_LIST(delayed_allocation_blocks),
 	ATTR_LIST(session_write_kbytes),
 	ATTR_LIST(lifetime_write_kbytes),
@@ -369,7 +369,7 @@ EXT4_ATTR_FEATURE(encrypted_casefold);
 EXT4_ATTR_FEATURE(blocksize_gt_pagesize);
 #endif
 
-static struct attribute *ext4_feat_attrs[] = {
+static const struct attribute *const ext4_feat_attrs[] = {
 	ATTR_LIST(lazy_itable_init),
 	ATTR_LIST(batched_discard),
 	ATTR_LIST(meta_bg_resize),
@@ -395,7 +395,7 @@ static struct attribute *ext4_feat_attrs[] = {
 };
 ATTRIBUTE_GROUPS(ext4_feat);
 
-static void *calc_ptr(struct ext4_attr *a, struct ext4_sb_info *sbi)
+static void *calc_ptr(const struct ext4_attr *a, struct ext4_sb_info *sbi)
 {
 	switch (a->attr_ptr) {
 	case ptr_explicit:
@@ -417,7 +417,7 @@ static ssize_t __print_tstamp(char *buf, __le32 lo, __u8 hi)
 #define print_tstamp(buf, es, tstamp) \
 	__print_tstamp(buf, (es)->tstamp, (es)->tstamp ## _hi)
 
-static ssize_t ext4_generic_attr_show(struct ext4_attr *a,
+static ssize_t ext4_generic_attr_show(const struct ext4_attr *a,
 				      struct ext4_sb_info *sbi, char *buf)
 {
 	void *ptr = calc_ptr(a, sbi);
@@ -454,9 +454,9 @@ static ssize_t ext4_generic_attr_show(struct ext4_attr *a,
 static ssize_t ext4_attr_show(struct kobject *kobj,
 			      struct attribute *attr, char *buf)
 {
+	const struct ext4_attr *a = container_of_const(attr, struct ext4_attr, attr);
 	struct ext4_sb_info *sbi = container_of(kobj, struct ext4_sb_info,
 						s_kobj);
-	struct ext4_attr *a = container_of(attr, struct ext4_attr, attr);
 
 	switch (a->attr_id) {
 	case attr_delayed_allocation_blocks:
@@ -488,7 +488,7 @@ static ssize_t ext4_attr_show(struct kobject *kobj,
 	}
 }
 
-static ssize_t ext4_generic_attr_store(struct ext4_attr *a,
+static ssize_t ext4_generic_attr_store(const struct ext4_attr *a,
 				       struct ext4_sb_info *sbi,
 				       const char *buf, size_t len)
 {
@@ -548,9 +548,9 @@ static ssize_t ext4_attr_store(struct kobject *kobj,
 			       struct attribute *attr,
 			       const char *buf, size_t len)
 {
+	const struct ext4_attr *a = container_of_const(attr, struct ext4_attr, attr);
 	struct ext4_sb_info *sbi = container_of(kobj, struct ext4_sb_info,
 						s_kobj);
-	struct ext4_attr *a = container_of(attr, struct ext4_attr, attr);
 
 	switch (a->attr_id) {
 	case attr_reserved_clusters:
