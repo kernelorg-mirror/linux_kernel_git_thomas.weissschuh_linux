@@ -75,16 +75,16 @@ struct map_sysfs_entry {
 	ssize_t (*store)(struct uio_mem *, const char *, size_t);
 };
 
-static struct map_sysfs_entry name_attribute =
+static const struct map_sysfs_entry name_attribute =
 	__ATTR(name, S_IRUGO, map_name_show, NULL);
-static struct map_sysfs_entry addr_attribute =
+static const struct map_sysfs_entry addr_attribute =
 	__ATTR(addr, S_IRUGO, map_addr_show, NULL);
-static struct map_sysfs_entry size_attribute =
+static const struct map_sysfs_entry size_attribute =
 	__ATTR(size, S_IRUGO, map_size_show, NULL);
-static struct map_sysfs_entry offset_attribute =
+static const struct map_sysfs_entry offset_attribute =
 	__ATTR(offset, S_IRUGO, map_offset_show, NULL);
 
-static struct attribute *map_attrs[] = {
+static const struct attribute *const map_attrs[] = {
 	&name_attribute.attr,
 	&addr_attribute.attr,
 	&size_attribute.attr,
@@ -102,11 +102,11 @@ static void map_release(struct kobject *kobj)
 static ssize_t map_type_show(struct kobject *kobj, struct attribute *attr,
 			     char *buf)
 {
+	const struct map_sysfs_entry *entry;
 	struct uio_map *map = to_map(kobj);
 	struct uio_mem *mem = map->mem;
-	struct map_sysfs_entry *entry;
 
-	entry = container_of(attr, struct map_sysfs_entry, attr);
+	entry = container_of_const(attr, struct map_sysfs_entry, attr);
 
 	if (!entry->show)
 		return -EIO;
@@ -164,16 +164,16 @@ struct portio_sysfs_entry {
 	ssize_t (*store)(struct uio_port *, const char *, size_t);
 };
 
-static struct portio_sysfs_entry portio_name_attribute =
+static const struct portio_sysfs_entry portio_name_attribute =
 	__ATTR(name, S_IRUGO, portio_name_show, NULL);
-static struct portio_sysfs_entry portio_start_attribute =
+static const struct portio_sysfs_entry portio_start_attribute =
 	__ATTR(start, S_IRUGO, portio_start_show, NULL);
-static struct portio_sysfs_entry portio_size_attribute =
+static const struct portio_sysfs_entry portio_size_attribute =
 	__ATTR(size, S_IRUGO, portio_size_show, NULL);
-static struct portio_sysfs_entry portio_porttype_attribute =
+static const struct portio_sysfs_entry portio_porttype_attribute =
 	__ATTR(porttype, S_IRUGO, portio_porttype_show, NULL);
 
-static struct attribute *portio_attrs[] = {
+static const struct attribute *const portio_attrs[] = {
 	&portio_name_attribute.attr,
 	&portio_start_attribute.attr,
 	&portio_size_attribute.attr,
@@ -192,10 +192,10 @@ static ssize_t portio_type_show(struct kobject *kobj, struct attribute *attr,
 			     char *buf)
 {
 	struct uio_portio *portio = to_portio(kobj);
+	const struct portio_sysfs_entry *entry;
 	struct uio_port *port = portio->port;
-	struct portio_sysfs_entry *entry;
 
-	entry = container_of(attr, struct portio_sysfs_entry, attr);
+	entry = container_of_const(attr, struct portio_sysfs_entry, attr);
 
 	if (!entry->show)
 		return -EIO;
