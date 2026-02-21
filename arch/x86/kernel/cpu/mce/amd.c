@@ -997,13 +997,30 @@ RW_ATTR(threshold_limit);
 static struct attribute *default_attrs[] = {
 	&threshold_limit.attr,
 	&error_count.attr,
-	NULL,	/* possibly interrupt_enable if supported, see below */
+	&interrupt_enable.attr,
 	NULL,
 };
-ATTRIBUTE_GROUPS(default);
 
 #define to_block(k)	container_of(k, struct threshold_block, kobj)
 #define to_attr(a)	container_of(a, struct threshold_attr, attr)
+
+static umode_t default_attrs_is_visible(struct kobject *kobj, struct attribute *attr, int count)
+{
+	struct threshold_block *b = to_block(kobj);
+	struct threshold_attr *a = to_attr(attr);
+
+	if (a == &interrupt_enable && !b->interrupt_capable)
+		return 0;
+
+	return attr->mode;
+}
+
+static const struct attribute_group default_group = {
+	.attrs		= default_attrs,
+	.is_visible	= default_attrs_is_visible,
+};
+
+__ATTRIBUTE_GROUPS(default);
 
 static ssize_t show(struct kobject *kobj, struct attribute *attr, char *buf)
 {
@@ -1115,12 +1132,8 @@ static int allocate_threshold_blocks(unsigned int cpu, struct threshold_bank *tb
 	b->interrupt_capable	= lvt_interrupt_supported(bank, high);
 	b->threshold_limit	= get_thr_limit();
 
-	if (b->interrupt_capable) {
-		default_attrs[2] = &interrupt_enable.attr;
+	if (b->interrupt_capable)
 		b->interrupt_enable = 1;
-	} else {
-		default_attrs[2] = NULL;
-	}
 
 	list_add(&b->miscj, &tb->miscj);
 
