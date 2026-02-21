@@ -97,7 +97,7 @@ static ssize_t power_write_file(struct pci_slot *pci_slot, const char *buf,
 	return count;
 }
 
-static struct pci_slot_attribute hotplug_slot_attr_power = {
+static const struct pci_slot_attribute hotplug_slot_attr_power = {
 	.attr = {.name = "power", .mode = S_IFREG | S_IRUGO | S_IWUSR},
 	.show = power_read_file,
 	.store = power_write_file
@@ -136,7 +136,7 @@ static ssize_t attention_write_file(struct pci_slot *pci_slot, const char *buf,
 	return count;
 }
 
-static struct pci_slot_attribute hotplug_slot_attr_attention = {
+static const struct pci_slot_attribute hotplug_slot_attr_attention = {
 	.attr = {.name = "attention", .mode = S_IFREG | S_IRUGO | S_IWUSR},
 	.show = attention_read_file,
 	.store = attention_write_file
@@ -154,7 +154,7 @@ static ssize_t latch_read_file(struct pci_slot *pci_slot, char *buf)
 	return sysfs_emit(buf, "%d\n", value);
 }
 
-static struct pci_slot_attribute hotplug_slot_attr_latch = {
+static const struct pci_slot_attribute hotplug_slot_attr_latch = {
 	.attr = {.name = "latch", .mode = S_IFREG | S_IRUGO},
 	.show = latch_read_file,
 };
@@ -171,7 +171,7 @@ static ssize_t presence_read_file(struct pci_slot *pci_slot, char *buf)
 	return sysfs_emit(buf, "%d\n", value);
 }
 
-static struct pci_slot_attribute hotplug_slot_attr_presence = {
+static const struct pci_slot_attribute hotplug_slot_attr_presence = {
 	.attr = {.name = "adapter", .mode = S_IFREG | S_IRUGO},
 	.show = presence_read_file,
 };
@@ -196,7 +196,7 @@ static ssize_t test_write_file(struct pci_slot *pci_slot, const char *buf,
 	return count;
 }
 
-static struct pci_slot_attribute hotplug_slot_attr_test = {
+static const struct pci_slot_attribute hotplug_slot_attr_test = {
 	.attr = {.name = "test", .mode = S_IFREG | S_IRUGO | S_IWUSR},
 	.store = test_write_file
 };

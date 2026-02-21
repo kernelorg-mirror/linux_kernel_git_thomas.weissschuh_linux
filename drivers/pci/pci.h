@@ -478,7 +478,7 @@ struct pci_slot_attribute {
 	ssize_t (*show)(struct pci_slot *, char *);
 	ssize_t (*store)(struct pci_slot *, const char *, size_t);
 };
-#define to_pci_slot_attr(s) container_of(s, struct pci_slot_attribute, attr)
+#define to_pci_slot_attr(s) container_of_const(s, struct pci_slot_attribute, attr)
 
 enum pci_bar_type {
 	pci_bar_unknown,	/* Standard PCI BAR probe */
