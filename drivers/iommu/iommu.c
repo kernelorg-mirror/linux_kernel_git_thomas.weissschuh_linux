@@ -176,7 +176,7 @@ struct iommu_group_attribute iommu_group_attr_##_name =		\
 	__ATTR(_name, _mode, _show, _store)
 
 #define to_iommu_group_attr(_attr)	\
-	container_of(_attr, struct iommu_group_attribute, attr)
+	container_of_const(_attr, struct iommu_group_attribute, attr)
 #define to_iommu_group(_kobj)		\
 	container_of(_kobj, struct iommu_group, kobj)
 
@@ -825,7 +825,7 @@ void iommu_set_dma_strict(void)
 static ssize_t iommu_group_attr_show(struct kobject *kobj,
 				     struct attribute *__attr, char *buf)
 {
-	struct iommu_group_attribute *attr = to_iommu_group_attr(__attr);
+	const struct iommu_group_attribute *attr = to_iommu_group_attr(__attr);
 	struct iommu_group *group = to_iommu_group(kobj);
 	ssize_t ret = -EIO;
 
@@ -838,7 +838,7 @@ static ssize_t iommu_group_attr_store(struct kobject *kobj,
 				      struct attribute *__attr,
 				      const char *buf, size_t count)
 {
-	struct iommu_group_attribute *attr = to_iommu_group_attr(__attr);
+	const struct iommu_group_attribute *attr = to_iommu_group_attr(__attr);
 	struct iommu_group *group = to_iommu_group(kobj);
 	ssize_t ret = -EIO;
 
@@ -853,13 +853,13 @@ static const struct sysfs_ops iommu_group_sysfs_ops = {
 };
 
 static int iommu_group_create_file(struct iommu_group *group,
-				   struct iommu_group_attribute *attr)
+				   const struct iommu_group_attribute *attr)
 {
 	return sysfs_create_file(&group->kobj, &attr->attr);
 }
 
 static void iommu_group_remove_file(struct iommu_group *group,
-				    struct iommu_group_attribute *attr)
+				    const struct iommu_group_attribute *attr)
 {
 	sysfs_remove_file(&group->kobj, &attr->attr);
 }
@@ -1026,13 +1026,13 @@ static ssize_t iommu_group_show_type(struct iommu_group *group,
 	return sysfs_emit(buf, "%s\n", type);
 }
 
-static IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
+static const IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
 
-static IOMMU_GROUP_ATTR(reserved_regions, 0444,
-			iommu_group_show_resv_regions, NULL);
+static const IOMMU_GROUP_ATTR(reserved_regions, 0444,
+			      iommu_group_show_resv_regions, NULL);
 
-static IOMMU_GROUP_ATTR(type, 0644, iommu_group_show_type,
-			iommu_group_store_type);
+static const IOMMU_GROUP_ATTR(type, 0644, iommu_group_show_type,
+			      iommu_group_store_type);
 
 static void iommu_group_release(struct kobject *kobj)
 {
