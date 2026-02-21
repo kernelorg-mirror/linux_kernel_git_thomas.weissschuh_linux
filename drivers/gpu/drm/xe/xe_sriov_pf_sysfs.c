@@ -131,7 +131,7 @@ static ssize_t xe_sriov_dev_attr_##NAME##_store(struct xe_device *xe,			\
 	return err ?: count;								\
 }											\
 											\
-static XE_SRIOV_DEV_ATTR_WO(NAME)
+static const XE_SRIOV_DEV_ATTR_WO(NAME)
 
 DEFINE_SIMPLE_BULK_PROVISIONING_SRIOV_DEV_ATTR_WO(exec_quantum_ms, eq, u32);
 DEFINE_SIMPLE_BULK_PROVISIONING_SRIOV_DEV_ATTR_WO(preempt_timeout_us, pt, u32);
@@ -179,9 +179,9 @@ static ssize_t xe_sriov_dev_attr_sched_priority_store(struct xe_device *xe,
 	return err ?: count;
 }
 
-static XE_SRIOV_DEV_ATTR_WO(sched_priority);
+static const XE_SRIOV_DEV_ATTR_WO(sched_priority);
 
-static struct attribute *bulk_profile_dev_attrs[] = {
+static const struct attribute *const bulk_profile_dev_attrs[] = {
 	&xe_sriov_dev_attr_exec_quantum_ms.attr,
 	&xe_sriov_dev_attr_preempt_timeout_us.attr,
 	&xe_sriov_dev_attr_sched_priority.attr,
@@ -190,7 +190,7 @@ static struct attribute *bulk_profile_dev_attrs[] = {
 };
 
 static umode_t profile_dev_attr_is_visible(struct kobject *kobj,
-					   struct attribute *attr, int index)
+					   const struct attribute *attr, int index)
 {
 	struct xe_sriov_kobj *vkobj = to_xe_sriov_kobj(kobj);
 
@@ -203,8 +203,8 @@ static umode_t profile_dev_attr_is_visible(struct kobject *kobj,
 
 static const struct attribute_group bulk_profile_dev_attr_group = {
 	.name = ".bulk_profile",
-	.attrs = bulk_profile_dev_attrs,
-	.is_visible = profile_dev_attr_is_visible,
+	.attrs_const = bulk_profile_dev_attrs,
+	.is_visible_const = profile_dev_attr_is_visible,
 };
 
 static const struct attribute_group *xe_sriov_dev_attr_groups[] = {
@@ -242,7 +242,7 @@ static ssize_t xe_sriov_vf_attr_##NAME##_store(struct xe_device *xe, unsigned in
 	return err ?: count;								\
 }											\
 											\
-static XE_SRIOV_VF_ATTR(NAME)
+static const XE_SRIOV_VF_ATTR(NAME)
 
 DEFINE_SIMPLE_PROVISIONING_SRIOV_VF_ATTR(exec_quantum_ms, eq, u32, "%u\n");
 DEFINE_SIMPLE_PROVISIONING_SRIOV_VF_ATTR(preempt_timeout_us, pt, u32, "%u\n");
@@ -287,9 +287,9 @@ static ssize_t xe_sriov_vf_attr_sched_priority_store(struct xe_device *xe, unsig
 	return err ?: count;
 }
 
-static XE_SRIOV_VF_ATTR(sched_priority);
+static const XE_SRIOV_VF_ATTR(sched_priority);
 
-static struct attribute *profile_vf_attrs[] = {
+static const struct attribute *const profile_vf_attrs[] = {
 	&xe_sriov_vf_attr_exec_quantum_ms.attr,
 	&xe_sriov_vf_attr_preempt_timeout_us.attr,
 	&xe_sriov_vf_attr_sched_priority.attr,
@@ -298,7 +298,7 @@ static struct attribute *profile_vf_attrs[] = {
 };
 
 static umode_t profile_vf_attr_is_visible(struct kobject *kobj,
-					  struct attribute *attr, int index)
+					  const struct attribute *attr, int index)
 {
 	struct xe_sriov_kobj *vkobj = to_xe_sriov_kobj(kobj);
 
@@ -318,8 +318,8 @@ static umode_t profile_vf_attr_is_visible(struct kobject *kobj,
 
 static const struct attribute_group profile_vf_attr_group = {
 	.name = "profile",
-	.attrs = profile_vf_attrs,
-	.is_visible = profile_vf_attr_is_visible,
+	.attrs_const = profile_vf_attrs,
+	.is_visible_const = profile_vf_attr_is_visible,
 };
 
 #define DEFINE_SIMPLE_CONTROL_SRIOV_VF_ATTR(NAME)					\
@@ -343,17 +343,17 @@ static ssize_t xe_sriov_vf_attr_##NAME##_store(struct xe_device *xe, unsigned in
 	return err ?: count;								\
 }											\
 											\
-static XE_SRIOV_VF_ATTR_WO(NAME)
+static const XE_SRIOV_VF_ATTR_WO(NAME)
 
 DEFINE_SIMPLE_CONTROL_SRIOV_VF_ATTR(stop);
 
-static struct attribute *control_vf_attrs[] = {
+static const struct attribute *const control_vf_attrs[] = {
 	&xe_sriov_vf_attr_stop.attr,
 	NULL
 };
 
 static umode_t control_vf_attr_is_visible(struct kobject *kobj,
-					  struct attribute *attr, int index)
+					  const struct attribute *attr, int index)
 {
 	struct xe_sriov_kobj *vkobj = to_xe_sriov_kobj(kobj);
 
@@ -364,8 +364,8 @@ static umode_t control_vf_attr_is_visible(struct kobject *kobj,
 }
 
 static const struct attribute_group control_vf_attr_group = {
-	.attrs = control_vf_attrs,
-	.is_visible = control_vf_attr_is_visible,
+	.attrs_const = control_vf_attrs,
+	.is_visible_const = control_vf_attr_is_visible,
 };
 
 static const struct attribute_group *xe_sriov_vf_attr_groups[] = {
@@ -415,7 +415,7 @@ static void release_xe_sriov_kobj(struct kobject *kobj)
 
 static ssize_t xe_sriov_dev_attr_show(struct kobject *kobj, struct attribute *attr, char *buf)
 {
-	struct xe_sriov_dev_attr *vattr  = to_xe_sriov_dev_attr(attr);
+	const struct xe_sriov_dev_attr *vattr  = to_xe_sriov_dev_attr(attr);
 	struct xe_sriov_kobj *vkobj = to_xe_sriov_kobj(kobj);
 	struct xe_device *xe = vkobj->xe;
 
@@ -428,7 +428,7 @@ static ssize_t xe_sriov_dev_attr_show(struct kobject *kobj, struct attribute *at
 static ssize_t xe_sriov_dev_attr_store(struct kobject *kobj, struct attribute *attr,
 				       const char *buf, size_t count)
 {
-	struct xe_sriov_dev_attr *vattr = to_xe_sriov_dev_attr(attr);
+	const struct xe_sriov_dev_attr *vattr = to_xe_sriov_dev_attr(attr);
 	struct xe_sriov_kobj *vkobj = to_xe_sriov_kobj(kobj);
 	struct xe_device *xe = vkobj->xe;
 
@@ -441,7 +441,7 @@ static ssize_t xe_sriov_dev_attr_store(struct kobject *kobj, struct attribute *a
 
 static ssize_t xe_sriov_vf_attr_show(struct kobject *kobj, struct attribute *attr, char *buf)
 {
-	struct xe_sriov_vf_attr *vattr = to_xe_sriov_vf_attr(attr);
+	const struct xe_sriov_vf_attr *vattr = to_xe_sriov_vf_attr(attr);
 	struct xe_sriov_kobj *vkobj = to_xe_sriov_kobj(kobj);
 	struct xe_device *xe = vkobj->xe;
 	unsigned int vfid = vkobj->vfid;
@@ -457,7 +457,7 @@ static ssize_t xe_sriov_vf_attr_show(struct kobject *kobj, struct attribute *att
 static ssize_t xe_sriov_vf_attr_store(struct kobject *kobj, struct attribute *attr,
 				      const char *buf, size_t count)
 {
-	struct xe_sriov_vf_attr *vattr = to_xe_sriov_vf_attr(attr);
+	const struct xe_sriov_vf_attr *vattr = to_xe_sriov_vf_attr(attr);
 	struct xe_sriov_kobj *vkobj = to_xe_sriov_kobj(kobj);
 	struct xe_device *xe = vkobj->xe;
 	unsigned int vfid = vkobj->vfid;
