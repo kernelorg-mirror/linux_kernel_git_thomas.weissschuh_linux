@@ -186,10 +186,10 @@ static ssize_t
 usnic_ib_qpn_attr_show(struct kobject *kobj, struct attribute *attr, char *buf)
 {
 	struct usnic_ib_qp_grp *qp_grp;
-	struct qpn_attribute *qpn_attr;
+	const struct qpn_attribute *qpn_attr;
 
 	qp_grp = container_of(kobj, struct usnic_ib_qp_grp, kobj);
-	qpn_attr = container_of(attr, struct qpn_attribute, attr);
+	qpn_attr = container_of_const(attr, struct qpn_attribute, attr);
 
 	return qpn_attr->show(qp_grp, buf);
 }
@@ -234,10 +234,10 @@ static ssize_t summary_show(struct usnic_ib_qp_grp *qp_grp, char *buf)
 	return len;
 }
 
-static QPN_ATTR_RO(context);
-static QPN_ATTR_RO(summary);
+static const QPN_ATTR_RO(context);
+static const QPN_ATTR_RO(summary);
 
-static struct attribute *usnic_ib_qpn_default_attrs[] = {
+static const struct attribute *const usnic_ib_qpn_default_attrs[] = {
 	&qpn_attr_context.attr,
 	&qpn_attr_summary.attr,
 	NULL
