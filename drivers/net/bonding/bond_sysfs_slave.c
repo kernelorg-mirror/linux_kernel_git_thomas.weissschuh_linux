@@ -119,12 +119,12 @@ static const struct attribute *slave_attrs[] = {
 	NULL
 };
 
-#define to_slave_attr(_at) container_of(_at, struct slave_attribute, attr)
+#define to_slave_attr(_at) container_of_const(_at, struct slave_attribute, attr)
 
 static ssize_t slave_show(struct kobject *kobj,
 			  struct attribute *attr, char *buf)
 {
-	struct slave_attribute *slave_attr = to_slave_attr(attr);
+	const struct slave_attribute *slave_attr = to_slave_attr(attr);
 	struct slave *slave = to_slave(kobj);
 
 	return slave_attr->show(slave, buf);
