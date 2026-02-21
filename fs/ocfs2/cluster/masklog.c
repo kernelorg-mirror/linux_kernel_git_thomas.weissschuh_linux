@@ -87,7 +87,7 @@ struct mlog_attribute {
 	u64 mask;
 };
 
-#define to_mlog_attr(_attr) container_of(_attr, struct mlog_attribute, attr)
+#define to_mlog_attr(_attr) container_of_const(_attr, struct mlog_attribute, attr)
 
 #define define_mask(_name) {			\
 	.attr = {				\
@@ -97,7 +97,7 @@ struct mlog_attribute {
 	.mask = ML_##_name,			\
 }
 
-static struct mlog_attribute mlog_attrs[MLOG_MAX_BITS] = {
+static const struct mlog_attribute mlog_attrs[MLOG_MAX_BITS] = {
 	define_mask(TCP),
 	define_mask(MSG),
 	define_mask(SOCKET),
@@ -120,13 +120,13 @@ static struct mlog_attribute mlog_attrs[MLOG_MAX_BITS] = {
 	define_mask(KTHREAD),
 };
 
-static struct attribute *mlog_default_attrs[MLOG_MAX_BITS] = {NULL, };
+static const struct attribute *mlog_default_attrs[MLOG_MAX_BITS] = {NULL, };
 ATTRIBUTE_GROUPS(mlog_default);
 
 static ssize_t mlog_show(struct kobject *obj, struct attribute *attr,
 			 char *buf)
 {
-	struct mlog_attribute *mlog_attr = to_mlog_attr(attr);
+	const struct mlog_attribute *mlog_attr = to_mlog_attr(attr);
 
 	return mlog_mask_show(mlog_attr->mask, buf);
 }
@@ -134,7 +134,7 @@ static ssize_t mlog_show(struct kobject *obj, struct attribute *attr,
 static ssize_t mlog_store(struct kobject *obj, struct attribute *attr,
 			  const char *buf, size_t count)
 {
-	struct mlog_attribute *mlog_attr = to_mlog_attr(attr);
+	const struct mlog_attribute *mlog_attr = to_mlog_attr(attr);
 
 	return mlog_mask_store(mlog_attr->mask, buf, count);
 }
