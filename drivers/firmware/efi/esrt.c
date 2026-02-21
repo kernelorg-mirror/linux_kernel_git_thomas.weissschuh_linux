@@ -82,16 +82,16 @@ static struct esre_entry *to_entry(struct kobject *kobj)
 	return container_of(kobj, struct esre_entry, kobj);
 }
 
-static struct esre_attribute *to_attr(struct attribute *attr)
+static const struct esre_attribute *to_attr(const struct attribute *attr)
 {
-	return container_of(attr, struct esre_attribute, attr);
+	return container_of_const(attr, struct esre_attribute, attr);
 }
 
 static ssize_t esre_attr_show(struct kobject *kobj,
 			      struct attribute *_attr, char *buf)
 {
 	struct esre_entry *entry = to_entry(kobj);
-	struct esre_attribute *attr = to_attr(_attr);
+	const struct esre_attribute *attr = to_attr(_attr);
 
 	return attr->show(entry, buf);
 }
@@ -112,7 +112,7 @@ static ssize_t fw_class_show(struct esre_entry *entry, char *buf)
 	return str - buf;
 }
 
-static struct esre_attribute esre_fw_class = __ATTR_RO_MODE(fw_class, 0400);
+static const struct esre_attribute esre_fw_class = __ATTR_RO_MODE(fw_class, 0400);
 
 #define esre_attr_decl(name, size, fmt) \
 static ssize_t name##_show(struct esre_entry *entry, char *buf) \
@@ -121,7 +121,7 @@ static ssize_t name##_show(struct esre_entry *entry, char *buf) \
 		       le##size##_to_cpu(entry->esre.esre1->name)); \
 } \
 \
-static struct esre_attribute esre_##name = __ATTR_RO_MODE(name, 0400)
+static const struct esre_attribute esre_##name = __ATTR_RO_MODE(name, 0400)
 
 esre_attr_decl(fw_type, 32, "%u");
 esre_attr_decl(fw_version, 32, "%u");
@@ -130,7 +130,7 @@ esre_attr_decl(capsule_flags, 32, "0x%x");
 esre_attr_decl(last_attempt_version, 32, "%u");
 esre_attr_decl(last_attempt_status, 32, "%u");
 
-static struct attribute *esre1_attrs[] = {
+static const struct attribute *const esre1_attrs[] = {
 	&esre_fw_class.attr,
 	&esre_fw_type.attr,
 	&esre_fw_version.attr,
