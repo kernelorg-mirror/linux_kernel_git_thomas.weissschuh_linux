@@ -979,13 +979,13 @@ static ssize_t show_error_count(struct threshold_block *b, char *buf)
 				     (THRESHOLD_MAX - b->threshold_limit)));
 }
 
-static struct threshold_attr error_count = {
+static const struct threshold_attr error_count = {
 	.attr = {.name = __stringify(error_count), .mode = 0444 },
 	.show = show_error_count,
 };
 
 #define RW_ATTR(val)							\
-static struct threshold_attr val = {					\
+static const struct threshold_attr val = {				\
 	.attr	= {.name = __stringify(val), .mode = 0644 },		\
 	.show	= show_## val,						\
 	.store	= store_## val,						\
@@ -994,7 +994,7 @@ static struct threshold_attr val = {					\
 RW_ATTR(interrupt_enable);
 RW_ATTR(threshold_limit);
 
-static struct attribute *default_attrs[] = {
+static const struct attribute *const default_attrs[] = {
 	&threshold_limit.attr,
 	&error_count.attr,
 	&interrupt_enable.attr,
@@ -1002,12 +1002,12 @@ static struct attribute *default_attrs[] = {
 };
 
 #define to_block(k)	container_of(k, struct threshold_block, kobj)
-#define to_attr(a)	container_of(a, struct threshold_attr, attr)
+#define to_attr(a)	container_of_const(a, struct threshold_attr, attr)
 
-static umode_t default_attrs_is_visible(struct kobject *kobj, struct attribute *attr, int count)
+static umode_t default_attrs_is_visible(struct kobject *kobj, const struct attribute *attr, int count)
 {
+	const struct threshold_attr *a = to_attr(attr);
 	struct threshold_block *b = to_block(kobj);
-	struct threshold_attr *a = to_attr(attr);
 
 	if (a == &interrupt_enable && !b->interrupt_capable)
 		return 0;
@@ -1016,16 +1016,16 @@ static umode_t default_attrs_is_visible(struct kobject *kobj, struct attribute *
 }
 
 static const struct attribute_group default_group = {
-	.attrs		= default_attrs,
-	.is_visible	= default_attrs_is_visible,
+	.attrs_const		= default_attrs,
+	.is_visible_const	= default_attrs_is_visible,
 };
 
 __ATTRIBUTE_GROUPS(default);
 
 static ssize_t show(struct kobject *kobj, struct attribute *attr, char *buf)
 {
+	const struct threshold_attr *a = to_attr(attr);
 	struct threshold_block *b = to_block(kobj);
-	struct threshold_attr *a = to_attr(attr);
 	ssize_t ret;
 
 	ret = a->show ? a->show(b, buf) : -EIO;
@@ -1036,8 +1036,8 @@ static ssize_t show(struct kobject *kobj, struct attribute *attr, char *buf)
 static ssize_t store(struct kobject *kobj, struct attribute *attr,
 		     const char *buf, size_t count)
 {
+	const struct threshold_attr *a = to_attr(attr);
 	struct threshold_block *b = to_block(kobj);
-	struct threshold_attr *a = to_attr(attr);
 	ssize_t ret;
 
 	ret = a->store ? a->store(b, buf, count) : -EIO;
