@@ -722,7 +722,7 @@ XCP_CFG_SYSFS_RES_ATTR(num_shared);
 
 #define XCP_CFG_SYSFS_RES_ATTR_PTR(_name) xcp_res_sysfs_attr_##_name.attr
 
-static struct attribute *xcp_cfg_res_sysfs_attrs[] = {
+static const struct attribute *const xcp_cfg_res_sysfs_attrs[] = {
 	&XCP_CFG_SYSFS_RES_ATTR_PTR(num_inst),
 	&XCP_CFG_SYSFS_RES_ATTR_PTR(num_shared), NULL
 };
@@ -748,13 +748,13 @@ static const char *nps_desc[] = {
 ATTRIBUTE_GROUPS(xcp_cfg_res_sysfs);
 
 #define to_xcp_attr(x) \
-	container_of(x, struct amdgpu_xcp_res_sysfs_attribute, attr)
+	container_of_const(x, struct amdgpu_xcp_res_sysfs_attribute, attr)
 #define to_xcp_res(x) container_of(x, struct amdgpu_xcp_res_details, kobj)
 
 static ssize_t xcp_cfg_res_sysfs_attr_show(struct kobject *kobj,
 					   struct attribute *attr, char *buf)
 {
-	struct amdgpu_xcp_res_sysfs_attribute *attribute;
+	const struct amdgpu_xcp_res_sysfs_attribute *attribute;
 	struct amdgpu_xcp_res_details *xcp_res;
 
 	attribute = to_xcp_attr(attr);
