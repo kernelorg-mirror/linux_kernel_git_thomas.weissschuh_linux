@@ -34,8 +34,8 @@ static ssize_t iscsi_boot_show_attribute(struct kobject *kobj,
 {
 	struct iscsi_boot_kobj *boot_kobj =
 			container_of(kobj, struct iscsi_boot_kobj, kobj);
-	struct iscsi_boot_attr *boot_attr =
-			container_of(attr, struct iscsi_boot_attr, attr);
+	const struct iscsi_boot_attr *boot_attr =
+			container_of_const(attr, struct iscsi_boot_attr, attr);
 	ssize_t ret = -EIO;
 	char *str = buf;
 
@@ -67,7 +67,7 @@ static struct kobj_type iscsi_boot_ktype = {
 };
 
 #define iscsi_boot_rd_attr(fnname, sysfs_name, attr_type)		\
-static struct iscsi_boot_attr iscsi_boot_attr_##fnname = {	\
+static const struct iscsi_boot_attr iscsi_boot_attr_##fnname = {	\
 	.attr	= { .name = __stringify(sysfs_name), .mode = 0444 },	\
 	.type	= attr_type,						\
 }
@@ -88,7 +88,7 @@ iscsi_boot_rd_attr(tgt_chap_rev_name, rev-chap-name,
 iscsi_boot_rd_attr(tgt_chap_rev_secret, rev-chap-name-secret,
 		   ISCSI_BOOT_TGT_REV_CHAP_SECRET);
 
-static struct attribute *target_attrs[] = {
+static const struct attribute *const target_attrs[] = {
 	&iscsi_boot_attr_tgt_index.attr,
 	&iscsi_boot_attr_tgt_flags.attr,
 	&iscsi_boot_attr_tgt_ip.attr,
@@ -105,7 +105,7 @@ static struct attribute *target_attrs[] = {
 };
 
 static umode_t iscsi_boot_tgt_attr_is_visible(struct kobject *kobj,
-					     struct attribute *attr, int i)
+					     const struct attribute *attr, int i)
 {
 	struct iscsi_boot_kobj *boot_kobj =
 			container_of(kobj, struct iscsi_boot_kobj, kobj);
@@ -149,9 +149,9 @@ static umode_t iscsi_boot_tgt_attr_is_visible(struct kobject *kobj,
 	return 0;
 }
 
-static struct attribute_group iscsi_boot_target_attr_group = {
-	.attrs = target_attrs,
-	.is_visible = iscsi_boot_tgt_attr_is_visible,
+static const struct attribute_group iscsi_boot_target_attr_group = {
+	.attrs_const = target_attrs,
+	.is_visible_const = iscsi_boot_tgt_attr_is_visible,
 };
 
 /* Ethernet attrs */
@@ -170,7 +170,7 @@ iscsi_boot_rd_attr(eth_vlan, vlan, ISCSI_BOOT_ETH_VLAN);
 iscsi_boot_rd_attr(eth_mac, mac, ISCSI_BOOT_ETH_MAC);
 iscsi_boot_rd_attr(eth_hostname, hostname, ISCSI_BOOT_ETH_HOSTNAME);
 
-static struct attribute *ethernet_attrs[] = {
+static const struct attribute *const ethernet_attrs[] = {
 	&iscsi_boot_attr_eth_index.attr,
 	&iscsi_boot_attr_eth_flags.attr,
 	&iscsi_boot_attr_eth_ip.attr,
@@ -188,7 +188,7 @@ static struct attribute *ethernet_attrs[] = {
 };
 
 static umode_t iscsi_boot_eth_attr_is_visible(struct kobject *kobj,
-					     struct attribute *attr, int i)
+					     const struct attribute *attr, int i)
 {
 	struct iscsi_boot_kobj *boot_kobj =
 			container_of(kobj, struct iscsi_boot_kobj, kobj);
@@ -235,9 +235,9 @@ static umode_t iscsi_boot_eth_attr_is_visible(struct kobject *kobj,
 	return 0;
 }
 
-static struct attribute_group iscsi_boot_ethernet_attr_group = {
-	.attrs = ethernet_attrs,
-	.is_visible = iscsi_boot_eth_attr_is_visible,
+static const struct attribute_group iscsi_boot_ethernet_attr_group = {
+	.attrs_const = ethernet_attrs,
+	.is_visible_const = iscsi_boot_eth_attr_is_visible,
 };
 
 /* Initiator attrs */
@@ -251,7 +251,7 @@ iscsi_boot_rd_attr(ini_secondary_radius, sec-radius-server,
 		   ISCSI_BOOT_INI_SEC_RADIUS_SERVER);
 iscsi_boot_rd_attr(ini_name, initiator-name, ISCSI_BOOT_INI_INITIATOR_NAME);
 
-static struct attribute *initiator_attrs[] = {
+static const struct attribute *const initiator_attrs[] = {
 	&iscsi_boot_attr_ini_index.attr,
 	&iscsi_boot_attr_ini_flags.attr,
 	&iscsi_boot_attr_ini_isns.attr,
@@ -263,7 +263,7 @@ static struct attribute *initiator_attrs[] = {
 };
 
 static umode_t iscsi_boot_ini_attr_is_visible(struct kobject *kobj,
-					     struct attribute *attr, int i)
+					     const struct attribute *attr, int i)
 {
 	struct iscsi_boot_kobj *boot_kobj =
 			container_of(kobj, struct iscsi_boot_kobj, kobj);
@@ -293,9 +293,9 @@ static umode_t iscsi_boot_ini_attr_is_visible(struct kobject *kobj,
 	return 0;
 }
 
-static struct attribute_group iscsi_boot_initiator_attr_group = {
-	.attrs = initiator_attrs,
-	.is_visible = iscsi_boot_ini_attr_is_visible,
+static const struct attribute_group iscsi_boot_initiator_attr_group = {
+	.attrs_const = initiator_attrs,
+	.is_visible_const = iscsi_boot_ini_attr_is_visible,
 };
 
 /* iBFT ACPI Table attributes */
@@ -304,7 +304,7 @@ iscsi_boot_rd_attr(acpitbl_oem_id, oem_id, ISCSI_BOOT_ACPITBL_OEM_ID);
 iscsi_boot_rd_attr(acpitbl_oem_table_id, oem_table_id,
 		   ISCSI_BOOT_ACPITBL_OEM_TABLE_ID);
 
-static struct attribute *acpitbl_attrs[] = {
+static const struct attribute *const acpitbl_attrs[] = {
 	&iscsi_boot_attr_acpitbl_signature.attr,
 	&iscsi_boot_attr_acpitbl_oem_id.attr,
 	&iscsi_boot_attr_acpitbl_oem_table_id.attr,
@@ -312,7 +312,7 @@ static struct attribute *acpitbl_attrs[] = {
 };
 
 static umode_t iscsi_boot_acpitbl_attr_is_visible(struct kobject *kobj,
-					     struct attribute *attr, int i)
+					     const struct attribute *attr, int i)
 {
 	struct iscsi_boot_kobj *boot_kobj =
 			container_of(kobj, struct iscsi_boot_kobj, kobj);
@@ -329,14 +329,14 @@ static umode_t iscsi_boot_acpitbl_attr_is_visible(struct kobject *kobj,
 	return 0;
 }
 
-static struct attribute_group iscsi_boot_acpitbl_attr_group = {
-	.attrs = acpitbl_attrs,
-	.is_visible = iscsi_boot_acpitbl_attr_is_visible,
+static const struct attribute_group iscsi_boot_acpitbl_attr_group = {
+	.attrs_const = acpitbl_attrs,
+	.is_visible_const = iscsi_boot_acpitbl_attr_is_visible,
 };
 
 static struct iscsi_boot_kobj *
 iscsi_boot_create_kobj(struct iscsi_boot_kset *boot_kset,
-		       struct attribute_group *attr_group,
+		       const struct attribute_group *attr_group,
 		       const char *name, int index, void *data,
 		       ssize_t (*show) (void *data, int type, char *buf),
 		       umode_t (*is_visible) (void *data, int type),
