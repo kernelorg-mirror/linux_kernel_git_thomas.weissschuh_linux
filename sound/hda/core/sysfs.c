@@ -87,9 +87,9 @@ struct widget_attribute;
 struct widget_attribute {
 	struct attribute	attr;
 	ssize_t (*show)(struct hdac_device *codec, hda_nid_t nid,
-			struct widget_attribute *attr, char *buf);
+			const struct widget_attribute *attr, char *buf);
 	ssize_t (*store)(struct hdac_device *codec, hda_nid_t nid,
-			 struct widget_attribute *attr,
+			 const struct widget_attribute *attr,
 			 const char *buf, size_t count);
 };
 
@@ -109,8 +109,8 @@ static int get_codec_nid(struct kobject *kobj, struct hdac_device **codecp)
 static ssize_t widget_attr_show(struct kobject *kobj, struct attribute *attr,
 				char *buf)
 {
-	struct widget_attribute *wid_attr =
-		container_of(attr, struct widget_attribute, attr);
+	const struct widget_attribute *wid_attr =
+		container_of_const(attr, struct widget_attribute, attr);
 	struct hdac_device *codec;
 	int nid;
 
@@ -125,8 +125,8 @@ static ssize_t widget_attr_show(struct kobject *kobj, struct attribute *attr,
 static ssize_t widget_attr_store(struct kobject *kobj, struct attribute *attr,
 				 const char *buf, size_t count)
 {
-	struct widget_attribute *wid_attr =
-		container_of(attr, struct widget_attribute, attr);
+	const struct widget_attribute *wid_attr =
+		container_of(attr, const struct widget_attribute, attr);
 	struct hdac_device *codec;
 	int nid;
 
@@ -159,13 +159,13 @@ static const struct kobj_type widget_ktype = {
 	struct widget_attribute wid_attr_##_name = __ATTR_RW(_name)
 
 static ssize_t caps_show(struct hdac_device *codec, hda_nid_t nid,
-			struct widget_attribute *attr, char *buf)
+			 const struct widget_attribute *attr, char *buf)
 {
 	return sysfs_emit(buf, "0x%08x\n", snd_hdac_get_wcaps(codec, nid));
 }
 
 static ssize_t pin_caps_show(struct hdac_device *codec, hda_nid_t nid,
-			     struct widget_attribute *attr, char *buf)
+			     const struct widget_attribute *attr, char *buf)
 {
 	if (snd_hdac_get_wcaps_type(snd_hdac_get_wcaps(codec, nid)) != AC_WID_PIN)
 		return 0;
@@ -174,7 +174,7 @@ static ssize_t pin_caps_show(struct hdac_device *codec, hda_nid_t nid,
 }
 
 static ssize_t pin_cfg_show(struct hdac_device *codec, hda_nid_t nid,
-			    struct widget_attribute *attr, char *buf)
+			    const struct widget_attribute *attr, char *buf)
 {
 	unsigned int val;
 
@@ -199,7 +199,7 @@ static bool has_pcm_cap(struct hdac_device *codec, hda_nid_t nid)
 }
 
 static ssize_t pcm_caps_show(struct hdac_device *codec, hda_nid_t nid,
-			     struct widget_attribute *attr, char *buf)
+			     const struct widget_attribute *attr, char *buf)
 {
 	if (!has_pcm_cap(codec, nid))
 		return 0;
@@ -208,7 +208,7 @@ static ssize_t pcm_caps_show(struct hdac_device *codec, hda_nid_t nid,
 }
 
 static ssize_t pcm_formats_show(struct hdac_device *codec, hda_nid_t nid,
-				struct widget_attribute *attr, char *buf)
+				const struct widget_attribute *attr, char *buf)
 {
 	if (!has_pcm_cap(codec, nid))
 		return 0;
@@ -217,7 +217,7 @@ static ssize_t pcm_formats_show(struct hdac_device *codec, hda_nid_t nid,
 }
 
 static ssize_t amp_in_caps_show(struct hdac_device *codec, hda_nid_t nid,
-				struct widget_attribute *attr, char *buf)
+				const struct widget_attribute *attr, char *buf)
 {
 	if (nid != codec->afg && !(snd_hdac_get_wcaps(codec, nid) & AC_WCAP_IN_AMP))
 		return 0;
@@ -226,7 +226,7 @@ static ssize_t amp_in_caps_show(struct hdac_device *codec, hda_nid_t nid,
 }
 
 static ssize_t amp_out_caps_show(struct hdac_device *codec, hda_nid_t nid,
-				 struct widget_attribute *attr, char *buf)
+				 const struct widget_attribute *attr, char *buf)
 {
 	if (nid != codec->afg && !(snd_hdac_get_wcaps(codec, nid) & AC_WCAP_OUT_AMP))
 		return 0;
@@ -235,7 +235,7 @@ static ssize_t amp_out_caps_show(struct hdac_device *codec, hda_nid_t nid,
 }
 
 static ssize_t power_caps_show(struct hdac_device *codec, hda_nid_t nid,
-			       struct widget_attribute *attr, char *buf)
+			       const struct widget_attribute *attr, char *buf)
 {
 	if (nid != codec->afg && !(snd_hdac_get_wcaps(codec, nid) & AC_WCAP_POWER))
 		return 0;
@@ -244,14 +244,14 @@ static ssize_t power_caps_show(struct hdac_device *codec, hda_nid_t nid,
 }
 
 static ssize_t gpio_caps_show(struct hdac_device *codec, hda_nid_t nid,
-			      struct widget_attribute *attr, char *buf)
+			      const struct widget_attribute *attr, char *buf)
 {
 	return sysfs_emit(buf, "0x%08x\n",
 			  snd_hdac_read_parm(codec, nid, AC_PAR_GPIO_CAP));
 }
 
 static ssize_t connections_show(struct hdac_device *codec, hda_nid_t nid,
-				struct widget_attribute *attr, char *buf)
+				const struct widget_attribute *attr, char *buf)
 {
 	hda_nid_t list[32];
 	int i, nconns;
@@ -266,18 +266,18 @@ static ssize_t connections_show(struct hdac_device *codec, hda_nid_t nid,
 	return ret;
 }
 
-static WIDGET_ATTR_RO(caps);
-static WIDGET_ATTR_RO(pin_caps);
-static WIDGET_ATTR_RO(pin_cfg);
-static WIDGET_ATTR_RO(pcm_caps);
-static WIDGET_ATTR_RO(pcm_formats);
-static WIDGET_ATTR_RO(amp_in_caps);
-static WIDGET_ATTR_RO(amp_out_caps);
-static WIDGET_ATTR_RO(power_caps);
-static WIDGET_ATTR_RO(gpio_caps);
-static WIDGET_ATTR_RO(connections);
+static const WIDGET_ATTR_RO(caps);
+static const WIDGET_ATTR_RO(pin_caps);
+static const WIDGET_ATTR_RO(pin_cfg);
+static const WIDGET_ATTR_RO(pcm_caps);
+static const WIDGET_ATTR_RO(pcm_formats);
+static const WIDGET_ATTR_RO(amp_in_caps);
+static const WIDGET_ATTR_RO(amp_out_caps);
+static const WIDGET_ATTR_RO(power_caps);
+static const WIDGET_ATTR_RO(gpio_caps);
+static const WIDGET_ATTR_RO(connections);
 
-static struct attribute *widget_node_attrs[] = {
+static const struct attribute *const widget_node_attrs[] = {
 	&wid_attr_caps.attr,
 	&wid_attr_pin_caps.attr,
 	&wid_attr_pin_cfg.attr,
@@ -290,7 +290,7 @@ static struct attribute *widget_node_attrs[] = {
 	NULL,
 };
 
-static struct attribute *widget_afg_attrs[] = {
+static const struct attribute *const widget_afg_attrs[] = {
 	&wid_attr_pcm_caps.attr,
 	&wid_attr_pcm_formats.attr,
 	&wid_attr_amp_in_caps.attr,
@@ -301,11 +301,11 @@ static struct attribute *widget_afg_attrs[] = {
 };
 
 static const struct attribute_group widget_node_group = {
-	.attrs = widget_node_attrs,
+	.attrs_const = widget_node_attrs,
 };
 
 static const struct attribute_group widget_afg_group = {
-	.attrs = widget_afg_attrs,
+	.attrs_const = widget_afg_attrs,
 };
 
 static void free_widget_node(struct kobject *kobj,
