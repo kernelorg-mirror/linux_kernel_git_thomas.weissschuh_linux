@@ -177,10 +177,10 @@ struct cpuidle_state_attr {
 };
 
 #define define_one_state_ro(_name, show) \
-static struct cpuidle_state_attr attr_##_name = __ATTR(_name, 0444, show, NULL)
+static const struct cpuidle_state_attr attr_##_name = __ATTR(_name, 0444, show, NULL)
 
 #define define_one_state_rw(_name, show, store) \
-static struct cpuidle_state_attr attr_##_name = __ATTR(_name, 0644, show, store)
+static const struct cpuidle_state_attr attr_##_name = __ATTR(_name, 0644, show, store)
 
 #define define_show_state_function(_name) \
 static ssize_t show_state_##_name(struct cpuidle_state *state, \
@@ -283,7 +283,7 @@ define_one_state_ro(above, show_state_above);
 define_one_state_ro(below, show_state_below);
 define_one_state_ro(default_status, show_state_default_status);
 
-static struct attribute *cpuidle_state_default_attrs[] = {
+static const struct attribute *const cpuidle_state_default_attrs[] = {
 	&attr_name.attr,
 	&attr_desc.attr,
 	&attr_latency.attr,
@@ -321,13 +321,13 @@ define_show_state_s2idle_ull_function(usage);
 define_show_state_s2idle_ull_function(time);
 
 #define define_one_state_s2idle_ro(_name, show) \
-static struct cpuidle_state_attr attr_s2idle_##_name = \
+static const struct cpuidle_state_attr attr_s2idle_##_name = \
 	__ATTR(_name, 0444, show, NULL)
 
 define_one_state_s2idle_ro(usage, show_state_s2idle_usage);
 define_one_state_s2idle_ro(time, show_state_s2idle_time);
 
-static struct attribute *cpuidle_state_s2idle_attrs[] = {
+static const struct attribute *const cpuidle_state_s2idle_attrs[] = {
 	&attr_s2idle_usage.attr,
 	&attr_s2idle_time.attr,
 	NULL
@@ -335,7 +335,7 @@ static struct attribute *cpuidle_state_s2idle_attrs[] = {
 
 static const struct attribute_group cpuidle_state_s2idle_group = {
 	.name	= "s2idle",
-	.attrs	= cpuidle_state_s2idle_attrs,
+	.attrs_const	= cpuidle_state_s2idle_attrs,
 };
 
 static void cpuidle_add_s2idle_attr_group(struct cpuidle_state_kobj *kobj)
@@ -364,7 +364,7 @@ static inline void cpuidle_remove_s2idle_attr_group(struct cpuidle_state_kobj *k
 #define kobj_to_state(k) (kobj_to_state_obj(k)->state)
 #define kobj_to_state_usage(k) (kobj_to_state_obj(k)->state_usage)
 #define kobj_to_device(k) (kobj_to_state_obj(k)->device)
-#define attr_to_stateattr(a) container_of(a, struct cpuidle_state_attr, attr)
+#define attr_to_stateattr(a) container_of_const(a, struct cpuidle_state_attr, attr)
 
 static ssize_t cpuidle_state_show(struct kobject *kobj, struct attribute *attr,
 				  char *buf)
@@ -372,7 +372,7 @@ static ssize_t cpuidle_state_show(struct kobject *kobj, struct attribute *attr,
 	int ret = -EIO;
 	struct cpuidle_state *state = kobj_to_state(kobj);
 	struct cpuidle_state_usage *state_usage = kobj_to_state_usage(kobj);
-	struct cpuidle_state_attr *cattr = attr_to_stateattr(attr);
+	const struct cpuidle_state_attr *cattr = attr_to_stateattr(attr);
 
 	if (cattr->show)
 		ret = cattr->show(state, state_usage, buf);
@@ -386,7 +386,7 @@ static ssize_t cpuidle_state_store(struct kobject *kobj, struct attribute *attr,
 	int ret = -EIO;
 	struct cpuidle_state *state = kobj_to_state(kobj);
 	struct cpuidle_state_usage *state_usage = kobj_to_state_usage(kobj);
-	struct cpuidle_state_attr *cattr = attr_to_stateattr(attr);
+	const struct cpuidle_state_attr *cattr = attr_to_stateattr(attr);
 	struct cpuidle_device *dev = kobj_to_device(kobj);
 
 	if (cattr->store)
@@ -483,10 +483,10 @@ static void cpuidle_remove_state_sysfs(struct cpuidle_device *device)
 
 #ifdef CONFIG_CPU_IDLE_MULTIPLE_DRIVERS
 #define kobj_to_driver_kobj(k) container_of(k, struct cpuidle_driver_kobj, kobj)
-#define attr_to_driver_attr(a) container_of(a, struct cpuidle_driver_attr, attr)
+#define attr_to_driver_attr(a) container_of_const(a, struct cpuidle_driver_attr, attr)
 
 #define define_one_driver_ro(_name, show)                       \
-	static struct cpuidle_driver_attr attr_driver_##_name = \
+	static const struct cpuidle_driver_attr attr_driver_##_name = \
 		__ATTR(_name, 0444, show, NULL)
 
 struct cpuidle_driver_kobj {
@@ -523,7 +523,7 @@ static ssize_t cpuidle_driver_show(struct kobject *kobj, struct attribute *attr,
 {
 	int ret = -EIO;
 	struct cpuidle_driver_kobj *driver_kobj = kobj_to_driver_kobj(kobj);
-	struct cpuidle_driver_attr *dattr = attr_to_driver_attr(attr);
+	const struct cpuidle_driver_attr *dattr = attr_to_driver_attr(attr);
 
 	if (dattr->show)
 		ret = dattr->show(driver_kobj->drv, buf);
@@ -536,7 +536,7 @@ static ssize_t cpuidle_driver_store(struct kobject *kobj, struct attribute *attr
 {
 	int ret = -EIO;
 	struct cpuidle_driver_kobj *driver_kobj = kobj_to_driver_kobj(kobj);
-	struct cpuidle_driver_attr *dattr = attr_to_driver_attr(attr);
+	const struct cpuidle_driver_attr *dattr = attr_to_driver_attr(attr);
 
 	if (dattr->store)
 		ret = dattr->store(driver_kobj->drv, buf, size);
@@ -551,7 +551,7 @@ static const struct sysfs_ops cpuidle_driver_sysfs_ops = {
 	.store = cpuidle_driver_store,
 };
 
-static struct attribute *cpuidle_driver_default_attrs[] = {
+static const struct attribute *const cpuidle_driver_default_attrs[] = {
 	&attr_driver_name.attr,
 	NULL
 };
