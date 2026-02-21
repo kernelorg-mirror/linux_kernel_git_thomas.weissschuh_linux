@@ -52,11 +52,7 @@ struct nilfs_sysfs_dev_subgroups {
 
 #define NILFS_KOBJ_ATTR_STRUCT(name) \
 struct nilfs_##name##_attr { \
-	struct attribute attr; \
-	ssize_t (*show)(struct kobject *, struct kobj_attribute *, \
-			char *); \
-	ssize_t (*store)(struct kobject *, struct kobj_attribute *, \
-			 const char *, size_t); \
+	struct kobj_attribute; \
 }
 
 NILFS_KOBJ_ATTR_STRUCT(feature);
