@@ -1855,9 +1855,9 @@ struct vq_sysfs_entry {
 			 size_t count);
 };
 
-static struct vq_sysfs_entry irq_cb_affinity_attr = __ATTR_RW(irq_cb_affinity);
+static const struct vq_sysfs_entry irq_cb_affinity_attr = __ATTR_RW(irq_cb_affinity);
 
-static struct attribute *vq_attrs[] = {
+static const struct attribute *const vq_attrs[] = {
 	&irq_cb_affinity_attr.attr,
 	NULL,
 };
@@ -1868,7 +1868,7 @@ static ssize_t vq_attr_show(struct kobject *kobj, struct attribute *attr,
 {
 	struct vduse_virtqueue *vq = container_of(kobj,
 					struct vduse_virtqueue, kobj);
-	struct vq_sysfs_entry *entry = container_of(attr,
+	const struct vq_sysfs_entry *entry = container_of_const(attr,
 					struct vq_sysfs_entry, attr);
 
 	if (!entry->show)
@@ -1882,7 +1882,7 @@ static ssize_t vq_attr_store(struct kobject *kobj, struct attribute *attr,
 {
 	struct vduse_virtqueue *vq = container_of(kobj,
 					struct vduse_virtqueue, kobj);
-	struct vq_sysfs_entry *entry = container_of(attr,
+	const struct vq_sysfs_entry *entry = container_of_const(attr,
 					struct vq_sysfs_entry, attr);
 
 	if (!entry->store)
