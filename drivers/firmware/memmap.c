@@ -56,14 +56,14 @@ struct memmap_attribute {
 	ssize_t (*show)(struct firmware_map_entry *entry, char *buf);
 };
 
-static struct memmap_attribute memmap_start_attr = __ATTR_RO(start);
-static struct memmap_attribute memmap_end_attr   = __ATTR_RO(end);
-static struct memmap_attribute memmap_type_attr  = __ATTR_RO(type);
+static const struct memmap_attribute memmap_start_attr = __ATTR_RO(start);
+static const struct memmap_attribute memmap_end_attr   = __ATTR_RO(end);
+static const struct memmap_attribute memmap_type_attr  = __ATTR_RO(type);
 
 /*
  * These are default attributes that are added for every memmap entry.
  */
-static struct attribute *def_attrs[] = {
+static const struct attribute *const def_attrs[] = {
 	&memmap_start_attr.attr,
 	&memmap_end_attr.attr,
 	&memmap_type_attr.attr,
@@ -384,16 +384,16 @@ static ssize_t type_show(struct firmware_map_entry *entry, char *buf)
 	return snprintf(buf, PAGE_SIZE, "%s\n", entry->type);
 }
 
-static inline struct memmap_attribute *to_memmap_attr(struct attribute *attr)
+static inline const struct memmap_attribute *to_memmap_attr(struct attribute *attr)
 {
-	return container_of(attr, struct memmap_attribute, attr);
+	return container_of_const(attr, struct memmap_attribute, attr);
 }
 
 static ssize_t memmap_attr_show(struct kobject *kobj,
 				struct attribute *attr, char *buf)
 {
 	struct firmware_map_entry *entry = to_memmap_entry(kobj);
-	struct memmap_attribute *memmap_attr = to_memmap_attr(attr);
+	const struct memmap_attribute *memmap_attr = to_memmap_attr(attr);
 
 	return memmap_attr->show(entry, buf);
 }
