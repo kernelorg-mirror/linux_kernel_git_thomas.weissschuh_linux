@@ -973,7 +973,7 @@ static ssize_t base_addr_show(struct ip_hw_instance *ip_hw_instance, char *buf)
 }
 
 #define IP_HW_INSTANCE_ATTR_RO(_name) \
-	static struct ip_hw_instance_attr ip_hw_instance_attr_ ## _name = __ATTR_RO(_name)
+	static const struct ip_hw_instance_attr ip_hw_instance_attr_ ## _name = __ATTR_RO(_name)
 
 IP_HW_INSTANCE_ATTR_RO(hw_id);
 IP_HW_INSTANCE_ATTR_RO(num_instance);
@@ -984,7 +984,7 @@ IP_HW_INSTANCE_ATTR_RO(harvest);
 IP_HW_INSTANCE_ATTR_RO(num_base_addresses);
 IP_HW_INSTANCE_ATTR_RO(base_addr);
 
-static struct attribute *ip_hw_instance_attrs[] = {
+static const struct attribute *const ip_hw_instance_attrs[] = {
 	&ip_hw_instance_attr_hw_id.attr,
 	&ip_hw_instance_attr_num_instance.attr,
 	&ip_hw_instance_attr_major.attr,
@@ -998,14 +998,14 @@ static struct attribute *ip_hw_instance_attrs[] = {
 ATTRIBUTE_GROUPS(ip_hw_instance);
 
 #define to_ip_hw_instance(x) container_of(x, struct ip_hw_instance, kobj)
-#define to_ip_hw_instance_attr(x) container_of(x, struct ip_hw_instance_attr, attr)
+#define to_ip_hw_instance_attr(x) container_of_const(x, struct ip_hw_instance_attr, attr)
 
 static ssize_t ip_hw_instance_attr_show(struct kobject *kobj,
 					struct attribute *attr,
 					char *buf)
 {
 	struct ip_hw_instance *ip_hw_instance = to_ip_hw_instance(kobj);
-	struct ip_hw_instance_attr *ip_hw_attr = to_ip_hw_instance_attr(attr);
+	const struct ip_hw_instance_attr *ip_hw_attr = to_ip_hw_instance_attr(attr);
 
 	if (!ip_hw_attr->show)
 		return -EIO;
