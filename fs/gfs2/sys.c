@@ -37,7 +37,7 @@ static ssize_t gfs2_attr_show(struct kobject *kobj, struct attribute *attr,
 			      char *buf)
 {
 	struct gfs2_sbd *sdp = container_of(kobj, struct gfs2_sbd, sd_kobj);
-	struct gfs2_attr *a = container_of(attr, struct gfs2_attr, attr);
+	const struct gfs2_attr *a = container_of_const(attr, struct gfs2_attr, attr);
 	return a->show ? a->show(sdp, buf) : 0;
 }
 
@@ -45,7 +45,7 @@ static ssize_t gfs2_attr_store(struct kobject *kobj, struct attribute *attr,
 			       const char *buf, size_t len)
 {
 	struct gfs2_sbd *sdp = container_of(kobj, struct gfs2_sbd, sd_kobj);
-	struct gfs2_attr *a = container_of(attr, struct gfs2_attr, attr);
+	const struct gfs2_attr *a = container_of_const(attr, struct gfs2_attr, attr);
 	return a->store ? a->store(sdp, buf, len) : len;
 }
 
@@ -338,7 +338,7 @@ static ssize_t demote_rq_store(struct gfs2_sbd *sdp, const char *buf, size_t len
 
 
 #define GFS2_ATTR(name, mode, show, store) \
-static struct gfs2_attr gfs2_attr_##name = __ATTR(name, mode, show, store)
+static const struct gfs2_attr gfs2_attr_##name = __ATTR(name, mode, show, store)
 
 GFS2_ATTR(id,                  0444, id_show,       NULL);
 GFS2_ATTR(fsname,              0444, fsname_show,   NULL);
@@ -352,7 +352,7 @@ GFS2_ATTR(quota_refresh_group, 0200, NULL,          quota_refresh_group_store);
 GFS2_ATTR(demote_rq,           0200, NULL,	    demote_rq_store);
 GFS2_ATTR(status,              0400, status_show,   NULL);
 
-static struct attribute *gfs2_attrs[] = {
+static const struct attribute *const gfs2_attrs[] = {
 	&gfs2_attr_id.attr,
 	&gfs2_attr_fsname.attr,
 	&gfs2_attr_uuid.attr,
