@@ -22,9 +22,8 @@ all_archs=(
 	arm64 arm armthumb
 	mips32le mips32be mipsn32le mipsn32be mips64le mips64be
 	ppc ppc64 ppc64le
-	riscv32 riscv64
+	riscv64
 	s390x
-	loongarch
 	sparc32 sparc64
 	m68k
 	sh4
