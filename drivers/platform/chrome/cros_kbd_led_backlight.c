@@ -10,6 +10,7 @@
 #include <linux/kernel.h>
 #include <linux/leds.h>
 #include <linux/mfd/core.h>
+#include <linux/mfd/cros_ec.h>
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -119,7 +120,7 @@ static const struct keyboard_led_drvdata keyboard_led_drvdata_acpi = {
 static int keyboard_led_init_ec_pwm_mfd(struct platform_device *pdev,
 					struct keyboard_led *keyboard_led)
 {
-	struct cros_ec_dev *ec_dev = dev_get_drvdata(pdev->dev.parent);
+	struct cros_ec_dev *ec_dev = cros_ec_mfd_get_ec_dev(pdev);
 	struct cros_ec_device *cros_ec = ec_dev->ec_dev;
 
 	keyboard_led->ec = cros_ec;
