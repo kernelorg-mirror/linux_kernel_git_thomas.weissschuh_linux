@@ -215,6 +215,11 @@ static int populate_data_item_mod(struct data *data_item)
 
 	memcpy(&ms, mod + (modlen - sizeof(ms)), sizeof(ms));
 
+	if (ms.id_type != MODULE_SIGNATURE_TYPE_PKCS7) {
+		ret = -EINVAL;
+		goto out;
+	}
+
 	sig_len = __be32_to_cpu(ms.sig_len);
 	modlen -= sig_len + sizeof(ms);
 
