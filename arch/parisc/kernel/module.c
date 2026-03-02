@@ -43,6 +43,7 @@
 #include <linux/elf.h>
 #include <linux/fs.h>
 #include <linux/ftrace.h>
+#include <linux/module.h>
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/bug.h>
