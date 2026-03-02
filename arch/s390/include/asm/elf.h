@@ -88,8 +88,6 @@
 #define R_390_GOTPLT20		59	/* 20 bit offset to jump slot.  */
 #define R_390_TLS_GOTIE20	60	/* 20 bit GOT offset for static TLS
 					   block offset.  */
-/* Keep this the last entry.  */
-#define R_390_NUM	61
 
 /*
  * HWCAP flags - for AT_HWCAP
