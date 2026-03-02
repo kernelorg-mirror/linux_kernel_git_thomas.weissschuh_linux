@@ -86,10 +86,6 @@
 #define R_PPC_GOT_DTPREL16_HI	93 /* half16*	(sym+add)@got@dtprel@h */
 #define R_PPC_GOT_DTPREL16_HA	94 /* half16*	(sym+add)@got@dtprel@ha */
 
-/* keep this the last entry. */
-#define R_PPC_NUM		95
-
-
 #define ELF_NGREG	48	/* includes nip, msr, lr, etc. */
 #define ELF_NFPREG	33	/* includes fpscr */
 #define ELF_NVMX	34	/* includes all vector registers */
@@ -291,8 +287,5 @@ typedef elf_fpreg_t elf_vsrreghalf_t32[ELF_NVSRHALFREG];
 #define R_PPC64_REL16_LO	250
 #define R_PPC64_REL16_HI	251
 #define R_PPC64_REL16_HA	252
-
-/* Keep this the last entry.  */
-#define R_PPC64_NUM		253
 
 #endif /* _UAPI_ASM_POWERPC_ELF_H */
