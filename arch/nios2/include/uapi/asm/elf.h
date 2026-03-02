@@ -46,8 +46,6 @@
 #define R_NIOS2_CJMP		19
 #define R_NIOS2_CALLR		20
 #define R_NIOS2_ALIGN		21
-/* Keep this the last entry.  */
-#define R_NIOS2_NUM		22
 
 typedef unsigned long elf_greg_t;
 
