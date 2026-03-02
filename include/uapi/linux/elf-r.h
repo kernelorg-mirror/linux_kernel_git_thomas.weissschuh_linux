@@ -817,4 +817,22 @@
 #define R_RISCV_SET_ULEB128	60
 #define R_RISCV_SUB_ULEB128	61
 
+/* CSKY Relocations */
+#define R_CSKY_NONE               0
+#define R_CSKY_32                 1
+#define R_CSKY_PCIMM8BY4          2
+#define R_CSKY_PCIMM11BY2         3
+#define R_CSKY_PCIMM4BY2          4
+#define R_CSKY_PC32               5
+#define R_CSKY_PCRELJSR_IMM11BY2  6
+#define R_CSKY_GNU_VTINHERIT      7
+#define R_CSKY_GNU_VTENTRY        8
+#define R_CSKY_RELATIVE           9
+#define R_CSKY_COPY               10
+#define R_CSKY_GLOB_DAT           11
+#define R_CSKY_JUMP_SLOT          12
+#define R_CSKY_ADDR_HI16          24
+#define R_CSKY_ADDR_LO16          25
+#define R_CSKY_PCRELJSR_IMM26BY2  40
+
 #endif /* _UAPI_LINUX_ELF_R_H */
