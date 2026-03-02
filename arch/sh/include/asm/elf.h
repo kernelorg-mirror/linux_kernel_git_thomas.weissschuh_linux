@@ -65,8 +65,6 @@
 #define R_SH_IMM_LOW16_PCREL	247
 #define R_SH_IMM_MEDLOW16	248
 #define R_SH_IMM_MEDLOW16_PCREL	249
-/* Keep this the last entry.  */
-#define	R_SH_NUM		256
 
 /*
  * ELF register definitions..
