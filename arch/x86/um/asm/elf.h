@@ -23,7 +23,6 @@
 #define R_386_RELATIVE	8
 #define R_386_GOTOFF	9
 #define R_386_GOTPC	10
-#define R_386_NUM	11
 
 /*
  * This is used to ensure we don't load something for the wrong architecture.
