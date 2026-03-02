@@ -20,58 +20,6 @@ struct elf32_hdr;
 
 /*  should have stuff like "CPU type" and maybe "ABI version", etc  */
 
-/* Hexagon relocations */
-  /* V2 */
-#define R_HEXAGON_NONE           0
-#define R_HEXAGON_B22_PCREL      1
-#define R_HEXAGON_B15_PCREL      2
-#define R_HEXAGON_B7_PCREL       3
-#define R_HEXAGON_LO16           4
-#define R_HEXAGON_HI16           5
-#define R_HEXAGON_32             6
-#define R_HEXAGON_16             7
-#define R_HEXAGON_8              8
-#define R_HEXAGON_GPREL16_0      9
-#define R_HEXAGON_GPREL16_1     10
-#define R_HEXAGON_GPREL16_2     11
-#define R_HEXAGON_GPREL16_3     12
-#define R_HEXAGON_HL16          13
-  /* V3 */
-#define R_HEXAGON_B13_PCREL     14
-  /* V4 */
-#define R_HEXAGON_B9_PCREL      15
-  /* V4 (extenders) */
-#define R_HEXAGON_B32_PCREL_X   16
-#define R_HEXAGON_32_6_X        17
-  /* V4 (extended) */
-#define R_HEXAGON_B22_PCREL_X   18
-#define R_HEXAGON_B15_PCREL_X   19
-#define R_HEXAGON_B13_PCREL_X   20
-#define R_HEXAGON_B9_PCREL_X    21
-#define R_HEXAGON_B7_PCREL_X    22
-#define R_HEXAGON_16_X          23
-#define R_HEXAGON_12_X          24
-#define R_HEXAGON_11_X          25
-#define R_HEXAGON_10_X          26
-#define R_HEXAGON_9_X           27
-#define R_HEXAGON_8_X           28
-#define R_HEXAGON_7_X           29
-#define R_HEXAGON_6_X           30
-  /* V2 PIC */
-#define R_HEXAGON_32_PCREL      31
-#define R_HEXAGON_COPY          32
-#define R_HEXAGON_GLOB_DAT      33
-#define R_HEXAGON_JMP_SLOT      34
-#define R_HEXAGON_RELATIVE      35
-#define R_HEXAGON_PLT_B22_PCREL 36
-#define R_HEXAGON_GOTOFF_LO16   37
-#define R_HEXAGON_GOTOFF_HI16   38
-#define R_HEXAGON_GOTOFF_32     39
-#define R_HEXAGON_GOT_LO16      40
-#define R_HEXAGON_GOT_HI16      41
-#define R_HEXAGON_GOT_32        42
-#define R_HEXAGON_GOT_16        43
-
 /*
  * ELF register definitions..
  */
