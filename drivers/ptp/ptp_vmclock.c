@@ -43,7 +43,7 @@ ACPI_MODULE_NAME("vmclock");
 
 struct vmclock_state {
 	struct resource res;
-	struct vmclock_abi *clk;
+	const struct vmclock_abi *clk;
 	struct miscdevice miscdev;
 	wait_queue_head_t disrupt_wait;
 	struct ptp_clock_info ptp_clock_info;
@@ -81,7 +81,7 @@ static uint64_t mul_u64_u64_shr_add_u64(uint64_t *res_hi, uint64_t delta,
 	return (uint64_t)res;
 }
 
-static bool tai_adjust(struct vmclock_abi *clk, uint64_t *sec)
+static bool tai_adjust(const struct vmclock_abi *clk, uint64_t *sec)
 {
 	if (clk->time_type == VMCLOCK_TIME_TAI)
 		return true;
