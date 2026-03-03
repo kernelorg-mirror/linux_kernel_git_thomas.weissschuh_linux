@@ -100,7 +100,8 @@ uint32_t vmclock_read_begin(const struct vmclock_abi *clk)
 {
 	uint32_t seq;
 
-	seq = le32_to_cpu(READ_ONCE(clk->seq_count)) & ~1ULL;
+	while (unlikely((seq = le32_to_cpu(READ_ONCE(clk->seq_count))) & 1))
+		;
 
 	/*
 	 * This pairs with a write barrier in the hypervisor
