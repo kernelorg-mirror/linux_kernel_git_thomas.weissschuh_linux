@@ -100,7 +100,7 @@ uint32_t vmclock_read_begin(const struct vmclock_abi *clk)
 {
 	uint32_t seq;
 
-	seq = le32_to_cpu(clk->seq_count) & ~1ULL;
+	seq = le32_to_cpu(READ_ONCE(clk->seq_count)) & ~1ULL;
 
 	/*
 	 * This pairs with a write barrier in the hypervisor
@@ -120,7 +120,7 @@ bool vmclock_read_retry(const struct vmclock_abi *clk, uint32_t seq)
 	 */
 	virt_rmb();
 
-	return unlikely(seq == le32_to_cpu(clk->seq_count));
+	return unlikely(seq == le32_to_cpu(READ_ONCE(clk->seq_count)));
 }
 
 static int vmclock_get_crosststamp(struct vmclock_state *st,
