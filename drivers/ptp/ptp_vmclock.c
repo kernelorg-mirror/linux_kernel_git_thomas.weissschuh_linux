@@ -95,6 +95,34 @@ static bool tai_adjust(const struct vmclock_abi *clk, uint64_t *sec)
 	return false;
 }
 
+static __always_inline
+uint32_t vmclock_read_begin(const struct vmclock_abi *clk)
+{
+	uint32_t seq;
+
+	seq = le32_to_cpu(clk->seq_count) & ~1ULL;
+
+	/*
+	 * This pairs with a write barrier in the hypervisor
+	 * which populates this structure.
+	 */
+	virt_rmb();
+
+	return seq;
+}
+
+static __always_inline
+bool vmclock_read_retry(const struct vmclock_abi *clk, uint32_t seq)
+{
+	/*
+	 * This pairs with a write barrier in the hypervisor
+	 * which populates this structure.
+	 */
+	virt_rmb();
+
+	return unlikely(seq == le32_to_cpu(clk->seq_count));
+}
+
 static int vmclock_get_crosststamp(struct vmclock_state *st,
 				   struct ptp_system_timestamp *sts,
 				   struct system_counterval_t *system_counter,
@@ -115,13 +143,7 @@ static int vmclock_get_crosststamp(struct vmclock_state *st,
 #endif
 
 	while (1) {
-		seq = le32_to_cpu(st->clk->seq_count) & ~1U;
-
-		/*
-		 * This pairs with a write barrier in the hypervisor
-		 * which populates this structure.
-		 */
-		virt_rmb();
+		seq = vmclock_read_begin(st->clk);
 
 		if (st->clk->clock_status == VMCLOCK_STATUS_UNRELIABLE)
 			return -EINVAL;
@@ -164,12 +186,7 @@ static int vmclock_get_crosststamp(struct vmclock_state *st,
 		if (!tai_adjust(st->clk, &tspec->tv_sec))
 			return -EINVAL;
 
-		/*
-		 * This pairs with a write barrier in the hypervisor
-		 * which populates this structure.
-		 */
-		virt_rmb();
-		if (seq == le32_to_cpu(st->clk->seq_count))
+		if (!vmclock_read_retry(st->clk, seq))
 			break;
 
 		if (ktime_after(ktime_get(), deadline))
@@ -407,16 +424,12 @@ static ssize_t vmclock_miscdev_read(struct file *fp, char __user *buf,
 
 	old_seq = atomic_read(&fst->seq);
 	while (1) {
-		seq = le32_to_cpu(st->clk->seq_count) & ~1U;
-		/* Pairs with hypervisor wmb */
-		virt_rmb();
+		seq = vmclock_read_begin(st->clk);
 
 		if (copy_to_user(buf, ((char *)st->clk) + *ppos, count))
 			return -EFAULT;
 
-		/* Pairs with hypervisor wmb */
-		virt_rmb();
-		if (seq == le32_to_cpu(st->clk->seq_count)) {
+		if (!vmclock_read_retry(st->clk, seq)) {
 			/*
 			 * Either we updated fst->seq to seq (the latest version we observed)
 			 * or someone else did (old_seq == seq), so we can break.
