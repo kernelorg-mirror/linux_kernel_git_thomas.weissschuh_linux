@@ -102,7 +102,8 @@ static int vmclock_get_crosststamp(struct vmclock_state *st,
 {
 	ktime_t deadline = ktime_add(ktime_get(), VMCLOCK_MAX_WAIT);
 	struct system_time_snapshot systime_snapshot;
-	uint64_t cycle, delta, seq, frac_sec;
+	uint64_t cycle, delta, frac_sec;
+	uint32_t seq;
 
 #ifdef CONFIG_X86
 	/*
@@ -114,7 +115,7 @@ static int vmclock_get_crosststamp(struct vmclock_state *st,
 #endif
 
 	while (1) {
-		seq = le32_to_cpu(st->clk->seq_count) & ~1ULL;
+		seq = le32_to_cpu(st->clk->seq_count) & ~1U;
 
 		/*
 		 * This pairs with a write barrier in the hypervisor
