@@ -24,8 +24,6 @@ static int mod_verify_sig(const void *mod, struct load_info *info)
 	size_t sig_len, modlen = info->len;
 	int ret;
 
-	pr_devel("==>%s(,%zu)\n", __func__, modlen);
-
 	if (modlen <= sizeof(ms))
 		return -EBADMSG;
 
