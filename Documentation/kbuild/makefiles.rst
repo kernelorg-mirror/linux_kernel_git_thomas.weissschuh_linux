@@ -1245,9 +1245,6 @@ KBUILD_LDFLAGS_MODULE
 
   From commandline LDFLAGS_MODULE shall be used (see kbuild.rst).
 
-KBUILD_LDS
-  The linker script with full path. Assigned by the top-level Makefile.
-
 KBUILD_VMLINUX_OBJS
   All object files for vmlinux. They are linked to vmlinux in the same
   order as listed in KBUILD_VMLINUX_OBJS.
