@@ -13,13 +13,9 @@
 #include <uapi/linux/module.h>
 #include "internal.h"
 
-/*
- * Verify the signature on a module.
- */
-static int mod_verify_sig(struct load_info *info)
+static int mod_split_sig(const struct load_info *info, size_t *mod_len, size_t *sig_len)
 {
 	struct module_signature ms;
-	size_t sig_len;
 	int ret;
 
 	if (info->len <= sizeof(ms))
@@ -36,18 +32,15 @@ static int mod_verify_sig(struct load_info *info)
 	if (ret)
 		return ret;
 
-	sig_len = be32_to_cpu(ms.sig_len);
-	info->len -= sig_len + sizeof(ms);
-
-	return verify_pkcs7_signature(info->hdr, info->len, (char *)info->hdr + info->len, sig_len,
-				      VERIFY_USE_SECONDARY_KEYRING,
-				      VERIFYING_MODULE_SIGNATURE,
-				      NULL, NULL);
+	*sig_len = be32_to_cpu(ms.sig_len);
+	*mod_len = info->len - (*sig_len + sizeof(ms));
+	return 0;
 }
 
 int module_sig_check(struct load_info *info, int flags)
 {
 	int err;
+	size_t sig_len;
 	const unsigned long markerlen = sizeof(MODULE_SIGNATURE_MARKER) - 1;
 	const char *module_marker = (char *)info->hdr + info->len - markerlen;
 	bool mangled_module = flags & (MODULE_INIT_IGNORE_MODVERSIONS |
@@ -64,7 +57,15 @@ int module_sig_check(struct load_info *info, int flags)
 	/* We truncate the module to discard the signature */
 	info->len -= markerlen;
 
-	err = mod_verify_sig(info);
+	err = mod_split_sig(info, &info->len, &sig_len);
+	if (err)
+		return err;
+
+	err = verify_pkcs7_signature(info->hdr, info->len,
+				     (char *)info->hdr + info->len, sig_len,
+				     VERIFY_USE_SECONDARY_KEYRING,
+				     VERIFYING_MODULE_SIGNATURE,
+				     NULL, NULL);
 	if (err)
 		return err;
 
