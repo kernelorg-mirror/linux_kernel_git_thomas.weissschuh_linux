@@ -57,17 +57,18 @@ int module_sig_check(struct load_info *info, int flags)
 	 * Do not allow mangled modules as a module with version information
 	 * removed is no longer the module that was signed.
 	 */
-	if (!mangled_module &&
-	    info->len > markerlen &&
-	    memcmp(mod + info->len - markerlen, MODULE_SIGNATURE_MARKER, markerlen) == 0) {
-		/* We truncate the module to discard the signature */
-		info->len -= markerlen;
-		err = mod_verify_sig(mod, info);
-		if (!err) {
-			info->sig_ok = true;
-			return 0;
-		}
-	}
+	if (mangled_module ||
+	    info->len <= markerlen ||
+	    memcmp(mod + info->len - markerlen, MODULE_SIGNATURE_MARKER, markerlen) != 0)
+		return -ENODATA;
 
-	return -ENODATA;
+	/* We truncate the module to discard the signature */
+	info->len -= markerlen;
+
+	err = mod_verify_sig(mod, info);
+	if (err)
+		return err;
+
+	info->sig_ok = true;
+	return 0;
 }
