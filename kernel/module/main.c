@@ -3344,7 +3344,8 @@ static int early_mod_check(struct load_info *info, int flags)
 	return err;
 }
 
-static int module_split_signature(struct load_info *info, int flags, size_t *sig_len)
+static int module_split_signature(struct load_info *info, int flags, size_t *sig_len,
+				  enum module_signature_type *sig_type)
 {
 	const unsigned long markerlen = sizeof(MODULE_SIGNATURE_MARKER) - 1;
 	const char *module_marker = (char *)info->hdr + info->len - markerlen;
@@ -3370,37 +3371,37 @@ static int module_split_signature(struct load_info *info, int flags, size_t *sig
 
 	memcpy(&ms, (char *)info->hdr + (info->len - sizeof(ms)), sizeof(ms));
 
-	if (ms.id_type != MODULE_SIGNATURE_TYPE_PKCS7) {
-		pr_err("module: not signed with expected PKCS#7 message\n");
-		return -ENOPKG;
-	}
-
 	ret = mod_check_sig(&ms, info->len, "module");
 	if (ret)
 		return ret;
 
 	*sig_len = be32_to_cpu(ms.sig_len);
+	*sig_type = ms.id_type;
 	info->len -= (*sig_len + sizeof(ms));
 	return 0;
 }
 
 static int module_split_and_check_signature(struct load_info *info, int flags)
 {
+	enum module_signature_type sig_type;
 	size_t sig_len;
 	int err;
 
 	if (!IS_ENABLED(CONFIG_MODULE_SIG_POLICY))
 		return 0;
 
-	err = module_split_signature(info, flags, &sig_len);
+	err = module_split_signature(info, flags, &sig_len, &sig_type);
 	if (err)
 		return err;
 
-	if (IS_ENABLED(CONFIG_MODULE_SIG)) {
+	if (IS_ENABLED(CONFIG_MODULE_SIG) && sig_type == MODULE_SIGNATURE_TYPE_PKCS7) {
 		err = module_sig_check(info->hdr, info->len,
 				       (char *)info->hdr + info->len, sig_len);
 		if (!err)
 			info->sig_ok = true;
+	} else {
+		pr_err("module: not signed with expected signature\n");
+		return -ENOPKG;
 	}
 
 	return err;
