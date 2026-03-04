@@ -13,10 +13,26 @@
 #include <uapi/linux/module.h>
 #include "internal.h"
 
-static int mod_split_sig(const struct load_info *info, size_t *mod_len, size_t *sig_len)
+static int mod_split_sig(struct load_info *info, int flags, size_t *sig_len)
 {
+	const unsigned long markerlen = sizeof(MODULE_SIGNATURE_MARKER) - 1;
+	const char *module_marker = (char *)info->hdr + info->len - markerlen;
+	bool mangled_module = flags & (MODULE_INIT_IGNORE_MODVERSIONS |
+				       MODULE_INIT_IGNORE_VERMAGIC);
 	struct module_signature ms;
 	int ret;
+
+	/*
+	 * Do not allow mangled modules as a module with version information
+	 * removed is no longer the module that was signed.
+	 */
+	if (mangled_module ||
+	    info->len <= markerlen ||
+	    memcmp(module_marker, MODULE_SIGNATURE_MARKER, markerlen) != 0)
+		return -ENODATA;
+
+	/* We truncate the module to discard the signature */
+	info->len -= markerlen;
 
 	if (info->len <= sizeof(ms))
 		return -EBADMSG;
@@ -33,31 +49,16 @@ static int mod_split_sig(const struct load_info *info, size_t *mod_len, size_t *
 		return ret;
 
 	*sig_len = be32_to_cpu(ms.sig_len);
-	*mod_len = info->len - (*sig_len + sizeof(ms));
+	info->len -= (*sig_len + sizeof(ms));
 	return 0;
 }
 
 int module_sig_check(struct load_info *info, int flags)
 {
-	int err;
 	size_t sig_len;
-	const unsigned long markerlen = sizeof(MODULE_SIGNATURE_MARKER) - 1;
-	const char *module_marker = (char *)info->hdr + info->len - markerlen;
-	bool mangled_module = flags & (MODULE_INIT_IGNORE_MODVERSIONS |
-				       MODULE_INIT_IGNORE_VERMAGIC);
-	/*
-	 * Do not allow mangled modules as a module with version information
-	 * removed is no longer the module that was signed.
-	 */
-	if (mangled_module ||
-	    info->len <= markerlen ||
-	    memcmp(module_marker, MODULE_SIGNATURE_MARKER, markerlen) != 0)
-		return -ENODATA;
+	int err;
 
-	/* We truncate the module to discard the signature */
-	info->len -= markerlen;
-
-	err = mod_split_sig(info, &info->len, &sig_len);
+	err = mod_split_sig(info, flags, &sig_len);
 	if (err)
 		return err;
 
