@@ -16,7 +16,7 @@
 /*
  * Verify the signature on a module.
  */
-static int mod_verify_sig(const void *mod, struct load_info *info)
+static int mod_verify_sig(struct load_info *info)
 {
 	struct module_signature ms;
 	size_t sig_len;
@@ -25,7 +25,7 @@ static int mod_verify_sig(const void *mod, struct load_info *info)
 	if (info->len <= sizeof(ms))
 		return -EBADMSG;
 
-	memcpy(&ms, mod + (info->len - sizeof(ms)), sizeof(ms));
+	memcpy(&ms, (char *)info->hdr + (info->len - sizeof(ms)), sizeof(ms));
 
 	if (ms.id_type != MODULE_SIGNATURE_TYPE_PKCS7) {
 		pr_err("module: not signed with expected PKCS#7 message\n");
@@ -39,7 +39,7 @@ static int mod_verify_sig(const void *mod, struct load_info *info)
 	sig_len = be32_to_cpu(ms.sig_len);
 	info->len -= sig_len + sizeof(ms);
 
-	return verify_pkcs7_signature(mod, info->len, mod + info->len, sig_len,
+	return verify_pkcs7_signature(info->hdr, info->len, (char *)info->hdr + info->len, sig_len,
 				      VERIFY_USE_SECONDARY_KEYRING,
 				      VERIFYING_MODULE_SIGNATURE,
 				      NULL, NULL);
@@ -49,7 +49,7 @@ int module_sig_check(struct load_info *info, int flags)
 {
 	int err;
 	const unsigned long markerlen = sizeof(MODULE_SIGNATURE_MARKER) - 1;
-	const void *mod = info->hdr;
+	const char *module_marker = (char *)info->hdr + info->len - markerlen;
 	bool mangled_module = flags & (MODULE_INIT_IGNORE_MODVERSIONS |
 				       MODULE_INIT_IGNORE_VERMAGIC);
 	/*
@@ -58,13 +58,13 @@ int module_sig_check(struct load_info *info, int flags)
 	 */
 	if (mangled_module ||
 	    info->len <= markerlen ||
-	    memcmp(mod + info->len - markerlen, MODULE_SIGNATURE_MARKER, markerlen) != 0)
+	    memcmp(module_marker, MODULE_SIGNATURE_MARKER, markerlen) != 0)
 		return -ENODATA;
 
 	/* We truncate the module to discard the signature */
 	info->len -= markerlen;
 
-	err = mod_verify_sig(mod, info);
+	err = mod_verify_sig(info);
 	if (err)
 		return err;
 
