@@ -19,28 +19,27 @@
 static int mod_verify_sig(const void *mod, struct load_info *info)
 {
 	struct module_signature ms;
-	size_t sig_len, modlen = info->len;
+	size_t sig_len;
 	int ret;
 
-	if (modlen <= sizeof(ms))
+	if (info->len <= sizeof(ms))
 		return -EBADMSG;
 
-	memcpy(&ms, mod + (modlen - sizeof(ms)), sizeof(ms));
+	memcpy(&ms, mod + (info->len - sizeof(ms)), sizeof(ms));
 
 	if (ms.id_type != MODULE_SIGNATURE_TYPE_PKCS7) {
 		pr_err("module: not signed with expected PKCS#7 message\n");
 		return -ENOPKG;
 	}
 
-	ret = mod_check_sig(&ms, modlen, "module");
+	ret = mod_check_sig(&ms, info->len, "module");
 	if (ret)
 		return ret;
 
 	sig_len = be32_to_cpu(ms.sig_len);
-	modlen -= sig_len + sizeof(ms);
-	info->len = modlen;
+	info->len -= sig_len + sizeof(ms);
 
-	return verify_pkcs7_signature(mod, modlen, mod + modlen, sig_len,
+	return verify_pkcs7_signature(mod, info->len, mod + info->len, sig_len,
 				      VERIFY_USE_SECONDARY_KEYRING,
 				      VERIFYING_MODULE_SIGNATURE,
 				      NULL, NULL);
