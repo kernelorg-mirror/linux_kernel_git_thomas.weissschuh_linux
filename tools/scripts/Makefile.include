@@ -185,6 +185,8 @@ endif
 
 export quiet Q
 
+strip-kbuild-output = $(if $(KBUILD_OUTPUT),$(1:$(abspath $(KBUILD_OUTPUT))/%=%),$(1))
+
 #
 # Define a callable command for descending to a new directory
 #
@@ -196,25 +198,25 @@ descend = \
 
 ifneq ($(silent),1)
   ifneq ($(V),1)
-	QUIET_CC       = @echo '  CC      '$@;
-	QUIET_CC_FPIC  = @echo '  CC FPIC '$@;
-	QUIET_CLANG    = @echo '  CLANG   '$@;
-	QUIET_AR       = @echo '  AR      '$@;
-	QUIET_LINK     = @echo '  LINK    '$@;
-	QUIET_MKDIR    = @echo '  MKDIR   '$@;
-	QUIET_GEN      = @echo '  GEN     '$@;
-	QUIET_FLEX     = @echo '  FLEX    '$@;
-	QUIET_BISON    = @echo '  BISON   '$@;
-	QUIET_GENSKEL  = @echo '  GENSKEL '$@;
+	QUIET_CC       = @echo '  CC      '$(call strip-kbuild-output,$@);
+	QUIET_CC_FPIC  = @echo '  CC FPIC '$(call strip-kbuild-output,$@);
+	QUIET_CLANG    = @echo '  CLANG   '$(call strip-kbuild-output,$@);
+	QUIET_AR       = @echo '  AR      '$(call strip-kbuild-output,$@);
+	QUIET_LINK     = @echo '  LINK    '$(call strip-kbuild-output,$@);
+	QUIET_MKDIR    = @echo '  MKDIR   '$(call strip-kbuild-output,$@);
+	QUIET_GEN      = @echo '  GEN     '$(call strip-kbuild-output,$@);
+	QUIET_FLEX     = @echo '  FLEX    '$(call strip-kbuild-output,$@);
+	QUIET_BISON    = @echo '  BISON   '$(call strip-kbuild-output,$@);
+	QUIET_GENSKEL  = @echo '  GENSKEL '$(call strip-kbuild-output,$@);
 
 	descend = \
 		+@echo	       '  DESCEND '$(1); \
 		mkdir -p $(OUTPUT)$(1) && \
 		$(MAKE) $(COMMAND_O) subdir=$(if $(subdir),$(subdir)/$(1),$(1)) $(PRINT_DIR) -C $(1) $(2)
 
-	QUIET_CLEAN    = @printf '  CLEAN   %s\n' $1;
-	QUIET_INSTALL  = @printf '  INSTALL %s\n' $1;
-	QUIET_UNINST   = @printf '  UNINST  %s\n' $1;
+	QUIET_CLEAN    = @printf '  CLEAN   %s\n' $(call strip-kbuild-output,$1);
+	QUIET_INSTALL  = @printf '  INSTALL %s\n' $(call strip-kbuild-output,$1);
+	QUIET_UNINST   = @printf '  UNINST  %s\n' $(call strip-kbuild-output,$1);
   endif
 endif
 
