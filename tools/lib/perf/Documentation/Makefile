@@ -94,9 +94,6 @@ export DESTDIR DESTDIR_SQ
 # Until that version is released you may have to apply the patch
 # yourself - yes, all 6 characters of it!
 
-QUIET_SUBDIR0  = +$(MAKE) -C # space to separate -C and subdir
-QUIET_SUBDIR1  =
-
 ifneq ($(findstring $(MAKEFLAGS),w),w)
   PRINT_DIR = --no-print-directory
 else # "make -w"

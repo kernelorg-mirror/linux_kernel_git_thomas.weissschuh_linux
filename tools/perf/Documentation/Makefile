@@ -143,9 +143,6 @@ SHELL_PATH_SQ = $(subst ','\'',$(SHELL_PATH))
 # yourself - yes, all 6 characters of it!
 #
 
-QUIET_SUBDIR0  = +$(MAKE) -C # space to separate -C and subdir
-QUIET_SUBDIR1  =
-
 ifneq ($(findstring $(MAKEFLAGS),w),w)
 PRINT_DIR = --no-print-directory
 else # "make -w"
@@ -162,10 +159,6 @@ ifneq ($(V),1)
 	QUIET_XSLTPROC	= @echo '  XSLTPROC '$@;
 	QUIET_GEN	= @echo '  GEN      '$@;
 	QUIET_STDERR	= 2> /dev/null
-	QUIET_SUBDIR0	= +@subdir=
-	QUIET_SUBDIR1	= ;$(NO_SUBDIR) \
-			   echo '  SUBDIR   ' $$subdir; \
-			  $(MAKE) $(PRINT_DIR) -C $$subdir
 	export V
 endif
 endif
