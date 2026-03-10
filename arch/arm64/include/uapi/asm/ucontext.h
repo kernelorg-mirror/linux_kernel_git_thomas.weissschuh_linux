@@ -19,6 +19,9 @@
 
 #include <linux/types.h>
 
+#include <asm/sigcontext.h>
+#include <asm/signal.h>
+
 struct ucontext {
 	unsigned long	  uc_flags;
 	struct ucontext	 *uc_link;

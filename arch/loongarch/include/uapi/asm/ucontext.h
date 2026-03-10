@@ -2,6 +2,9 @@
 #ifndef __LOONGARCH_UAPI_ASM_UCONTEXT_H
 #define __LOONGARCH_UAPI_ASM_UCONTEXT_H
 
+#include <asm/sigcontext.h>
+#include <asm/signal.h>
+
 /**
  * struct ucontext - user context structure
  * @uc_flags:

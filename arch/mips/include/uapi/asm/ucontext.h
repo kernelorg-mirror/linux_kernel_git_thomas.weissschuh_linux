@@ -2,6 +2,9 @@
 #ifndef __MIPS_UAPI_ASM_UCONTEXT_H
 #define __MIPS_UAPI_ASM_UCONTEXT_H
 
+#include <asm/sigcontext.h>
+#include <asm/signal.h>
+
 /**
  * struct extcontext - extended context header structure
  * @magic:	magic value identifying the type of extended context

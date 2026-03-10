@@ -2,6 +2,9 @@
 #ifndef _ASM_PARISC_UCONTEXT_H
 #define _ASM_PARISC_UCONTEXT_H
 
+#include <asm/sigcontext.h>
+#include <asm/signal.h>
+
 struct ucontext {
 	unsigned int	  uc_flags;
 	struct ucontext  *uc_link;
