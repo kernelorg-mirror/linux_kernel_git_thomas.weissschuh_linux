@@ -33,4 +33,5 @@ mandatory-y += swab.h
 mandatory-y += termbits.h
 mandatory-y += termios.h
 mandatory-y += types.h
+mandatory-y += ucontext.h
 mandatory-y += unistd.h
