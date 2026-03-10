@@ -18,7 +18,6 @@ cxx_flags = $(filter-out -Wmissing-prototypes -Wstrict-prototypes -std=%, $(KBUI
 # Please consider to fix the header first.
 #
 # Sorted alphabetically.
-no-header-test += asm/ucontext.h
 no-header-test += drm/vmwgfx_drm.h
 no-header-test += linux/am437x-vpfe.h
 no-header-test += linux/coda.h
