@@ -29,13 +29,37 @@
 #include <linux/ptp_clock_kernel.h>
 
 #ifdef CONFIG_X86
+
 #include <asm/pvclock.h>
 #include <asm/kvmclock.h>
-#endif
 
-#ifdef CONFIG_KVM_GUEST
-#define SUPPORT_KVMCLOCK
-#endif
+#else /* !CONFIG_X86 */
+
+static inline struct pvclock_vcpu_time_info *this_cpu_pvti(void)
+{
+	return NULL;
+}
+
+static inline uint32_t pvclock_read_begin(const struct pvclock_vcpu_time_info *pvti)
+{
+	return 0;
+}
+
+static inline bool pvclock_read_retry(const struct pvclock_vcpu_time_info *pvti, u64 ver)
+{
+	return false;
+}
+
+static inline uint64_t __pvclock_read_cycles(const struct pvclock_vcpu_time_info *pvti, u64 tsc)
+{
+	return 0;
+}
+
+static inline bool check_tsc_unstable(void)
+{
+	return false;
+}
+#endif /* CONFIG_X86 */
 
 static DEFINE_IDA(vmclock_ida);
 
@@ -134,14 +158,12 @@ static int vmclock_get_crosststamp(struct vmclock_state *st,
 	uint64_t cycle, delta, frac_sec;
 	uint32_t seq;
 
-#ifdef CONFIG_X86
 	/*
 	 * We'd expect the hypervisor to know this and to report the clock
 	 * status as VMCLOCK_STATUS_UNRELIABLE. But be paranoid.
 	 */
-	if (check_tsc_unstable())
+	if (IS_ENABLED(CONFIG_X86) && check_tsc_unstable())
 		return -EINVAL;
-#endif
 
 	while (1) {
 		seq = vmclock_read_begin(st->clk);
@@ -208,7 +230,6 @@ static int vmclock_get_crosststamp(struct vmclock_state *st,
 	return 0;
 }
 
-#ifdef SUPPORT_KVMCLOCK
 /*
  * In the case where the system is using the KVM clock for timekeeping, convert
  * the TSC value into a KVM clock time in order to return a paired reading that
@@ -251,7 +272,6 @@ static int vmclock_get_crosststamp_kvmclock(struct vmclock_state *st,
 
 	return ret;
 }
-#endif
 
 static int ptp_vmclock_get_time_fn(ktime_t *device_time,
 				   struct system_counterval_t *system_counter,
@@ -261,12 +281,10 @@ static int ptp_vmclock_get_time_fn(ktime_t *device_time,
 	struct timespec64 tspec;
 	int ret;
 
-#ifdef SUPPORT_KVMCLOCK
-	if (READ_ONCE(st->sys_cs_id) == CSID_X86_KVM_CLK)
+	if (IS_ENABLED(CONFIG_KVM_GUEST) && READ_ONCE(st->sys_cs_id) == CSID_X86_KVM_CLK)
 		ret = vmclock_get_crosststamp_kvmclock(st, NULL, system_counter,
 						       &tspec);
 	else
-#endif
 		ret = vmclock_get_crosststamp(st, NULL, system_counter, &tspec);
 
 	if (!ret)
@@ -282,13 +300,12 @@ static int ptp_vmclock_getcrosststamp(struct ptp_clock_info *ptp,
 						ptp_clock_info);
 	int ret = get_device_system_crosststamp(ptp_vmclock_get_time_fn, st,
 						NULL, xtstamp);
-#ifdef SUPPORT_KVMCLOCK
 	/*
 	 * On x86, the KVM clock may be used for the system time. We can
 	 * actually convert a TSC reading to that, and return a paired
 	 * timestamp that get_device_system_crosststamp() *can* handle.
 	 */
-	if (ret == -ENODEV) {
+	if (IS_ENABLED(CONFIG_KVM_GUEST) && ret == -ENODEV) {
 		struct system_time_snapshot systime_snapshot;
 
 		ktime_get_snapshot(&systime_snapshot);
@@ -300,7 +317,7 @@ static int ptp_vmclock_getcrosststamp(struct ptp_clock_info *ptp,
 							    st, NULL, xtstamp);
 		}
 	}
-#endif
+
 	return ret;
 }
 
