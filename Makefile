@@ -1464,8 +1464,12 @@ quiet_cmd_install = INSTALL $(INSTALL_PATH)
 
 PHONY += vdso_install
 vdso_install: export INSTALL_FILES = $(vdso-install-y)
+vdso_install: export INSTALL_MOD_PATH = ./vdso
 vdso_install:
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.vdsoinst
+
+__all: vdso_install
+vdso_install: vmlinux
 
 # ---------------------------------------------------------------------------
 # Tools
