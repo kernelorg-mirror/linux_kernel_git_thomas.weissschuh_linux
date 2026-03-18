@@ -922,6 +922,28 @@ static inline int acpi_mps_check(void)
 	return 0;
 }
 
+static inline bool acpi_dev_resource_memory(struct acpi_resource *ares, struct resource *res)
+{
+	return false;
+}
+
+static inline bool acpi_dev_resource_io(struct acpi_resource *ares, struct resource *res)
+{
+	return false;
+}
+
+static inline bool acpi_dev_resource_address_space(struct acpi_resource *ares,
+						   struct resource_win *win)
+{
+	return false;
+}
+
+static inline bool acpi_dev_resource_ext_address_space(struct acpi_resource *ares,
+						       struct resource_win *win)
+{
+	return false;
+}
+
 static inline int acpi_check_resource_conflict(struct resource *res)
 {
 	return 0;
