@@ -505,7 +505,6 @@ static const struct file_operations vmclock_miscdev_fops = {
 
 /* module operations */
 
-#if IS_ENABLED(CONFIG_ACPI)
 static acpi_status vmclock_acpi_resources(struct acpi_resource *ares, void *data)
 {
 	struct vmclock_state *st = data;
@@ -556,7 +555,7 @@ static int vmclock_setup_acpi_notification(struct device *dev)
 	if (!adev)
 		return -ENODEV;
 
-	status = acpi_install_notify_handler(adev->handle, ACPI_DEVICE_NOTIFY,
+	status = acpi_install_notify_handler(acpi_device_handle(adev), ACPI_DEVICE_NOTIFY,
 					     vmclock_acpi_notification_handler,
 					     dev);
 	if (ACPI_FAILURE(status)) {
@@ -580,7 +579,7 @@ static int vmclock_probe_acpi(struct device *dev, struct vmclock_state *st)
 	if (!adev)
 		return -ENODEV;
 
-	status = acpi_walk_resources(adev->handle, METHOD_NAME__CRS,
+	status = acpi_walk_resources(acpi_device_handle(adev), METHOD_NAME__CRS,
 				     vmclock_acpi_resources, st);
 	if (ACPI_FAILURE(status) || resource_type(&st->res) != IORESOURCE_MEM) {
 		dev_err(dev, "failed to get resources\n");
@@ -589,7 +588,6 @@ static int vmclock_probe_acpi(struct device *dev, struct vmclock_state *st)
 
 	return 0;
 }
-#endif /* CONFIG_ACPI */
 
 static irqreturn_t vmclock_of_irq_handler(int __always_unused irq, void *_st)
 {
@@ -633,10 +631,9 @@ static int vmclock_setup_notification(struct device *dev,
 	if (!(le64_to_cpu(st->clk->flags) & VMCLOCK_FLAG_NOTIFICATION_PRESENT))
 		return 0;
 
-#if IS_ENABLED(CONFIG_ACPI)
 	if (has_acpi_companion(dev))
 		return vmclock_setup_acpi_notification(dev);
-#endif
+
 	return vmclock_setup_of_notification(dev);
 }
 
@@ -650,12 +647,10 @@ static void vmclock_remove(void *data)
 		return;
 	}
 
-#if IS_ENABLED(CONFIG_ACPI)
 	if (has_acpi_companion(dev))
-		acpi_remove_notify_handler(ACPI_COMPANION(dev)->handle,
+		acpi_remove_notify_handler(acpi_device_handle(ACPI_COMPANION(dev)),
 					   ACPI_DEVICE_NOTIFY,
 					   vmclock_acpi_notification_handler);
-#endif
 
 	if (st->ptp_clock)
 		ptp_clock_unregister(st->ptp_clock);
@@ -683,11 +678,9 @@ static int vmclock_probe(struct platform_device *pdev)
 	if (!st)
 		return -ENOMEM;
 
-#if IS_ENABLED(CONFIG_ACPI)
 	if (has_acpi_companion(dev))
 		ret = vmclock_probe_acpi(dev, st);
 	else
-#endif
 		ret = vmclock_probe_dt(dev, st);
 
 	if (ret) {
