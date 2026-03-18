@@ -29,6 +29,7 @@
 #include <linux/hex.h>
 #include <linux/kernel.h>
 #include <linux/kallsyms.h>
+#include <linux/lockdep.h>
 #include <linux/math64.h>
 #include <linux/uaccess.h>
 #include <linux/ioport.h>
@@ -863,6 +864,8 @@ static noinline_for_stack
 char *restricted_pointer(char *buf, char *end, const void *ptr,
 			 struct printf_spec spec)
 {
+	lockdep_assert(in_task());
+
 	switch (kptr_restrict) {
 	case 0:
 		/* Handle as %p, hash and do _not_ leak addresses. */
