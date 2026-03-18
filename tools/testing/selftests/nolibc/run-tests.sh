@@ -193,6 +193,14 @@ test_arch() {
 		echo "Unsupported configuration"
 		return
 	fi
+	if [ "$arch" = "loongarch" ] && [ "$llvm" = "" ]; then
+		echo "Unsupported configuration"
+		return
+	fi
+	if [ "$arch" = "riscv32" ] && [ "$test_mode" = "system" ]; then
+		echo "Unsupported configuration"
+		return
+	fi
 
 	mkdir -p "$build_dir"
 	swallow_output "${MAKE[@]}" defconfig
