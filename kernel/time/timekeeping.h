@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _KERNEL_TIME_TIMEKEEPING_H
 #define _KERNEL_TIME_TIMEKEEPING_H
+
+#include <linux/timekeeping_types.h>
+
 /*
  * Internal interfaces for kernel/time/
  */
-extern ktime_t ktime_get_update_offsets_now(unsigned int *cwsseq,
-					    ktime_t *offs_real,
-					    ktime_t *offs_boot,
-					    ktime_t *offs_tai);
+extern ktime_t ktime_get_update_offsets_now(unsigned int *cwsseq, struct tk_clock_offsets *tko);
 
 extern int timekeeping_valid_for_hres(void);
 extern u64 timekeeping_max_deferment(void);

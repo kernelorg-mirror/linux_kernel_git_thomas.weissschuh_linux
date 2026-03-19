@@ -626,16 +626,19 @@ static ktime_t hrtimer_update_next_event(struct hrtimer_cpu_base *cpu_base)
 
 static inline ktime_t hrtimer_update_base(struct hrtimer_cpu_base *base)
 {
-	ktime_t *offs_real = &base->clock_base[HRTIMER_BASE_REALTIME]._offset;
-	ktime_t *offs_boot = &base->clock_base[HRTIMER_BASE_BOOTTIME]._offset;
-	ktime_t *offs_tai = &base->clock_base[HRTIMER_BASE_TAI]._offset;
+	struct tk_clock_offsets offsets;
+	ktime_t now;
 
-	ktime_t now = ktime_get_update_offsets_now(&base->clock_was_set_seq,
-					    offs_real, offs_boot, offs_tai);
+	now = ktime_get_update_offsets_now(&base->clock_was_set_seq, &offsets);
 
-	base->clock_base[HRTIMER_BASE_REALTIME_SOFT]._offset = *offs_real;
-	base->clock_base[HRTIMER_BASE_BOOTTIME_SOFT]._offset = *offs_boot;
-	base->clock_base[HRTIMER_BASE_TAI_SOFT]._offset = *offs_tai;
+	base->clock_base[HRTIMER_BASE_REALTIME]._offset = offsets.offs_real;
+	base->clock_base[HRTIMER_BASE_REALTIME_SOFT]._offset = offsets.offs_real;
+
+	base->clock_base[HRTIMER_BASE_BOOTTIME]._offset = offsets.offs_boot;
+	base->clock_base[HRTIMER_BASE_BOOTTIME_SOFT]._offset = offsets.offs_boot;
+
+	base->clock_base[HRTIMER_BASE_TAI]._offset = offsets.offs_tai;
+	base->clock_base[HRTIMER_BASE_TAI_SOFT]._offset = offsets.offs_tai;
 
 	return now;
 }

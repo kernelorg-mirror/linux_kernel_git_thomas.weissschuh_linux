@@ -2544,9 +2544,7 @@ void do_timer(unsigned long ticks)
 /**
  * ktime_get_update_offsets_now - hrtimer helper
  * @cwsseq:	pointer to check and store the clock was set sequence number
- * @offs_real:	pointer to storage for monotonic -> realtime offset
- * @offs_boot:	pointer to storage for monotonic -> boottime offset
- * @offs_tai:	pointer to storage for monotonic -> clock tai offset
+ * @tko:	Pointer to a timekeeper offset struct to store the offsets
  *
  * Returns current monotonic time and updates the offsets if the
  * sequence number in @cwsseq and timekeeper.clock_was_set_seq are
@@ -2554,8 +2552,7 @@ void do_timer(unsigned long ticks)
  *
  * Called from hrtimer_interrupt() or retrigger_next_event()
  */
-ktime_t ktime_get_update_offsets_now(unsigned int *cwsseq, ktime_t *offs_real,
-				     ktime_t *offs_boot, ktime_t *offs_tai)
+ktime_t ktime_get_update_offsets_now(unsigned int *cwsseq, struct tk_clock_offsets *tko)
 {
 	struct timekeeper *tk = &tk_core.timekeeper;
 	unsigned int seq;
@@ -2571,14 +2568,14 @@ ktime_t ktime_get_update_offsets_now(unsigned int *cwsseq, ktime_t *offs_real,
 
 		if (*cwsseq != tk->clock_was_set_seq) {
 			*cwsseq = tk->clock_was_set_seq;
-			*offs_real = tk->offs_real;
-			*offs_boot = tk->offs_boot;
-			*offs_tai = tk->offs_tai;
+			tko->offs_real = tk->offs_real;
+			tko->offs_boot = tk->offs_boot;
+			tko->offs_tai = tk->offs_tai;
 		}
 
 		/* Handle leapsecond insertion adjustments */
 		if (unlikely(base >= tk->next_leap_ktime))
-			*offs_real = ktime_sub(tk->offs_real, ktime_set(1, 0));
+			tko->offs_real = ktime_sub(tk->offs_real, ktime_set(1, 0));
 
 	} while (read_seqcount_retry(&tk_core_seq, seq));
 
