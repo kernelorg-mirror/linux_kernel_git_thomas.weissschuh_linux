@@ -2561,6 +2561,7 @@ void do_timer(unsigned long ticks)
 ktime_t ktime_get_update_offsets_now(struct tk_clock_offsets *tko)
 {
 	struct timekeeper *tk = &tk_core.timekeeper;
+	u64 clock_seq = READ_ONCE(tko->clock_seq);
 	unsigned int seq;
 	ktime_t base;
 	u64 nsecs;
@@ -2572,7 +2573,7 @@ ktime_t ktime_get_update_offsets_now(struct tk_clock_offsets *tko)
 		nsecs = timekeeping_get_ns(&tk->tkr_mono);
 		base = ktime_add_ns(base, nsecs);
 
-		if (tko->clock_was_set_seq != tk_offsets.clock_was_set_seq)
+		if (clock_seq != tk_offsets.clock_seq)
 			*tko = tk_offsets;
 
 		/* Handle leapsecond insertion adjustments */
