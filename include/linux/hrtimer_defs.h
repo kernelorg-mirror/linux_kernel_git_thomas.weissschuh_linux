@@ -41,7 +41,8 @@
  * @seq:		seqcount around __run_hrtimer
  * @running:		pointer to the currently running hrtimer
  * @active:		red black tree root node for the active timers
- * @offset:		offset of this clock to the monotonic base
+ * @offset:		Pointer to the offset of this clock to the monotonic base.
+ * @_offset:		offset of this clock to the monotonic base.
  */
 struct hrtimer_clock_base {
 	struct hrtimer_cpu_base	*cpu_base;
@@ -50,7 +51,8 @@ struct hrtimer_clock_base {
 	seqcount_raw_spinlock_t	seq;
 	struct hrtimer		*running;
 	struct timerqueue_head	active;
-	ktime_t			offset;
+	ktime_t			*offset;
+	ktime_t			_offset;
 } __hrtimer_clock_base_align;
 
 enum  hrtimer_base_type {

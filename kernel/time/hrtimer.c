@@ -207,7 +207,7 @@ static bool hrtimer_suitable_target(struct hrtimer *timer, struct hrtimer_clock_
 	if (!hrtimer_base_is_online(this_cpu_base))
 		return true;
 
-	expires = ktime_sub(hrtimer_get_expires(timer), new_base->offset);
+	expires = ktime_sub(hrtimer_get_expires(timer), *new_base->offset);
 
 	return expires >= new_base->cpu_base->expires_next;
 }
@@ -523,7 +523,7 @@ static ktime_t __hrtimer_next_event_base(struct hrtimer_cpu_base *cpu_base,
 
 			timer = container_of(next, struct hrtimer, node);
 		}
-		expires = ktime_sub(hrtimer_get_expires(timer), base->offset);
+		expires = ktime_sub(hrtimer_get_expires(timer), *base->offset);
 		if (expires < expires_next) {
 			expires_next = expires;
 
@@ -626,16 +626,16 @@ static ktime_t hrtimer_update_next_event(struct hrtimer_cpu_base *cpu_base)
 
 static inline ktime_t hrtimer_update_base(struct hrtimer_cpu_base *base)
 {
-	ktime_t *offs_real = &base->clock_base[HRTIMER_BASE_REALTIME].offset;
-	ktime_t *offs_boot = &base->clock_base[HRTIMER_BASE_BOOTTIME].offset;
-	ktime_t *offs_tai = &base->clock_base[HRTIMER_BASE_TAI].offset;
+	ktime_t *offs_real = &base->clock_base[HRTIMER_BASE_REALTIME]._offset;
+	ktime_t *offs_boot = &base->clock_base[HRTIMER_BASE_BOOTTIME]._offset;
+	ktime_t *offs_tai = &base->clock_base[HRTIMER_BASE_TAI]._offset;
 
 	ktime_t now = ktime_get_update_offsets_now(&base->clock_was_set_seq,
 					    offs_real, offs_boot, offs_tai);
 
-	base->clock_base[HRTIMER_BASE_REALTIME_SOFT].offset = *offs_real;
-	base->clock_base[HRTIMER_BASE_BOOTTIME_SOFT].offset = *offs_boot;
-	base->clock_base[HRTIMER_BASE_TAI_SOFT].offset = *offs_tai;
+	base->clock_base[HRTIMER_BASE_REALTIME_SOFT]._offset = *offs_real;
+	base->clock_base[HRTIMER_BASE_BOOTTIME_SOFT]._offset = *offs_boot;
+	base->clock_base[HRTIMER_BASE_TAI_SOFT]._offset = *offs_tai;
 
 	return now;
 }
@@ -804,7 +804,7 @@ static void hrtimer_reprogram(struct hrtimer *timer, bool reprogram)
 {
 	struct hrtimer_cpu_base *cpu_base = this_cpu_ptr(&hrtimer_bases);
 	struct hrtimer_clock_base *base = timer->base;
-	ktime_t expires = ktime_sub(hrtimer_get_expires(timer), base->offset);
+	ktime_t expires = ktime_sub(hrtimer_get_expires(timer), *base->offset);
 
 	WARN_ON_ONCE(hrtimer_get_expires_tv64(timer) < 0);
 
@@ -908,7 +908,7 @@ static bool update_needs_ipi(struct hrtimer_cpu_base *cpu_base,
 		struct timerqueue_node *next;
 
 		next = timerqueue_getnext(&base->active);
-		expires = ktime_sub(next->expires, base->offset);
+		expires = ktime_sub(next->expires, *base->offset);
 		if (expires < cpu_base->expires_next)
 			return true;
 
@@ -1816,7 +1816,7 @@ static void __hrtimer_run_queues(struct hrtimer_cpu_base *cpu_base, ktime_t now,
 		struct timerqueue_node *node;
 		ktime_t basenow;
 
-		basenow = ktime_add(now, base->offset);
+		basenow = ktime_add(now, *base->offset);
 
 		while ((node = timerqueue_getnext(&base->active))) {
 			struct hrtimer *timer;
@@ -2234,6 +2234,7 @@ int hrtimers_prepare_cpu(unsigned int cpu)
 		struct hrtimer_clock_base *clock_b = &cpu_base->clock_base[i];
 
 		clock_b->cpu_base = cpu_base;
+		clock_b->offset = &clock_b->_offset;
 		seqcount_raw_spinlock_init(&clock_b->seq, &cpu_base->lock);
 		timerqueue_init_head(&clock_b->active);
 	}
