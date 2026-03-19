@@ -90,6 +90,40 @@ DEFINE_PER_CPU(struct hrtimer_cpu_base, hrtimer_bases) =
 			.index = HRTIMER_BASE_TAI,
 			.clockid = CLOCK_TAI,
 		},
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+		{
+			.index = HRTIMER_BASE_AUX0,
+			.clockid = CLOCK_AUX + 0,
+		},
+		{
+			.index = HRTIMER_BASE_AUX1,
+			.clockid = CLOCK_AUX + 1,
+		},
+		{
+			.index = HRTIMER_BASE_AUX2,
+			.clockid = CLOCK_AUX + 2,
+		},
+		{
+			.index = HRTIMER_BASE_AUX3,
+			.clockid = CLOCK_AUX + 3,
+		},
+		{
+			.index = HRTIMER_BASE_AUX4,
+			.clockid = CLOCK_AUX + 4,
+		},
+		{
+			.index = HRTIMER_BASE_AUX5,
+			.clockid = CLOCK_AUX + 5,
+		},
+		{
+			.index = HRTIMER_BASE_AUX6,
+			.clockid = CLOCK_AUX + 6,
+		},
+		{
+			.index = HRTIMER_BASE_AUX7,
+			.clockid = CLOCK_AUX + 7,
+		},
+#endif /* CONFIG_POSIX_AUX_CLOCKS */
 		{
 			.index = HRTIMER_BASE_MONOTONIC_SOFT,
 			.clockid = CLOCK_MONOTONIC,
@@ -106,9 +140,47 @@ DEFINE_PER_CPU(struct hrtimer_cpu_base, hrtimer_bases) =
 			.index = HRTIMER_BASE_TAI_SOFT,
 			.clockid = CLOCK_TAI,
 		},
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+		{
+			.index = HRTIMER_BASE_AUX0_SOFT,
+			.clockid = CLOCK_AUX + 0,
+		},
+		{
+			.index = HRTIMER_BASE_AUX1_SOFT,
+			.clockid = CLOCK_AUX + 1,
+		},
+		{
+			.index = HRTIMER_BASE_AUX2_SOFT,
+			.clockid = CLOCK_AUX + 2,
+		},
+		{
+			.index = HRTIMER_BASE_AUX3_SOFT,
+			.clockid = CLOCK_AUX + 3,
+		},
+		{
+			.index = HRTIMER_BASE_AUX4_SOFT,
+			.clockid = CLOCK_AUX + 4,
+		},
+		{
+			.index = HRTIMER_BASE_AUX5_SOFT,
+			.clockid = CLOCK_AUX + 5,
+		},
+		{
+			.index = HRTIMER_BASE_AUX6_SOFT,
+			.clockid = CLOCK_AUX + 6,
+		},
+		{
+			.index = HRTIMER_BASE_AUX7_SOFT,
+			.clockid = CLOCK_AUX + 7,
+		},
+#endif /* CONFIG_POSIX_AUX_CLOCKS */
 	},
 	.csd = CSD_INIT(retrigger_next_event, NULL)
 };
+
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+static_assert(HRTIMER_BASE_MONOTONIC_SOFT - HRTIMER_BASE_AUX0 == MAX_AUX_CLOCKS);
+#endif
 
 static inline bool hrtimer_base_is_online(struct hrtimer_cpu_base *base)
 {
@@ -1564,6 +1636,11 @@ static inline int hrtimer_clockid_to_base(clockid_t clock_id)
 		return HRTIMER_BASE_BOOTTIME;
 	case CLOCK_TAI:
 		return HRTIMER_BASE_TAI;
+	case CLOCK_AUX ... CLOCK_AUX_LAST:
+		if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
+			break;
+
+		return HRTIMER_BASE_AUX0 + clock_id - CLOCK_AUX;
 	}
 
 	WARN(1, "Invalid clockid %d. Using MONOTONIC\n", clock_id);
@@ -1581,6 +1658,15 @@ static ktime_t __hrtimer_cb_get_time(clockid_t clock_id)
 		return ktime_get_boottime();
 	case CLOCK_TAI:
 		return ktime_get_clocktai();
+	case CLOCK_AUX ... CLOCK_AUX_LAST:
+		if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
+			break;
+
+		ktime_t kt;
+		if (ktime_get_aux(clock_id, &kt))
+			return kt;
+		else
+			return KTIME_MIN;
 	}
 
 	WARN(1, "Invalid clockid %d. Using MONOTONIC\n", clock_id);
@@ -2225,6 +2311,9 @@ static ktime_t *hrtimer_clock_base_offset(struct hrtimer_cpu_base *cpu_base,
 
 	else if (base->clockid == CLOCK_TAI)
 		return &cpu_base->tk_offsets.offs_tai;
+
+	else if (clockid_aux_valid(base->clockid))
+		return &cpu_base->tk_offsets.offs_aux[base->clockid - CLOCK_AUX];
 
 	WARN_ON(1);
 	return NULL;
