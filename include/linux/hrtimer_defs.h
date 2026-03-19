@@ -3,6 +3,7 @@
 #define _LINUX_HRTIMER_DEFS_H
 
 #include <linux/ktime.h>
+#include <linux/timekeeping_types.h>
 #include <linux/timerqueue.h>
 #include <linux/seqlock.h>
 
@@ -42,7 +43,6 @@
  * @running:		pointer to the currently running hrtimer
  * @active:		red black tree root node for the active timers
  * @offset:		Pointer to the offset of this clock to the monotonic base.
- * @_offset:		offset of this clock to the monotonic base.
  */
 struct hrtimer_clock_base {
 	struct hrtimer_cpu_base	*cpu_base;
@@ -52,7 +52,6 @@ struct hrtimer_clock_base {
 	struct hrtimer		*running;
 	struct timerqueue_head	active;
 	ktime_t			*offset;
-	ktime_t			_offset;
 } __hrtimer_clock_base_align;
 
 enum  hrtimer_base_type {
@@ -74,6 +73,7 @@ enum  hrtimer_base_type {
  * @cpu:		cpu number
  * @active_bases:	Bitfield to mark bases with active timers
  * @clock_was_set_seq:	Sequence counter of clock was set events
+ * @tk_offsets		Timekeeping clock offsets to CLOCK_MONOTONIC
  * @hres_active:	State of high resolution mode
  * @in_hrtirq:		hrtimer_interrupt() is currently executing
  * @hang_detected:	The last hrtimer interrupt detected a hang
@@ -105,6 +105,7 @@ struct hrtimer_cpu_base {
 	unsigned int			cpu;
 	unsigned int			active_bases;
 	unsigned int			clock_was_set_seq;
+	struct tk_clock_offsets		tk_offsets;
 	unsigned int			hres_active		: 1,
 					in_hrtirq		: 1,
 					hang_detected		: 1,

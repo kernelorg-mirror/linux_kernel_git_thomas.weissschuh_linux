@@ -626,21 +626,7 @@ static ktime_t hrtimer_update_next_event(struct hrtimer_cpu_base *cpu_base)
 
 static inline ktime_t hrtimer_update_base(struct hrtimer_cpu_base *base)
 {
-	struct tk_clock_offsets offsets;
-	ktime_t now;
-
-	now = ktime_get_update_offsets_now(&base->clock_was_set_seq, &offsets);
-
-	base->clock_base[HRTIMER_BASE_REALTIME]._offset = offsets.offs_real;
-	base->clock_base[HRTIMER_BASE_REALTIME_SOFT]._offset = offsets.offs_real;
-
-	base->clock_base[HRTIMER_BASE_BOOTTIME]._offset = offsets.offs_boot;
-	base->clock_base[HRTIMER_BASE_BOOTTIME_SOFT]._offset = offsets.offs_boot;
-
-	base->clock_base[HRTIMER_BASE_TAI]._offset = offsets.offs_tai;
-	base->clock_base[HRTIMER_BASE_TAI_SOFT]._offset = offsets.offs_tai;
-
-	return now;
+	return ktime_get_update_offsets_now(&base->clock_was_set_seq, &base->tk_offsets);
 }
 
 /*
@@ -2225,6 +2211,25 @@ SYSCALL_DEFINE2(nanosleep_time32, struct old_timespec32 __user *, rqtp,
 }
 #endif
 
+static ktime_t *hrtimer_clock_base_offset(struct hrtimer_cpu_base *cpu_base,
+					  struct hrtimer_clock_base *base)
+{
+	if (base->clockid == CLOCK_MONOTONIC)
+		return &cpu_base->tk_offsets.offs_none;
+
+	else if (base->clockid == CLOCK_REALTIME)
+		return &cpu_base->tk_offsets.offs_real;
+
+	else if (base->clockid == CLOCK_BOOTTIME)
+		return &cpu_base->tk_offsets.offs_boot;
+
+	else if (base->clockid == CLOCK_TAI)
+		return &cpu_base->tk_offsets.offs_tai;
+
+	WARN_ON(1);
+	return NULL;
+}
+
 /*
  * Functions related to boot-time initialization:
  */
@@ -2237,7 +2242,7 @@ int hrtimers_prepare_cpu(unsigned int cpu)
 		struct hrtimer_clock_base *clock_b = &cpu_base->clock_base[i];
 
 		clock_b->cpu_base = cpu_base;
-		clock_b->offset = &clock_b->_offset;
+		clock_b->offset = hrtimer_clock_base_offset(cpu_base, clock_b);
 		seqcount_raw_spinlock_init(&clock_b->seq, &cpu_base->lock);
 		timerqueue_init_head(&clock_b->active);
 	}
