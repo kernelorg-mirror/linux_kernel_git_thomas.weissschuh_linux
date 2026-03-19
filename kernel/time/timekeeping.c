@@ -80,16 +80,72 @@ static inline bool tk_is_aux(const struct timekeeper *tk)
 {
 	return tk->id >= TIMEKEEPER_AUX_FIRST && tk->id <= TIMEKEEPER_AUX_LAST;
 }
+
+static inline
+void tk_aux_update_tk_offset(const struct timekeeper *tk, struct tk_clock_offsets *offsets)
+{
+	if (offsets->offs_aux[tk->id - TIMEKEEPER_AUX_FIRST] == tk->aux_to_core_mono)
+		return;
+
+	offsets->offs_aux[tk->id - TIMEKEEPER_AUX_FIRST] = tk->aux_to_core_mono;
+	offsets->clock_aux_offs_seq++;
+}
+
+static __always_inline u64 tk_clock_read(const struct tk_read_base *tkr);
+static __always_inline u64 timekeeping_cycles_to_ns(const struct tk_read_base *tkr, u64 cycles);
+
+static ktime_t tk_aux_get_mono_offset(struct timekeeper *aux_tk)
+{
+	struct timekeeper *core_tk;
+	ktime_t mono_base, aux_base;
+	ktime_t mono_now, aux_now;
+	u64 mono_nsecs, aux_nsecs;
+	u64 cycles;
+
+	lockdep_assert_held(&tk_core_lock);
+	WARN_ON(timekeeping_suspended);
+
+	core_tk = &tk_core.timekeeper;
+
+	/* Both timekeepers are guaranteed to use the same clocksource */
+	cycles = tk_clock_read(&core_tk->tkr_mono);
+
+	mono_base = core_tk->tkr_mono.base;
+	mono_nsecs = timekeeping_cycles_to_ns(&core_tk->tkr_mono, cycles);
+
+	/* tk_update_ktime_data() has not run yet, so calculate tkr_mono.base manually */
+	aux_base = ktime_set(aux_tk->xtime_sec, 0);
+	aux_base += ktime_set(aux_tk->wall_to_monotonic.tv_sec, 0);
+	aux_base += ktime_set(0, aux_tk->wall_to_monotonic.tv_nsec);
+
+	aux_base += aux_tk->offs_aux;
+
+	aux_nsecs = timekeeping_cycles_to_ns(&aux_tk->tkr_mono, cycles);
+
+	mono_now = ktime_add_ns(mono_base, mono_nsecs);
+	aux_now = ktime_add_ns(aux_base, aux_nsecs);
+
+	/* While the clock is stopped, its timers do not expire */
+	if (!aux_tk->clock_valid)
+		return aux_now;
+
+	return ktime_sub(aux_now, mono_now);
+}
+
+static inline void tk_aux_update_core_mono_offset(struct timekeeper *tk)
+{
+	tk->aux_to_core_mono = tk_aux_get_mono_offset(tk);
+}
+
 #else
 static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)
 {
 	return false;
 }
-
-static inline bool tk_is_aux(const struct timekeeper *tk)
-{
-	return false;
-}
+static inline bool tk_is_aux(const struct timekeeper *tk) { return false; }
+static inline
+void tk_aux_update_tk_offset(const struct timekeeper *tk, struct tk_clock_offsets *offsets) { }
+static inline void tk_aux_update_core_mono_offset(struct timekeeper *tk) { }
 #endif
 
 static inline void tk_update_aux_offs(struct timekeeper *tk, ktime_t offs)
@@ -750,6 +806,7 @@ static void timekeeping_update_from_shadow(struct tk_data *tkd, unsigned int act
 		tk_offsets.offs_tai = tk->offs_tai;
 	} else if (tk_is_aux(tk)) {
 		vdso_time_update_aux(tk);
+		tk_aux_update_tk_offset(tk, &tk_offsets);
 	}
 
 	if (action & TK_CLOCK_WAS_SET)
@@ -2372,6 +2429,9 @@ static bool __timekeeping_advance(struct tk_data *tkd, enum timekeeping_adv_mode
 	if (orig_offset != offset)
 		tk_update_coarse_nsecs(tk);
 
+	if (tk_is_aux(tk))
+		tk_aux_update_core_mono_offset(tk);
+
 	timekeeping_update_from_shadow(tkd, clock_set);
 
 	return !!clock_set;
@@ -2554,7 +2614,7 @@ void do_timer(unsigned long ticks)
  *
  * Returns current monotonic time and updates the offsets if the sequence
  * numbers in @tko and tk_offsets differ. The latter are updated when the clock
- * was set.
+ * was set or when the AUX clock offsets have changed.
  *
  * Called from hrtimer_interrupt() or retrigger_next_event()
  */
