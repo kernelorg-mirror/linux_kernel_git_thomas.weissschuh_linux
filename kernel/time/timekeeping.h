@@ -7,7 +7,7 @@
 /*
  * Internal interfaces for kernel/time/
  */
-extern ktime_t ktime_get_update_offsets_now(unsigned int *cwsseq, struct tk_clock_offsets *tko);
+extern ktime_t ktime_get_update_offsets_now(struct tk_clock_offsets *tko);
 
 extern int timekeeping_valid_for_hres(void);
 extern u64 timekeeping_max_deferment(void);

@@ -626,7 +626,7 @@ static ktime_t hrtimer_update_next_event(struct hrtimer_cpu_base *cpu_base)
 
 static inline ktime_t hrtimer_update_base(struct hrtimer_cpu_base *base)
 {
-	return ktime_get_update_offsets_now(&base->clock_was_set_seq, &base->tk_offsets);
+	return ktime_get_update_offsets_now(&base->tk_offsets);
 }
 
 /*
