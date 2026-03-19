@@ -72,7 +72,6 @@ struct tk_read_base {
  * @id:				The timekeeper ID
  * @tkr_raw:			The readout base structure for CLOCK_MONOTONIC_RAW
  * @raw_sec:			CLOCK_MONOTONIC_RAW  time in seconds
- * @clock_was_set_seq:		The sequence number of clock was set events
  * @cs_was_changed_seq:		The sequence number of clocksource change events
  * @clock_valid:		Indicator for valid clock
  * @monotonic_to_boot:		CLOCK_MONOTONIC to CLOCK_BOOTTIME offset
@@ -159,7 +158,6 @@ struct timekeeper {
 	u64			raw_sec;
 
 	/* Cachline 3 and 4 (timekeeping internal variables): */
-	unsigned int		clock_was_set_seq;
 	u8			cs_was_changed_seq;
 	u8			clock_valid;
 

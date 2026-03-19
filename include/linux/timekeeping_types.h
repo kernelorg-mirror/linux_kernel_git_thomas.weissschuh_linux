@@ -5,6 +5,7 @@
 #include <linux/types.h>
 
 struct tk_clock_offsets {
+	u32			clock_was_set_seq;
 	ktime_t			offs_none;
 	ktime_t			offs_real;
 	ktime_t			offs_boot;

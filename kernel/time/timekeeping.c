@@ -753,7 +753,7 @@ static void timekeeping_update_from_shadow(struct tk_data *tkd, unsigned int act
 	}
 
 	if (action & TK_CLOCK_WAS_SET)
-		tk->clock_was_set_seq++;
+		tk_offsets.clock_was_set_seq++;
 
 	/*
 	 * Update the real timekeeper.
@@ -1074,7 +1074,7 @@ void ktime_get_snapshot(struct system_time_snapshot *systime_snapshot)
 		now = tk_clock_read(&tk->tkr_mono);
 		systime_snapshot->cs_id = tk->tkr_mono.clock->id;
 		systime_snapshot->cs_was_changed_seq = tk->cs_was_changed_seq;
-		systime_snapshot->clock_was_set_seq = tk->clock_was_set_seq;
+		systime_snapshot->clock_was_set_seq = tk_offsets.clock_was_set_seq;
 		base_real = ktime_add(tk->tkr_mono.base,
 				      tk_core.timekeeper.offs_real);
 		base_boot = ktime_add(tk->tkr_mono.base,
@@ -1360,7 +1360,7 @@ int get_device_system_crosststamp(int (*get_time_fn)
 		now = tk_clock_read(&tk->tkr_mono);
 		interval_start = tk->tkr_mono.cycle_last;
 		if (!timestamp_in_interval(interval_start, now, cycles)) {
-			clock_was_set_seq = tk->clock_was_set_seq;
+			clock_was_set_seq = tk_offsets.clock_was_set_seq;
 			cs_was_changed_seq = tk->cs_was_changed_seq;
 			cycles = interval_start;
 			do_interp = true;
@@ -2573,8 +2573,8 @@ ktime_t ktime_get_update_offsets_now(unsigned int *cwsseq, struct tk_clock_offse
 		nsecs = timekeeping_get_ns(&tk->tkr_mono);
 		base = ktime_add_ns(base, nsecs);
 
-		if (*cwsseq != tk->clock_was_set_seq) {
-			*cwsseq = tk->clock_was_set_seq;
+		if (*cwsseq != tk_offsets.clock_was_set_seq) {
+			*cwsseq = tk_offsets.clock_was_set_seq;
 			*tko = tk_offsets;
 		}
 
