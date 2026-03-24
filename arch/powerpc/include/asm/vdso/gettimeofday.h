@@ -10,8 +10,6 @@
 #include <uapi/linux/time.h>
 #include <vdso/time32.h>
 
-#define VDSO_HAS_CLOCK_GETRES		1
-
 /*
  * powerpc specific delta calculation.
  *

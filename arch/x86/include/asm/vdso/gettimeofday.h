@@ -20,8 +20,6 @@
 #include <clocksource/hyperv_timer.h>
 #include <asm/vdso/sys_call.h>
 
-#define VDSO_HAS_CLOCK_GETRES 1
-
 /*
  * Declare the memory-mapped vclock data pages.  These come from hypervisors.
  * If we ever reintroduce something like direct access to an MMIO clock like
