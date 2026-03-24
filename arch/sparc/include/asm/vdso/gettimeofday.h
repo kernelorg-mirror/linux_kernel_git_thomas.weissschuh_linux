@@ -104,7 +104,7 @@ static __always_inline u64 __arch_get_hw_counter(s32 clock_mode, const struct vd
 #ifdef CONFIG_SPARC64
 
 static __always_inline
-long clock_gettime_fallback(clockid_t clock, struct __kernel_timespec *ts)
+int clock_gettime_fallback(clockid_t clock, struct __kernel_timespec *ts)
 {
 	register long num __asm__("g1") = __NR_clock_gettime;
 	register long o0 __asm__("o0") = clock;
@@ -118,7 +118,7 @@ long clock_gettime_fallback(clockid_t clock, struct __kernel_timespec *ts)
 #else /* !CONFIG_SPARC64 */
 
 static __always_inline
-long clock_gettime_fallback(clockid_t clock, struct __kernel_timespec *ts)
+int clock_gettime_fallback(clockid_t clock, struct __kernel_timespec *ts)
 {
 	register long num __asm__("g1") = __NR_clock_gettime64;
 	register long o0 __asm__("o0") = clock;
@@ -130,7 +130,7 @@ long clock_gettime_fallback(clockid_t clock, struct __kernel_timespec *ts)
 }
 
 static __always_inline
-long clock_gettime32_fallback(clockid_t clock, struct old_timespec32 *ts)
+int clock_gettime32_fallback(clockid_t clock, struct old_timespec32 *ts)
 {
 	register long num __asm__("g1") = __NR_clock_gettime;
 	register long o0 __asm__("o0") = clock;
@@ -144,7 +144,7 @@ long clock_gettime32_fallback(clockid_t clock, struct old_timespec32 *ts)
 #endif /* CONFIG_SPARC64 */
 
 static __always_inline
-long gettimeofday_fallback(struct __kernel_old_timeval *tv, struct timezone *tz)
+int gettimeofday_fallback(struct __kernel_old_timeval *tv, struct timezone *tz)
 {
 	register long num __asm__("g1") = __NR_gettimeofday;
 	register long o0 __asm__("o0") = (long) tv;

@@ -35,7 +35,7 @@ static __always_inline int gettimeofday_fallback(
 	return ret;
 }
 
-static __always_inline long clock_gettime_fallback(
+static __always_inline int clock_gettime_fallback(
 					clockid_t _clkid,
 					struct __kernel_timespec *_ts)
 {
@@ -53,7 +53,7 @@ static __always_inline long clock_gettime_fallback(
 	return ret;
 }
 
-static __always_inline long clock_gettime32_fallback(
+static __always_inline int clock_gettime32_fallback(
 					clockid_t _clkid,
 					struct old_timespec32 *_ts)
 {

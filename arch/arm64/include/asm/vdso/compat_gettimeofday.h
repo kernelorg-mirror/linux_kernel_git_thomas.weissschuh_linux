@@ -39,7 +39,7 @@ int gettimeofday_fallback(struct __kernel_old_timeval *_tv,
 }
 
 static __always_inline
-long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
+int clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
 	register struct __kernel_timespec *ts asm("r1") = _ts;
 	register clockid_t clkid asm("r0") = _clkid;
@@ -56,7 +56,7 @@ long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 }
 
 static __always_inline
-long clock_gettime32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
+int clock_gettime32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
 {
 	register struct old_timespec32 *ts asm("r1") = _ts;
 	register clockid_t clkid asm("r0") = _clkid;

@@ -26,7 +26,7 @@
 #define VDSO_SYSCALL_CLOBBERS
 #endif
 
-static __always_inline long gettimeofday_fallback(
+static __always_inline int gettimeofday_fallback(
 				struct __kernel_old_timeval *_tv,
 				struct timezone *_tz)
 {
@@ -48,7 +48,7 @@ static __always_inline long gettimeofday_fallback(
 	return error ? -ret : ret;
 }
 
-static __always_inline long clock_gettime_fallback(
+static __always_inline int clock_gettime_fallback(
 					clockid_t _clkid,
 					struct __kernel_timespec *_ts)
 {
@@ -102,7 +102,7 @@ static __always_inline int clock_getres_fallback(
 
 #if _MIPS_SIM != _MIPS_SIM_ABI64
 
-static __always_inline long clock_gettime32_fallback(
+static __always_inline int clock_gettime32_fallback(
 					clockid_t _clkid,
 					struct old_timespec32 *_ts)
 {

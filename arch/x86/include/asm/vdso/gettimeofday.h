@@ -55,20 +55,20 @@ extern struct ms_hyperv_tsc_page hvclock_page
 #endif
 
 static __always_inline
-long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
+int clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
 	return VDSO_SYSCALL2(clock_gettime,64,_clkid,_ts);
 }
 
 static __always_inline
-long gettimeofday_fallback(struct __kernel_old_timeval *_tv,
+int gettimeofday_fallback(struct __kernel_old_timeval *_tv,
 			   struct timezone *_tz)
 {
 	return VDSO_SYSCALL2(gettimeofday,,_tv,_tz);
 }
 
 static __always_inline
-long clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
+int clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
 	return VDSO_SYSCALL2(clock_getres,_time64,_clkid,_ts);
 }
@@ -76,12 +76,12 @@ long clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 #ifndef CONFIG_X86_64
 
 static __always_inline
-long clock_gettime32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
+int clock_gettime32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
 {
 	return VDSO_SYSCALL2(clock_gettime,,_clkid,_ts);
 }
 
-static __always_inline long
+static __always_inline int
 clock_getres32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
 {
 	return VDSO_SYSCALL2(clock_getres,,_clkid,_ts);
