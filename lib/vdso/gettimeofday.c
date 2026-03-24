@@ -443,6 +443,8 @@ bool __cvdso_clock_getres_common(const struct vdso_time_data *vd, clockid_t cloc
 	return true;
 }
 
+__always_inline int clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts);
+
 static
 int __cvdso_clock_getres_data(const struct vdso_time_data *vd, clockid_t clock,
 			      struct __kernel_timespec *res)
@@ -463,6 +465,8 @@ int __cvdso_clock_getres(clockid_t clock, struct __kernel_timespec *res)
 }
 
 #ifdef BUILD_VDSO32
+__always_inline int clock_getres32_fallback(clockid_t _clkid, struct old_timespec32 *_ts);
+
 static int
 __cvdso_clock_getres_time32_data(const struct vdso_time_data *vd, clockid_t clock,
 				 struct old_timespec32 *res)
