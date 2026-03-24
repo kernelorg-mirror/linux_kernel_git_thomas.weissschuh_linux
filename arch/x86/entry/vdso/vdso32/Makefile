@@ -11,7 +11,7 @@ vobjs-y			:= note.o vclock_gettime.o vgetcpu.o
 vobjs-y			+= system_call.o sigreturn.o
 
 # Compilation flags
-flags-y			:= -DBUILD_VDSO32 -m32 -mregparm=0
+flags-y			:= -m32 -mregparm=0
 flags-$(CONFIG_X86_64)	+= -include $(src)/fake_32bit_build.h
 flags-remove-y          := -m64
 

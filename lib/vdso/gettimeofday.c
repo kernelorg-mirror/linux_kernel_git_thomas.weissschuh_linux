@@ -316,7 +316,8 @@ __cvdso_clock_gettime(clockid_t clock, struct __kernel_timespec *ts)
 	return __cvdso_clock_gettime_data(__arch_get_vdso_u_time_data(), clock, ts);
 }
 
-#ifdef BUILD_VDSO32
+__always_inline int clock_gettime32_fallback(clockid_t _clkid, struct old_timespec32 *_ts);
+
 static int
 __cvdso_clock_gettime32_data(const struct vdso_time_data *vd, clockid_t clock,
 			     struct old_timespec32 *res)
@@ -341,7 +342,6 @@ __cvdso_clock_gettime32(clockid_t clock, struct old_timespec32 *res)
 {
 	return __cvdso_clock_gettime32_data(__arch_get_vdso_u_time_data(), clock, res);
 }
-#endif /* BUILD_VDSO32 */
 
 static int
 __cvdso_gettimeofday_data(const struct vdso_time_data *vd,
@@ -463,7 +463,6 @@ int __cvdso_clock_getres(clockid_t clock, struct __kernel_timespec *res)
 	return __cvdso_clock_getres_data(__arch_get_vdso_u_time_data(), clock, res);
 }
 
-#ifdef BUILD_VDSO32
 __always_inline int clock_getres32_fallback(clockid_t _clkid, struct old_timespec32 *_ts);
 
 static int
@@ -491,4 +490,3 @@ __cvdso_clock_getres_time32(clockid_t clock, struct old_timespec32 *res)
 	return __cvdso_clock_getres_time32_data(__arch_get_vdso_u_time_data(),
 						clock, res);
 }
-#endif /* BUILD_VDSO32 */
