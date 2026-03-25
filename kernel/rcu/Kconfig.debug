@@ -42,6 +42,8 @@ config RCU_TORTURE_TEST
 	tristate "torture tests for RCU"
 	depends on DEBUG_KERNEL
 	select TORTURE_TEST
+	select HEADERS_INSTALL if ARCH_HAS_NOLIBC
+	select GEN_INIT_CPIO
 	default n
 	help
 	  This option provides a kernel module that runs torture tests

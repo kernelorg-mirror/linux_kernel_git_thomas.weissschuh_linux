@@ -315,11 +315,11 @@ then
 	fi
 fi
 
-if test -n "$dryrun" || test -z "$TORTURE_INITRD" || tools/testing/selftests/rcutorture/bin/mkinitrd.sh
+if test -n "$dryrun" || test -z "$TORTURE_INITRD"
 then
 	:
 else
-	echo No initrd and unable to create one, aborting test >&2
+	echo No initrd, aborting test >&2
 	exit 1
 fi
 
