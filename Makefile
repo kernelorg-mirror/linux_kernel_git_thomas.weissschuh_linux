@@ -1440,6 +1440,10 @@ PHONY += usr_gen_init_cpio
 usr_gen_init_cpio: scripts_basic
 	$(Q)$(MAKE) $(build)=usr usr/gen_init_cpio
 
+ifdef CONFIG_GEN_INIT_CPIO
+prepare: usr_gen_init_cpio
+endif
+
 PHONY += scripts_unifdef
 scripts_unifdef: scripts_basic
 	$(Q)$(MAKE) $(build)=scripts scripts/unifdef

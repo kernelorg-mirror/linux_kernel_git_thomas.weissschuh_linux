@@ -3,6 +3,9 @@
 # Configuration for initramfs
 #
 
+config GEN_INIT_CPIO
+	bool
+
 config INITRAMFS_SOURCE
 	string "Initramfs source file(s)"
 	default ""
