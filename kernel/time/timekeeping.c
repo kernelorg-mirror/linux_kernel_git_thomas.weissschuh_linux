@@ -2991,33 +2991,36 @@ static int aux_clock_set(const clockid_t id, const struct timespec64 *tnew)
 
 	aux_tks = &aux_tkd->shadow_timekeeper;
 
-	guard(raw_spinlock_irq)(&tk_core_lock);
-	if (!aux_tks->clock_valid)
-		return -ENODEV;
+	scoped_guard(raw_spinlock_irq, &tk_core_lock) {
+		if (!aux_tks->clock_valid)
+			return -ENODEV;
 
-	/* Forward the timekeeper base time */
-	timekeeping_forward_now(aux_tks);
-	/*
-	 * Get the updated base time. tkr_mono.base has not been
-	 * updated yet, so do that first. That makes the update
-	 * in timekeeping_update_from_shadow() redundant, but
-	 * that's harmless. After that @tnow can be calculated
-	 * by using tkr_mono::cycle_last, which has been set
-	 * by timekeeping_forward_now().
-	 */
-	tk_update_ktime_data(aux_tks);
-	nsecs = timekeeping_cycles_to_ns(&aux_tks->tkr_mono, aux_tks->tkr_mono.cycle_last);
-	tnow = ktime_add(aux_tks->tkr_mono.base, nsecs);
+		/* Forward the timekeeper base time */
+		timekeeping_forward_now(aux_tks);
+		/*
+		 * Get the updated base time. tkr_mono.base has not been
+		 * updated yet, so do that first. That makes the update
+		 * in timekeeping_update_from_shadow() redundant, but
+		 * that's harmless. After that @tnow can be calculated
+		 * by using tkr_mono::cycle_last, which has been set
+		 * by timekeeping_forward_now().
+		 */
+		tk_update_ktime_data(aux_tks);
+		nsecs = timekeeping_cycles_to_ns(&aux_tks->tkr_mono, aux_tks->tkr_mono.cycle_last);
+		tnow = ktime_add(aux_tks->tkr_mono.base, nsecs);
 
-	/*
-	 * Calculate the new AUX offset as delta to @tnow ("monotonic").
-	 * That avoids all the tk::xtime back and forth conversions as
-	 * xtime ("realtime") is not applicable for auxiliary clocks and
-	 * kept in sync with "monotonic".
-	 */
-	tk_update_aux_offs(aux_tks, ktime_sub(timespec64_to_ktime(*tnew), tnow));
+		/*
+		 * Calculate the new AUX offset as delta to @tnow ("monotonic").
+		 * That avoids all the tk::xtime back and forth conversions as
+		 * xtime ("realtime") is not applicable for auxiliary clocks and
+		 * kept in sync with "monotonic".
+		 */
+		tk_update_aux_offs(aux_tks, ktime_sub(timespec64_to_ktime(*tnew), tnow));
 
-	timekeeping_update_from_shadow(aux_tkd, TK_UPDATE_ALL);
+		timekeeping_update_from_shadow(aux_tkd, TK_UPDATE_ALL);
+	}
+
+	clock_was_set(CLOCK_SET_AUX(id));
 	return 0;
 }
 
