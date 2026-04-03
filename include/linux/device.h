@@ -135,9 +135,9 @@ ssize_t device_show_int(struct device *dev, const struct device_attribute *attr,
 			char *buf);
 ssize_t device_store_int(struct device *dev, const struct device_attribute *attr,
 			 const char *buf, size_t count);
-ssize_t device_show_bool(struct device *dev, struct device_attribute *attr,
+ssize_t device_show_bool(struct device *dev, const struct device_attribute *attr,
 			char *buf);
-ssize_t device_store_bool(struct device *dev, struct device_attribute *attr,
+ssize_t device_store_bool(struct device *dev, const struct device_attribute *attr,
 			 const char *buf, size_t count);
 ssize_t device_show_string(struct device *dev, struct device_attribute *attr,
 			   char *buf);
