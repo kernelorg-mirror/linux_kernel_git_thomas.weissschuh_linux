@@ -103,15 +103,15 @@ static __always_inline bool vdso_clockid_valid(clockid_t clock)
  * Must not be invoked within the sequence read section as a race inside
  * that loop could result in __iter_div_u64_rem() being extremely slow.
  */
-static __always_inline void vdso_set_timespec(struct __kernel_timespec *ts, u64 sec, u64 ns)
+static __always_inline void vdso_set_timespec(struct __kernel_timespec *ts,
+					      const struct vdso_timestamp *vdso_ts)
 {
-	ts->tv_sec = sec + __iter_div_u64_rem(ns, NSEC_PER_SEC, &ns);
-	ts->tv_nsec = ns;
+	ts->tv_sec = vdso_ts->sec + __iter_div_u64_rem(vdso_ts->nsec, NSEC_PER_SEC, &ts->tv_nsec);
 }
 
 static __always_inline
 bool vdso_get_timestamp(const struct vdso_time_data *vd, const struct vdso_clock *vc,
-			unsigned int clkidx, u64 *sec, u64 *ns)
+			unsigned int clkidx, struct vdso_timestamp *out_ts)
 {
 	const struct vdso_timestamp *vdso_ts = &vc->basetime[clkidx];
 	u64 cycles;
@@ -123,8 +123,8 @@ bool vdso_get_timestamp(const struct vdso_time_data *vd, const struct vdso_clock
 	if (unlikely(!vdso_cycles_ok(cycles)))
 		return false;
 
-	*ns = vdso_calc_ns(vc, cycles, vdso_ts->nsec);
-	*sec = vdso_ts->sec;
+	out_ts->nsec = vdso_calc_ns(vc, cycles, vdso_ts->nsec);
+	out_ts->sec = vdso_ts->sec;
 
 	return true;
 }
@@ -142,9 +142,8 @@ bool do_hres_timens(const struct vdso_time_data *vdns, const struct vdso_clock *
 	const struct vdso_time_data *vd = vdso_timens_data(vdns);
 	const struct timens_offset *offs = &vcns->offset[clk];
 	const struct vdso_clock *vc = vd->clock_data;
+	struct vdso_timestamp out_ts;
 	u32 seq;
-	s64 sec;
-	u64 ns;
 
 	if (clk != CLOCK_MONOTONIC_RAW)
 		vc = &vc[CS_HRES_COARSE];
@@ -154,15 +153,15 @@ bool do_hres_timens(const struct vdso_time_data *vdns, const struct vdso_clock *
 	do {
 		seq = vdso_read_begin(vc);
 
-		if (!vdso_get_timestamp(vd, vc, clk, &sec, &ns))
+		if (!vdso_get_timestamp(vd, vc, clk, &out_ts))
 			return false;
 	} while (vdso_read_retry(vc, seq));
 
 	/* Add the namespace offset */
-	sec += offs->sec;
-	ns += offs->nsec;
+	out_ts.sec += offs->sec;
+	out_ts.nsec += offs->nsec;
 
-	vdso_set_timespec(ts, sec, ns);
+	vdso_set_timespec(ts, &out_ts);
 
 	return true;
 }
@@ -171,7 +170,7 @@ static __always_inline
 bool do_hres(const struct vdso_time_data *vd, const struct vdso_clock *vc,
 	     clockid_t clk, struct __kernel_timespec *ts)
 {
-	u64 sec, ns;
+	struct vdso_timestamp out_ts;
 	u32 seq;
 
 	/* Allows to compile the high resolution parts out */
@@ -182,11 +181,11 @@ bool do_hres(const struct vdso_time_data *vd, const struct vdso_clock *vc,
 		if (vdso_read_begin_timens(vc, &seq))
 			return do_hres_timens(vd, vc, clk, ts);
 
-		if (!vdso_get_timestamp(vd, vc, clk, &sec, &ns))
+		if (!vdso_get_timestamp(vd, vc, clk, &out_ts))
 			return false;
 	} while (vdso_read_retry(vc, seq));
 
-	vdso_set_timespec(ts, sec, ns);
+	vdso_set_timespec(ts, &out_ts);
 
 	return true;
 }
@@ -199,23 +198,21 @@ bool do_coarse_timens(const struct vdso_time_data *vdns, const struct vdso_clock
 	const struct timens_offset *offs = &vcns->offset[clk];
 	const struct vdso_clock *vc = vd->clock_data;
 	const struct vdso_timestamp *vdso_ts;
-	u64 nsec;
-	s64 sec;
+	struct vdso_timestamp out_ts;
 	s32 seq;
 
 	vdso_ts = &vc->basetime[clk];
 
 	do {
 		seq = vdso_read_begin(vc);
-		sec = vdso_ts->sec;
-		nsec = vdso_ts->nsec;
+		out_ts = *vdso_ts;
 	} while (vdso_read_retry(vc, seq));
 
 	/* Add the namespace offset */
-	sec += offs->sec;
-	nsec += offs->nsec;
+	out_ts.sec += offs->sec;
+	out_ts.nsec += offs->nsec;
 
-	vdso_set_timespec(ts, sec, nsec);
+	vdso_set_timespec(ts, &out_ts);
 
 	return true;
 }
@@ -241,9 +238,9 @@ bool do_coarse(const struct vdso_time_data *vd, const struct vdso_clock *vc,
 static __always_inline
 bool do_aux(const struct vdso_time_data *vd, clockid_t clock, struct __kernel_timespec *ts)
 {
+	struct vdso_timestamp out_ts;
 	const struct vdso_clock *vc;
 	u32 seq, idx;
-	u64 sec, ns;
 
 	if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
 		return false;
@@ -262,11 +259,11 @@ bool do_aux(const struct vdso_time_data *vd, clockid_t clock, struct __kernel_ti
 		if (vc->clock_mode == VDSO_CLOCKMODE_NONE)
 			return false;
 
-		if (!vdso_get_timestamp(vd, vc, VDSO_BASE_AUX, &sec, &ns))
+		if (!vdso_get_timestamp(vd, vc, VDSO_BASE_AUX, &out_ts))
 			return false;
 	} while (vdso_read_retry(vc, seq));
 
-	vdso_set_timespec(ts, sec, ns);
+	vdso_set_timespec(ts, &out_ts);
 
 	return true;
 }
