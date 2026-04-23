@@ -103,7 +103,7 @@ vmlinux_link()
 	${ld} ${ldflags} -o ${output}					\
 		${wl}--whole-archive ${objs} ${wl}--no-whole-archive	\
 		${wl}--start-group ${libs} ${wl}--end-group		\
-		${kallsymso} ${btf_vmlinux_bin_o} ${arch_vmlinux_o} ${ldlibs}
+		${kallsymso} ${btf_vmlinux_bin_o} ${module_hashes_o} ${arch_vmlinux_o} ${ldlibs}
 }
 
 # Check if kallsymso_prev and kallsymso differ
@@ -196,6 +196,7 @@ fi
 btf_vmlinux_bin_o=
 btfids_vmlinux=
 kallsymso=
+module_hashes_o=
 strip_debug=
 generate_map=
 
