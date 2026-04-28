@@ -276,7 +276,9 @@ setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs,
 		rp = VDSO64_SYMBOL(current, sigtramp_rt);
 	else
 #endif
+#if defined(CONFIG_PA11) || defined(CONFIG_COMPAT)
 		rp = VDSO32_SYMBOL(current, sigtramp_rt);
+#endif
 
 	if (in_syscall)
 		rp += 4*4; /* skip 4 instructions and start at ldi 1,%r25 */
@@ -514,10 +516,12 @@ insert_restart_trampoline(struct pt_regs *regs)
 			rp = VDSO64_SYMBOL(current, restart_syscall);
 		} else
 #endif
+#if defined(CONFIG_PA11) || defined(CONFIG_COMPAT)
 		{
 			err |= put_user(regs->gr[31], &usp[0]);
 			rp = VDSO32_SYMBOL(current, restart_syscall);
 		}
+#endif
 		WARN_ON(err);
 
 		regs->gr[31] = rp;
