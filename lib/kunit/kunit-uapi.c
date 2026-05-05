@@ -264,20 +264,18 @@ static void kunit_uapi_log_str(struct kunit *test, const char *str, size_t len)
 
 static void kunit_uapi_print_buf_to_log(struct kunit *test, struct seq_buf *s)
 {
-	const char *start, *lf;
+	const char *lf;
 
 	if (s->size == 0 || s->len == 0)
 		return;
 
-	start = seq_buf_str(s);
-	while ((lf = strchr(start, '\n'))) {
-		kunit_uapi_log_str(test, start, lf - start + 1);
-		start = ++lf;
+	while ((lf = strnchr(s->buffer, s->len, '\n'))) {
+		size_t count = lf - s->buffer + 1;
+		kunit_uapi_log_str(test, s->buffer, count);
+		/* Remove printed data from buffer */
+		memmove(s->buffer, lf, s->len - count);
+		s->len -= count;
 	}
-
-	/* Remove printed data from buffer */
-	memmove(s->buffer, start, start - s->buffer);
-	s->len -= start - s->buffer;
 }
 
 static ssize_t kunit_uapi_log_write(struct file *file, const char __user *ubuf, size_t count,
