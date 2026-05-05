@@ -326,8 +326,10 @@ static int kunit_uapi_log_release(struct inode *ino, struct file *file)
 	}
 
 	/* Flush last partial line */
-	kunit_uapi_log_str(test, priv->buf.buffer, priv->buf.len);
-	kunit_uapi_log_str(test, "\n", 1);
+	if (!seq_buf_has_overflowed(&priv->buf)) {
+		kunit_uapi_log_str(test, priv->buf.buffer, priv->buf.len);
+		kunit_uapi_log_str(test, "\n", 1);
+	}
 
 	kfree(priv);
 	return 0;
