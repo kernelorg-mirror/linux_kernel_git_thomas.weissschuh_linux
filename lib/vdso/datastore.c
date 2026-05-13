@@ -115,7 +115,6 @@ static vm_fault_t vvar_fault(const struct vm_special_mapping *sm,
 		return VM_FAULT_SIGBUS;
 	}
 
-	pr_warn("XXX %d faulted page %ld at 0x%lx\n", task_pid_nr(current), vmf->pgoff, vmf->address);
 	get_page(page);
 	vmf->page = page;
 	return 0;
