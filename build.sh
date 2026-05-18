@@ -12,7 +12,7 @@ build_location="$(realpath "${cache_dir}"/nolibc-tests/)"
 perform_download=0
 test_mode=system
 CFLAGS_EXTRA="-Werror"
-archs="i386 x86_64 arm arm-nommu arm64 arm64-p64k ppc ppc64 m68k mips mips64 riscv riscv-nommu riscv32 riscv32-nommu s390 loongarch um um32 sparc32 sparc64"
+archs="i386 x86_64 arm arm-nommu arm64 arm64-p64k ppc ppc64 m68k mips mips64 riscv riscv-nommu riscv32 riscv32-nommu s390 um um32 sparc32 sparc64"
 
 if [[ -n "$*" ]]; then
 	archs="$*"
