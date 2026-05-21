@@ -129,6 +129,8 @@ ifeq ($(CONFIG_X86_32),y)
         KBUILD_CFLAGS += -ffreestanding
     endif
 
+        I386_CHECKFLAGS := $(CHECKFLAGS)
+
         percpu_seg := fs
 else
         BITS := 64
@@ -172,6 +174,9 @@ endif
         KBUILD_CFLAGS += -mcmodel=kernel
         KBUILD_RUSTFLAGS += -Cno-redzone=y
         KBUILD_RUSTFLAGS += -Ccode-model=kernel
+
+        I386_CHECKFLAGS := $(subst -m64,-m32,$(CHECKFLAGS))
+        I386_CHECKFLAGS := $(subst -D__x86_64__,-D__i386__,$(CHECKFLAGS))
 
         percpu_seg := gs
 endif
