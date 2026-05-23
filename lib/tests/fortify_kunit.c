@@ -82,12 +82,31 @@ void fortify_add_kunit_error(int write)
 	kunit_put_resource(resource);
 }
 
+#define __compiletime_strlenx(p)					\
+({								\
+	char *__p = (char *)(p);				\
+	size_t __ret = SIZE_MAX;				\
+	const size_t __p_size = __member_size(p);		\
+	if (__p_size != SIZE_MAX &&				\
+	    __builtin_constant_p(*__p)) {			\
+		size_t __p_len = __p_size - 1;			\
+		if (__builtin_constant_p(__p[__p_len]) &&	\
+		    __p[__p_len] == '\0')			\
+			__ret = __builtin_strlen(__p);		\
+	}							\
+	__ret;							\
+})
+
 static void fortify_test_known_sizes(struct kunit *test)
 {
 	char stack[80] = "Test!";
 
 	KUNIT_EXPECT_FALSE(test, __is_constexpr(__builtin_strlen(stack)));
-	KUNIT_EXPECT_EQ(test, __compiletime_strlen(stack), 5);
+	KUNIT_EXPECT_EQ(test, __member_size((char *)(stack)), 80);
+	KUNIT_EXPECT_EQ(test, __builtin_constant_p(stack[79]) && stack[79] == '\0', 1);
+	KUNIT_EXPECT_EQ(test, __builtin_constant_p(stack[79]), 1);
+	KUNIT_EXPECT_EQ(test, __builtin_constant_p(stack[0]), 1);
+	KUNIT_EXPECT_EQ(test, __compiletime_strlenx(stack), 5);
 
 	KUNIT_EXPECT_TRUE(test, __is_constexpr(__builtin_strlen("88888888")));
 	KUNIT_EXPECT_EQ(test, __compiletime_strlen("88888888"), 8);
