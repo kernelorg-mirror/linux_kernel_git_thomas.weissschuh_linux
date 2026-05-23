@@ -2604,59 +2604,59 @@ static void tb_test_credit_alloc_all(struct kunit *test)
 }
 
 static const u32 root_directory[] = {
-	0x55584401,	/* "UXD" v1 */
-	0x00000018,	/* Root directory length */
-	0x76656e64,	/* "vend" */
-	0x6f726964,	/* "orid" */
-	0x76000001,	/* "v" R 1 */
-	0x00000a27,	/* Immediate value, ! Vendor ID */
-	0x76656e64,	/* "vend" */
-	0x6f726964,	/* "orid" */
-	0x74000003,	/* "t" R 3 */
-	0x0000001a,	/* Text leaf offset, (“Apple Inc.”) */
-	0x64657669,	/* "devi" */
-	0x63656964,	/* "ceid" */
-	0x76000001,	/* "v" R 1 */
-	0x0000000a,	/* Immediate value, ! Device ID */
-	0x64657669,	/* "devi" */
-	0x63656964,	/* "ceid" */
-	0x74000003,	/* "t" R 3 */
-	0x0000001d,	/* Text leaf offset, (“Macintosh”) */
-	0x64657669,	/* "devi" */
-	0x63657276,	/* "cerv" */
-	0x76000001,	/* "v" R 1 */
-	0x80000100,	/* Immediate value, Device Revision */
-	0x6e657477,	/* "netw" */
-	0x6f726b00,	/* "ork" */
-	0x44000014,	/* "D" R 20 */
-	0x00000021,	/* Directory data offset, (Network Directory) */
-	0x4170706c,	/* "Appl" */
-	0x6520496e,	/* "e In" */
-	0x632e0000,	/* "c." ! */
-	0x4d616369,	/* "Maci" */
-	0x6e746f73,	/* "ntos" */
-	0x68000000,	/* "h" */
-	0x00000000,	/* padding */
-	0xca8961c6,	/* Directory UUID, Network Directory */
-	0x9541ce1c,	/* Directory UUID, Network Directory */
-	0x5949b8bd,	/* Directory UUID, Network Directory */
-	0x4f5a5f2e,	/* Directory UUID, Network Directory */
-	0x70727463,	/* "prtc" */
-	0x69640000,	/* "id" */
-	0x76000001,	/* "v" R 1 */
-	0x00000001,	/* Immediate value, Network Protocol ID */
-	0x70727463,	/* "prtc" */
-	0x76657273,	/* "vers" */
-	0x76000001,	/* "v" R 1 */
-	0x00000001,	/* Immediate value, Network Protocol Version */
-	0x70727463,	/* "prtc" */
-	0x72657673,	/* "revs" */
-	0x76000001,	/* "v" R 1 */
-	0x00000001,	/* Immediate value, Network Protocol Revision */
-	0x70727463,	/* "prtc" */
-	0x73746e73,	/* "stns" */
-	0x76000001,	/* "v" R 1 */
-	0x00000000,	/* Immediate value, Network Protocol Settings */
+	le32_to_cpu(0x55584401),	/* "UXD" v1 */
+	le32_to_cpu(0x00000018),	/* Root directory length */
+	le32_to_cpu(0x76656e64),	/* "vend" */
+	le32_to_cpu(0x6f726964),	/* "orid" */
+	le32_to_cpu(0x76000001),	/* "v" R 1 */
+	le32_to_cpu(0x00000a27),	/* Immediate value, ! Vendor ID */
+	le32_to_cpu(0x76656e64),	/* "vend" */
+	le32_to_cpu(0x6f726964),	/* "orid" */
+	le32_to_cpu(0x74000003),	/* "t" R 3 */
+	le32_to_cpu(0x0000001a),	/* Text leaf offset, (“Apple Inc.”) */
+	le32_to_cpu(0x64657669),	/* "devi" */
+	le32_to_cpu(0x63656964),	/* "ceid" */
+	le32_to_cpu(0x76000001),	/* "v" R 1 */
+	le32_to_cpu(0x0000000a),	/* Immediate value, ! Device ID */
+	le32_to_cpu(0x64657669),	/* "devi" */
+	le32_to_cpu(0x63656964),	/* "ceid" */
+	le32_to_cpu(0x74000003),	/* "t" R 3 */
+	le32_to_cpu(0x0000001d),	/* Text leaf offset, (“Macintosh”) */
+	le32_to_cpu(0x64657669),	/* "devi" */
+	le32_to_cpu(0x63657276),	/* "cerv" */
+	le32_to_cpu(0x76000001),	/* "v" R 1 */
+	le32_to_cpu(0x80000100),	/* Immediate value, Device Revision */
+	le32_to_cpu(0x6e657477),	/* "netw" */
+	le32_to_cpu(0x6f726b00),	/* "ork" */
+	le32_to_cpu(0x44000014),	/* "D" R 20 */
+	le32_to_cpu(0x00000021),	/* Directory data offset, (Network Directory) */
+	le32_to_cpu(0x4170706c),	/* "Appl" */
+	le32_to_cpu(0x6520496e),	/* "e In" */
+	le32_to_cpu(0x632e0000),	/* "c." ! */
+	le32_to_cpu(0x4d616369),	/* "Maci" */
+	le32_to_cpu(0x6e746f73),	/* "ntos" */
+	le32_to_cpu(0x68000000),	/* "h" */
+	le32_to_cpu(0x00000000),	/* padding */
+	le32_to_cpu(0xca8961c6),	/* Directory UUID, Network Directory */
+	le32_to_cpu(0x9541ce1c),	/* Directory UUID, Network Directory */
+	le32_to_cpu(0x5949b8bd),	/* Directory UUID, Network Directory */
+	le32_to_cpu(0x4f5a5f2e),	/* Directory UUID, Network Directory */
+	le32_to_cpu(0x70727463),	/* "prtc" */
+	le32_to_cpu(0x69640000),	/* "id" */
+	le32_to_cpu(0x76000001),	/* "v" R 1 */
+	le32_to_cpu(0x00000001),	/* Immediate value, Network Protocol ID */
+	le32_to_cpu(0x70727463),	/* "prtc" */
+	le32_to_cpu(0x76657273),	/* "vers" */
+	le32_to_cpu(0x76000001),	/* "v" R 1 */
+	le32_to_cpu(0x00000001),	/* Immediate value, Network Protocol Version */
+	le32_to_cpu(0x70727463),	/* "prtc" */
+	le32_to_cpu(0x72657673),	/* "revs" */
+	le32_to_cpu(0x76000001),	/* "v" R 1 */
+	le32_to_cpu(0x00000001),	/* Immediate value, Network Protocol Revision */
+	le32_to_cpu(0x70727463),	/* "prtc" */
+	le32_to_cpu(0x73746e73),	/* "stns" */
+	le32_to_cpu(0x76000001),	/* "v" R 1 */
+	le32_to_cpu(0x00000000),	/* Immediate value, Network Protocol Settings */
 };
 
 static const uuid_t network_dir_uuid =
