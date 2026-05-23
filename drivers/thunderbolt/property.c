@@ -15,8 +15,7 @@
 #include <linux/thunderbolt.h>
 
 struct tb_property_entry {
-	__le32 key_hi;
-	__le32 key_lo;
+	u8 key[TB_PROPERTY_KEY_SIZE];
 	__le16 length;
 	u8 reserved;
 	u8 type;
@@ -107,7 +106,7 @@ static struct tb_property *tb_property_parse(const u32 *block, size_t block_len,
 	if (!tb_property_entry_valid(entry, block_len))
 		return NULL;
 
-	convert_dwdata(key, entry, 2);
+	convert_dwdata(key, &entry->key, 2);
 	key[TB_PROPERTY_KEY_SIZE] = '\0';
 
 	property = tb_property_alloc(key, entry->type);
@@ -453,7 +452,7 @@ static ssize_t __tb_property_format_dir(const struct tb_property_dir *dir,
 	list_for_each_entry(property, &dir->properties, list) {
 		const struct tb_property_dir *child;
 
-		convert_dwdata(entry, property->key, 2);
+		convert_dwdata(&entry->key, property->key, 2);
 		entry->type = property->type;
 
 		switch (property->type) {
