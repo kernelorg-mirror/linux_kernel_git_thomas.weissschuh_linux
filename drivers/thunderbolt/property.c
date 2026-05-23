@@ -41,15 +41,10 @@ static struct tb_property_dir *__tb_property_parse_dir(const u32 *block,
 	size_t block_len, unsigned int dir_offset, size_t dir_len,
 	bool is_root, unsigned int depth);
 
-static inline void parse_dwdata(void *dst, const void *src, size_t dwords)
+static inline void convert_dwdata(void *dst, const void *src, size_t dwords)
 {
 	for (size_t i = 0; i < dwords; i++)
 		((u32 *)dst)[i] = swab32(((u32 *)src)[i]);
-}
-
-static inline void format_dwdata(void *dst, const void *src, size_t dwords)
-{
-	return parse_dwdata(dst, src, dwords);
 }
 
 static bool tb_property_entry_valid(const struct tb_property_entry *entry,
@@ -112,7 +107,7 @@ static struct tb_property *tb_property_parse(const u32 *block, size_t block_len,
 	if (!tb_property_entry_valid(entry, block_len))
 		return NULL;
 
-	parse_dwdata(key, entry, 2);
+	convert_dwdata(key, entry, 2);
 	key[TB_PROPERTY_KEY_SIZE] = '\0';
 
 	property = tb_property_alloc(key, entry->type);
@@ -141,9 +136,9 @@ static struct tb_property *tb_property_parse(const u32 *block, size_t block_len,
 			kfree(property);
 			return NULL;
 		}
-		parse_dwdata(property->value.data,
-			     block + le32_to_cpu(entry->value),
-			     le16_to_cpu(entry->length));
+		convert_dwdata(property->value.data,
+			       block + le32_to_cpu(entry->value),
+			       le16_to_cpu(entry->length));
 		break;
 
 	case TB_PROPERTY_TYPE_TEXT:
@@ -153,9 +148,9 @@ static struct tb_property *tb_property_parse(const u32 *block, size_t block_len,
 			kfree(property);
 			return NULL;
 		}
-		parse_dwdata(property->value.text,
-			     block + le32_to_cpu(entry->value),
-			     le16_to_cpu(entry->length));
+		convert_dwdata(property->value.text,
+			       block + le32_to_cpu(entry->value),
+			       le16_to_cpu(entry->length));
 		/* Force null termination */
 		property->value.text[property->length * 4 - 1] = '\0';
 		break;
@@ -458,7 +453,7 @@ static ssize_t __tb_property_format_dir(const struct tb_property_dir *dir,
 	list_for_each_entry(property, &dir->properties, list) {
 		const struct tb_property_dir *child;
 
-		format_dwdata(entry, property->key, 2);
+		convert_dwdata(entry, property->key, 2);
 		entry->type = property->type;
 
 		switch (property->type) {
@@ -475,16 +470,16 @@ static ssize_t __tb_property_format_dir(const struct tb_property_dir *dir,
 			break;
 
 		case TB_PROPERTY_TYPE_DATA:
-			format_dwdata(&block[data_offset], property->value.data,
-				      property->length);
+			convert_dwdata(&block[data_offset], property->value.data,
+				       property->length);
 			entry->length = cpu_to_le16(property->length);
 			entry->value = cpu_to_le32(data_offset);
 			data_offset += property->length;
 			break;
 
 		case TB_PROPERTY_TYPE_TEXT:
-			format_dwdata(&block[data_offset], property->value.text,
-				      property->length);
+			convert_dwdata(&block[data_offset], property->value.text,
+				       property->length);
 			entry->length = cpu_to_le16(property->length);
 			entry->value = cpu_to_le32(data_offset);
 			data_offset += property->length;
