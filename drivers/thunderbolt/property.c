@@ -43,7 +43,8 @@ static struct tb_property_dir *__tb_property_parse_dir(const u32 *block,
 
 static inline void parse_dwdata(void *dst, const void *src, size_t dwords)
 {
-	be32_to_cpu_array(dst, src, dwords);
+	for (size_t i = 0; i < dwords; i++)
+		((u32 *)dst)[i] = swab32(((u32 *)src)[i]);
 }
 
 static inline void format_dwdata(void *dst, const void *src, size_t dwords)
