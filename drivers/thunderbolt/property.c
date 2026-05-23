@@ -48,7 +48,7 @@ static inline void parse_dwdata(void *dst, const void *src, size_t dwords)
 
 static inline void format_dwdata(void *dst, const void *src, size_t dwords)
 {
-	cpu_to_be32_array(dst, src, dwords);
+	return parse_dwdata(dst, src, dwords);
 }
 
 static bool tb_property_entry_valid(const struct tb_property_entry *entry,
