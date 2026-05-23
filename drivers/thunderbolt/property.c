@@ -15,17 +15,17 @@
 #include <linux/thunderbolt.h>
 
 struct tb_property_entry {
-	u32 key_hi;
-	u32 key_lo;
-	u16 length;
+	__le32 key_hi;
+	__le32 key_lo;
+	__le16 length;
 	u8 reserved;
 	u8 type;
-	u32 value;
+	__le32 value;
 };
 
 struct tb_property_rootdir_entry {
-	u32 magic;
-	u32 length;
+	__le32 magic;
+	__le32 length;
 	struct tb_property_entry entries[];
 };
 
@@ -63,15 +63,16 @@ static bool tb_property_entry_valid(const struct tb_property_entry *entry,
 	case TB_PROPERTY_TYPE_TEXT:
 		if (!entry->length)
 			return false;
-		if (entry->length > block_len)
+		if (le16_to_cpu(entry->length) > block_len)
 			return false;
-		if (check_add_overflow(entry->value, entry->length, &end) ||
+		if (check_add_overflow(le32_to_cpu(entry->value),
+				       le16_to_cpu(entry->length), &end) ||
 		    end > block_len)
 			return false;
 		break;
 
 	case TB_PROPERTY_TYPE_VALUE:
-		if (entry->length != 1)
+		if (le16_to_cpu(entry->length) != 1)
 			return false;
 		break;
 	}
@@ -118,12 +119,14 @@ static struct tb_property *tb_property_parse(const u32 *block, size_t block_len,
 	if (!property)
 		return NULL;
 
-	property->length = entry->length;
+	property->length = le16_to_cpu(entry->length);
 
 	switch (property->type) {
 	case TB_PROPERTY_TYPE_DIRECTORY:
-		dir = __tb_property_parse_dir(block, block_len, entry->value,
-					      entry->length, false, depth + 1);
+		dir = __tb_property_parse_dir(block, block_len,
+					      le32_to_cpu(entry->value),
+					      le16_to_cpu(entry->length),
+					      false, depth + 1);
 		if (!dir) {
 			kfree(property);
 			return NULL;
@@ -138,8 +141,9 @@ static struct tb_property *tb_property_parse(const u32 *block, size_t block_len,
 			kfree(property);
 			return NULL;
 		}
-		parse_dwdata(property->value.data, block + entry->value,
-			     entry->length);
+		parse_dwdata(property->value.data,
+			     block + le32_to_cpu(entry->value),
+			     le16_to_cpu(entry->length));
 		break;
 
 	case TB_PROPERTY_TYPE_TEXT:
@@ -149,14 +153,15 @@ static struct tb_property *tb_property_parse(const u32 *block, size_t block_len,
 			kfree(property);
 			return NULL;
 		}
-		parse_dwdata(property->value.text, block + entry->value,
-			     entry->length);
+		parse_dwdata(property->value.text,
+			     block + le32_to_cpu(entry->value),
+			     le16_to_cpu(entry->length));
 		/* Force null termination */
 		property->value.text[property->length * 4 - 1] = '\0';
 		break;
 
 	case TB_PROPERTY_TYPE_VALUE:
-		property->value.immediate = entry->value;
+		property->value.immediate = le32_to_cpu(entry->value);
 		break;
 
 	default:
@@ -246,12 +251,13 @@ struct tb_property_dir *tb_property_parse_dir(const u32 *block,
 	const struct tb_property_rootdir_entry *rootdir =
 		(const struct tb_property_rootdir_entry *)block;
 
-	if (rootdir->magic != TB_PROPERTY_ROOTDIR_MAGIC)
+	if (le32_to_cpu(rootdir->magic) != TB_PROPERTY_ROOTDIR_MAGIC)
 		return NULL;
-	if (rootdir->length > block_len)
+	if (le32_to_cpu(rootdir->length) > block_len)
 		return NULL;
 
-	return __tb_property_parse_dir(block, block_len, 0, rootdir->length,
+	return __tb_property_parse_dir(block, block_len, 0,
+				       le32_to_cpu(rootdir->length),
 				       true, 0);
 }
 
@@ -444,8 +450,8 @@ static ssize_t __tb_property_format_dir(const struct tb_property_dir *dir,
 		struct tb_property_rootdir_entry *re;
 
 		re = (struct tb_property_rootdir_entry *)&block[start_offset];
-		re->magic = TB_PROPERTY_ROOTDIR_MAGIC;
-		re->length = dir_len - sizeof(*re) / 4;
+		re->magic = cpu_to_le32(TB_PROPERTY_ROOTDIR_MAGIC);
+		re->length = cpu_to_le32(dir_len - sizeof(*re) / 4);
 		entry = re->entries;
 	}
 
@@ -462,31 +468,31 @@ static ssize_t __tb_property_format_dir(const struct tb_property_dir *dir,
 						       block_len);
 			if (ret < 0)
 				return ret;
-			entry->length = tb_property_dir_length(child, false,
-							       NULL);
-			entry->value = dir_end;
+			entry->length = cpu_to_le16(
+				tb_property_dir_length(child, false, NULL));
+			entry->value = cpu_to_le32(dir_end);
 			dir_end = ret;
 			break;
 
 		case TB_PROPERTY_TYPE_DATA:
 			format_dwdata(&block[data_offset], property->value.data,
 				      property->length);
-			entry->length = property->length;
-			entry->value = data_offset;
-			data_offset += entry->length;
+			entry->length = cpu_to_le16(property->length);
+			entry->value = cpu_to_le32(data_offset);
+			data_offset += property->length;
 			break;
 
 		case TB_PROPERTY_TYPE_TEXT:
 			format_dwdata(&block[data_offset], property->value.text,
 				      property->length);
-			entry->length = property->length;
-			entry->value = data_offset;
-			data_offset += entry->length;
+			entry->length = cpu_to_le16(property->length);
+			entry->value = cpu_to_le32(data_offset);
+			data_offset += property->length;
 			break;
 
 		case TB_PROPERTY_TYPE_VALUE:
-			entry->length = property->length;
-			entry->value = property->value.immediate;
+			entry->length = cpu_to_le16(property->length);
+			entry->value = cpu_to_le32(property->value.immediate);
 			break;
 
 		default:
