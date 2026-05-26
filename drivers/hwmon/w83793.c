@@ -309,17 +309,17 @@ static struct i2c_driver w83793_driver = {
 };
 
 static ssize_t
-vrm_show(struct device *dev, struct device_attribute *attr, char *buf)
+vrm_show(struct device *dev, const struct device_attribute *attr, char *buf)
 {
 	struct w83793_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%d\n", data->vrm);
 }
 
 static ssize_t
-show_vid(struct device *dev, struct device_attribute *attr, char *buf)
+show_vid(struct device *dev, const struct device_attribute *attr, char *buf)
 {
 	struct w83793_data *data = w83793_update_device(dev);
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int index = sensor_attr->index;
 
@@ -327,7 +327,7 @@ show_vid(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-vrm_store(struct device *dev, struct device_attribute *attr,
+vrm_store(struct device *dev, const struct device_attribute *attr,
 	  const char *buf, size_t count)
 {
 	struct w83793_data *data = dev_get_drvdata(dev);
@@ -348,10 +348,10 @@ vrm_store(struct device *dev, struct device_attribute *attr,
 #define ALARM_STATUS			0
 #define BEEP_ENABLE			1
 static ssize_t
-show_alarm_beep(struct device *dev, struct device_attribute *attr, char *buf)
+show_alarm_beep(struct device *dev, const struct device_attribute *attr, char *buf)
 {
 	struct w83793_data *data = w83793_update_device(dev);
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index >> 3;
@@ -368,12 +368,12 @@ show_alarm_beep(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_beep(struct device *dev, struct device_attribute *attr,
+store_beep(struct device *dev, const struct device_attribute *attr,
 	   const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83793_data *data = i2c_get_clientdata(client);
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int index = sensor_attr->index >> 3;
 	int shift = sensor_attr->index & 0x07;
@@ -399,14 +399,14 @@ store_beep(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t
-show_beep_enable(struct device *dev, struct device_attribute *attr, char *buf)
+show_beep_enable(struct device *dev, const struct device_attribute *attr, char *buf)
 {
 	struct w83793_data *data = w83793_update_device(dev);
 	return sprintf(buf, "%u\n", (data->beep_enable >> 1) & 0x01);
 }
 
 static ssize_t
-store_beep_enable(struct device *dev, struct device_attribute *attr,
+store_beep_enable(struct device *dev, const struct device_attribute *attr,
 		  const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -434,7 +434,7 @@ store_beep_enable(struct device *dev, struct device_attribute *attr,
 /* Write 0 to clear chassis alarm */
 static ssize_t
 store_chassis_clear(struct device *dev,
-		    struct device_attribute *attr, const char *buf,
+		    const struct device_attribute *attr, const char *buf,
 		    size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -460,9 +460,9 @@ store_chassis_clear(struct device *dev,
 #define FAN_INPUT			0
 #define FAN_MIN				1
 static ssize_t
-show_fan(struct device *dev, struct device_attribute *attr, char *buf)
+show_fan(struct device *dev, const struct device_attribute *attr, char *buf)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -478,10 +478,10 @@ show_fan(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_fan_min(struct device *dev, struct device_attribute *attr,
+store_fan_min(struct device *dev, const struct device_attribute *attr,
 	      const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int index = sensor_attr->index;
 	struct i2c_client *client = to_i2c_client(dev);
@@ -505,9 +505,9 @@ store_fan_min(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t
-show_pwm(struct device *dev, struct device_attribute *attr, char *buf)
+show_pwm(struct device *dev, const struct device_attribute *attr, char *buf)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	struct w83793_data *data = w83793_update_device(dev);
 	u16 val;
@@ -523,12 +523,12 @@ show_pwm(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_pwm(struct device *dev, struct device_attribute *attr,
+store_pwm(struct device *dev, const struct device_attribute *attr,
 	  const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83793_data *data = i2c_get_clientdata(client);
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -559,9 +559,9 @@ store_pwm(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t
-show_temp(struct device *dev, struct device_attribute *attr, char *buf)
+show_temp(struct device *dev, const struct device_attribute *attr, char *buf)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -576,10 +576,10 @@ show_temp(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_temp(struct device *dev, struct device_attribute *attr,
+store_temp(struct device *dev, const struct device_attribute *attr,
 	   const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -618,10 +618,10 @@ store_temp(struct device *dev, struct device_attribute *attr,
 static u8 TO_TEMP_MODE[] = { 0, 0, 0, 6 };
 
 static ssize_t
-show_temp_mode(struct device *dev, struct device_attribute *attr, char *buf)
+show_temp_mode(struct device *dev, const struct device_attribute *attr, char *buf)
 {
 	struct w83793_data *data = w83793_update_device(dev);
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int index = sensor_attr->index;
 	u8 mask = (index < 4) ? 0x03 : 0x01;
@@ -641,12 +641,12 @@ show_temp_mode(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_temp_mode(struct device *dev, struct device_attribute *attr,
+store_temp_mode(struct device *dev, const struct device_attribute *attr,
 		const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83793_data *data = i2c_get_clientdata(client);
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int index = sensor_attr->index;
 	u8 mask = (index < 4) ? 0x03 : 0x01;
@@ -687,9 +687,9 @@ store_temp_mode(struct device *dev, struct device_attribute *attr,
 #define SETUP_PWM_DOWNTIME		2	/* Unit in 0.1s */
 #define SETUP_TEMP_CRITICAL		3
 static ssize_t
-show_sf_setup(struct device *dev, struct device_attribute *attr, char *buf)
+show_sf_setup(struct device *dev, const struct device_attribute *attr, char *buf)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	struct w83793_data *data = w83793_update_device(dev);
@@ -708,10 +708,10 @@ show_sf_setup(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_sf_setup(struct device *dev, struct device_attribute *attr,
+store_sf_setup(struct device *dev, const struct device_attribute *attr,
 	       const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	struct i2c_client *client = to_i2c_client(dev);
@@ -784,9 +784,9 @@ store_sf_setup(struct device *dev, struct device_attribute *attr,
 #define TEMP_CRUISE			2
 #define TEMP_TOLERANCE			3
 static ssize_t
-show_sf_ctrl(struct device *dev, struct device_attribute *attr, char *buf)
+show_sf_ctrl(struct device *dev, const struct device_attribute *attr, char *buf)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -808,10 +808,10 @@ show_sf_ctrl(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_sf_ctrl(struct device *dev, struct device_attribute *attr,
+store_sf_ctrl(struct device *dev, const struct device_attribute *attr,
 	      const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -868,9 +868,9 @@ store_sf_ctrl(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t
-show_sf2_pwm(struct device *dev, struct device_attribute *attr, char *buf)
+show_sf2_pwm(struct device *dev, const struct device_attribute *attr, char *buf)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -880,12 +880,12 @@ show_sf2_pwm(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_sf2_pwm(struct device *dev, struct device_attribute *attr,
+store_sf2_pwm(struct device *dev, const struct device_attribute *attr,
 	      const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83793_data *data = i2c_get_clientdata(client);
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -908,9 +908,9 @@ store_sf2_pwm(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t
-show_sf2_temp(struct device *dev, struct device_attribute *attr, char *buf)
+show_sf2_temp(struct device *dev, const struct device_attribute *attr, char *buf)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -921,12 +921,12 @@ show_sf2_temp(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_sf2_temp(struct device *dev, struct device_attribute *attr,
+store_sf2_temp(struct device *dev, const struct device_attribute *attr,
 	       const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83793_data *data = i2c_get_clientdata(client);
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -950,9 +950,9 @@ store_sf2_temp(struct device *dev, struct device_attribute *attr,
 
 /* only Vcore A/B and Vtt have additional 2 bits precision */
 static ssize_t
-show_in(struct device *dev, struct device_attribute *attr, char *buf)
+show_in(struct device *dev, const struct device_attribute *attr, char *buf)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -969,10 +969,10 @@ show_in(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_in(struct device *dev, struct device_attribute *attr,
+store_in(struct device *dev, const struct device_attribute *attr,
 	 const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -1100,7 +1100,7 @@ store_in(struct device *dev, struct device_attribute *attr,
 	SENSOR_ATTR_2(temp##index##_auto_point7_temp, S_IRUGO | S_IWUSR,\
 		show_sf2_temp, store_sf2_temp, 6, index - 1)
 
-static struct sensor_device_attribute_2 w83793_sensor_attr_2[] = {
+static const struct sensor_device_attribute_2 w83793_sensor_attr_2[] = {
 	SENSOR_ATTR_IN(0),
 	SENSOR_ATTR_IN(1),
 	SENSOR_ATTR_IN(2),
@@ -1121,7 +1121,7 @@ static struct sensor_device_attribute_2 w83793_sensor_attr_2[] = {
 	SENSOR_ATTR_PWM(3),
 };
 
-static struct sensor_device_attribute_2 w83793_temp[] = {
+static const struct sensor_device_attribute_2 w83793_temp[] = {
 	SENSOR_ATTR_TEMP(1),
 	SENSOR_ATTR_TEMP(2),
 	SENSOR_ATTR_TEMP(3),
@@ -1131,7 +1131,7 @@ static struct sensor_device_attribute_2 w83793_temp[] = {
 };
 
 /* Fan6-Fan12 */
-static struct sensor_device_attribute_2 w83793_left_fan[] = {
+static const struct sensor_device_attribute_2 w83793_left_fan[] = {
 	SENSOR_ATTR_FAN(6),
 	SENSOR_ATTR_FAN(7),
 	SENSOR_ATTR_FAN(8),
@@ -1142,7 +1142,7 @@ static struct sensor_device_attribute_2 w83793_left_fan[] = {
 };
 
 /* Pwm4-Pwm8 */
-static struct sensor_device_attribute_2 w83793_left_pwm[] = {
+static const struct sensor_device_attribute_2 w83793_left_pwm[] = {
 	SENSOR_ATTR_PWM(4),
 	SENSOR_ATTR_PWM(5),
 	SENSOR_ATTR_PWM(6),
@@ -1150,13 +1150,13 @@ static struct sensor_device_attribute_2 w83793_left_pwm[] = {
 	SENSOR_ATTR_PWM(8),
 };
 
-static struct sensor_device_attribute_2 w83793_vid[] = {
+static const struct sensor_device_attribute_2 w83793_vid[] = {
 	SENSOR_ATTR_2(cpu0_vid, S_IRUGO, show_vid, NULL, NOT_USED, 0),
 	SENSOR_ATTR_2(cpu1_vid, S_IRUGO, show_vid, NULL, NOT_USED, 1),
 };
 static DEVICE_ATTR_RW(vrm);
 
-static struct sensor_device_attribute_2 sda_single_files[] = {
+static const struct sensor_device_attribute_2 sda_single_files[] = {
 	SENSOR_ATTR_2(intrusion0_alarm, S_IWUSR | S_IRUGO, show_alarm_beep,
 		      store_chassis_clear, ALARM_STATUS, 30),
 	SENSOR_ATTR_2(beep_enable, S_IWUSR | S_IRUGO, show_beep_enable,
