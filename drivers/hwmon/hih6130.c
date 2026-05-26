@@ -193,10 +193,10 @@ static ssize_t hih6130_humidity_show(struct device *dev,
 }
 
 /* sysfs attributes */
-static SENSOR_DEVICE_ATTR_RO(temp1_input, hih6130_temperature, 0);
-static SENSOR_DEVICE_ATTR_RO(humidity1_input, hih6130_humidity, 0);
+static const SENSOR_DEVICE_ATTR_RO(temp1_input, hih6130_temperature, 0);
+static const SENSOR_DEVICE_ATTR_RO(humidity1_input, hih6130_humidity, 0);
 
-static struct attribute *hih6130_attrs[] = {
+static const struct attribute *const hih6130_attrs[] = {
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_humidity1_input.dev_attr.attr,
 	NULL
