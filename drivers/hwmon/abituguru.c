@@ -785,9 +785,9 @@ abituguru_detect_no_pwms_exit:
 static struct abituguru_data *abituguru_update_device(struct device *dev);
 
 static ssize_t show_bank1_value(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = abituguru_update_device(dev);
 	if (!data)
 		return -EIO;
@@ -796,9 +796,9 @@ static ssize_t show_bank1_value(struct device *dev,
 }
 
 static ssize_t show_bank1_setting(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%d\n",
 		(data->bank1_settings[attr->index][attr->nr] *
@@ -806,9 +806,9 @@ static ssize_t show_bank1_setting(struct device *dev,
 }
 
 static ssize_t show_bank2_value(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = abituguru_update_device(dev);
 	if (!data)
 		return -EIO;
@@ -817,19 +817,19 @@ static ssize_t show_bank2_value(struct device *dev,
 }
 
 static ssize_t show_bank2_setting(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%d\n",
 		(data->bank2_settings[attr->index][attr->nr] *
 		ABIT_UGURU_FAN_MAX + 128) / 255);
 }
 
-static ssize_t store_bank1_setting(struct device *dev, struct device_attribute
+static ssize_t store_bank1_setting(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	unsigned long val;
 	ssize_t ret;
@@ -859,10 +859,10 @@ static ssize_t store_bank1_setting(struct device *dev, struct device_attribute
 	return ret;
 }
 
-static ssize_t store_bank2_setting(struct device *dev, struct device_attribute
+static ssize_t store_bank2_setting(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	unsigned long val;
 	ssize_t ret;
@@ -895,9 +895,9 @@ static ssize_t store_bank2_setting(struct device *dev, struct device_attribute
 }
 
 static ssize_t show_bank1_alarm(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = abituguru_update_device(dev);
 	if (!data)
 		return -EIO;
@@ -916,9 +916,9 @@ static ssize_t show_bank1_alarm(struct device *dev,
 }
 
 static ssize_t show_bank2_alarm(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = abituguru_update_device(dev);
 	if (!data)
 		return -EIO;
@@ -929,9 +929,9 @@ static ssize_t show_bank2_alarm(struct device *dev,
 }
 
 static ssize_t show_bank1_mask(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	if (data->bank1_settings[attr->index][0] & attr->nr)
 		return sprintf(buf, "1\n");
@@ -940,9 +940,9 @@ static ssize_t show_bank1_mask(struct device *dev,
 }
 
 static ssize_t show_bank2_mask(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	if (data->bank2_settings[attr->index][0] & attr->nr)
 		return sprintf(buf, "1\n");
@@ -951,9 +951,9 @@ static ssize_t show_bank2_mask(struct device *dev,
 }
 
 static ssize_t store_bank1_mask(struct device *dev,
-	struct device_attribute *devattr, const char *buf, size_t count)
+	const struct device_attribute *devattr, const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	ssize_t ret;
 	u8 orig_val;
@@ -984,9 +984,9 @@ static ssize_t store_bank1_mask(struct device *dev,
 }
 
 static ssize_t store_bank2_mask(struct device *dev,
-	struct device_attribute *devattr, const char *buf, size_t count)
+	const struct device_attribute *devattr, const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	ssize_t ret;
 	u8 orig_val;
@@ -1018,18 +1018,18 @@ static ssize_t store_bank2_mask(struct device *dev,
 
 /* Fan PWM (speed control) */
 static ssize_t show_pwm_setting(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%d\n", data->pwm_settings[attr->index][attr->nr] *
 		abituguru_pwm_settings_multiplier[attr->nr]);
 }
 
-static ssize_t store_pwm_setting(struct device *dev, struct device_attribute
+static ssize_t store_pwm_setting(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	u8 min;
 	unsigned long val;
@@ -1077,9 +1077,9 @@ static ssize_t store_pwm_setting(struct device *dev, struct device_attribute
 }
 
 static ssize_t show_pwm_sensor(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	int i;
 	/*
@@ -1094,10 +1094,10 @@ static ssize_t show_pwm_sensor(struct device *dev,
 	return -ENXIO;
 }
 
-static ssize_t store_pwm_sensor(struct device *dev, struct device_attribute
+static ssize_t store_pwm_sensor(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	ssize_t ret;
 	unsigned long val;
@@ -1130,9 +1130,9 @@ static ssize_t store_pwm_sensor(struct device *dev, struct device_attribute
 }
 
 static ssize_t show_pwm_enable(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	int res = 0;
 	if (data->pwm_settings[attr->index][0] & ABIT_UGURU_FAN_PWM_ENABLE)
@@ -1140,10 +1140,10 @@ static ssize_t show_pwm_enable(struct device *dev,
 	return sprintf(buf, "%d\n", res);
 }
 
-static ssize_t store_pwm_enable(struct device *dev, struct device_attribute
+static ssize_t store_pwm_enable(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru_data *data = dev_get_drvdata(dev);
 	u8 orig_val;
 	ssize_t ret;
@@ -1179,7 +1179,7 @@ static ssize_t store_pwm_enable(struct device *dev, struct device_attribute
 }
 
 static ssize_t show_name(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
 	return sprintf(buf, "%s\n", ABIT_UGURU_NAME);
 }
@@ -1250,7 +1250,7 @@ static const struct sensor_device_attribute_2 abituguru_sysfs_pwm_templ[6] = {
 		store_pwm_setting, 4, 0),
 };
 
-static struct sensor_device_attribute_2 abituguru_sysfs_attr[] = {
+static const struct sensor_device_attribute_2 abituguru_sysfs_attr[] = {
 	SENSOR_ATTR_2(name, 0444, show_name, NULL, 0, 0),
 };
 
