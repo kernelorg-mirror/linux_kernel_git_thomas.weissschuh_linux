@@ -28,7 +28,7 @@ struct mc13783_adc_priv {
 	char name[PLATFORM_NAME_SIZE];
 };
 
-static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
+static ssize_t name_show(struct device *dev, const struct device_attribute *devattr,
 			 char *buf)
 {
 	struct mc13783_adc_priv *priv = dev_get_drvdata(dev);
@@ -37,10 +37,10 @@ static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
 }
 
 static int mc13783_adc_read(struct device *dev,
-		struct device_attribute *devattr, unsigned int *val)
+		const struct device_attribute *devattr, unsigned int *val)
 {
 	struct mc13783_adc_priv *priv = dev_get_drvdata(dev);
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	unsigned int channel = attr->index;
 	unsigned int sample[4];
 	int ret;
@@ -63,7 +63,7 @@ static int mc13783_adc_read(struct device *dev,
 }
 
 static ssize_t mc13783_adc_bp_show(struct device *dev,
-				   struct device_attribute *devattr,
+				   const struct device_attribute *devattr,
 				   char *buf)
 {
 	unsigned val;
@@ -87,7 +87,7 @@ static ssize_t mc13783_adc_bp_show(struct device *dev,
 }
 
 static ssize_t mc13783_adc_gp_show(struct device *dev,
-				   struct device_attribute *devattr,
+				   const struct device_attribute *devattr,
 				   char *buf)
 {
 	unsigned val;
@@ -106,7 +106,7 @@ static ssize_t mc13783_adc_gp_show(struct device *dev,
 }
 
 static ssize_t mc13783_adc_uid_show(struct device *dev,
-				    struct device_attribute *devattr,
+				    const struct device_attribute *devattr,
 				    char *buf)
 {
 	unsigned int val;
@@ -128,7 +128,7 @@ static ssize_t mc13783_adc_uid_show(struct device *dev,
 }
 
 static ssize_t mc13783_adc_temp_show(struct device *dev,
-				     struct device_attribute *devattr,
+				     const struct device_attribute *devattr,
 				     char *buf)
 {
 	unsigned int val;
@@ -158,23 +158,23 @@ static ssize_t mc13783_adc_temp_show(struct device *dev,
 	return sprintf(buf, "%d\n", ret);
 }
 
-static DEVICE_ATTR_RO(name);
-static SENSOR_DEVICE_ATTR_RO(in2_input, mc13783_adc_bp, 2);
-static SENSOR_DEVICE_ATTR_RO(in5_input, mc13783_adc_gp, 5);
-static SENSOR_DEVICE_ATTR_RO(in6_input, mc13783_adc_gp, 6);
-static SENSOR_DEVICE_ATTR_RO(in7_input, mc13783_adc_gp, 7);
-static SENSOR_DEVICE_ATTR_RO(in8_input, mc13783_adc_gp, 8);
-static SENSOR_DEVICE_ATTR_RO(in9_input, mc13783_adc_gp, 9);
-static SENSOR_DEVICE_ATTR_RO(in10_input, mc13783_adc_gp, 10);
-static SENSOR_DEVICE_ATTR_RO(in11_input, mc13783_adc_gp, 11);
-static SENSOR_DEVICE_ATTR_RO(in12_input, mc13783_adc_gp, 12);
-static SENSOR_DEVICE_ATTR_RO(in13_input, mc13783_adc_gp, 13);
-static SENSOR_DEVICE_ATTR_RO(in14_input, mc13783_adc_gp, 14);
-static SENSOR_DEVICE_ATTR_RO(in15_input, mc13783_adc_gp, 15);
-static SENSOR_DEVICE_ATTR_RO(in16_input, mc13783_adc_uid, 16);
-static SENSOR_DEVICE_ATTR_RO(temp1_input, mc13783_adc_temp, 17);
+static const DEVICE_ATTR_RO(name);
+static const SENSOR_DEVICE_ATTR_RO(in2_input, mc13783_adc_bp, 2);
+static const SENSOR_DEVICE_ATTR_RO(in5_input, mc13783_adc_gp, 5);
+static const SENSOR_DEVICE_ATTR_RO(in6_input, mc13783_adc_gp, 6);
+static const SENSOR_DEVICE_ATTR_RO(in7_input, mc13783_adc_gp, 7);
+static const SENSOR_DEVICE_ATTR_RO(in8_input, mc13783_adc_gp, 8);
+static const SENSOR_DEVICE_ATTR_RO(in9_input, mc13783_adc_gp, 9);
+static const SENSOR_DEVICE_ATTR_RO(in10_input, mc13783_adc_gp, 10);
+static const SENSOR_DEVICE_ATTR_RO(in11_input, mc13783_adc_gp, 11);
+static const SENSOR_DEVICE_ATTR_RO(in12_input, mc13783_adc_gp, 12);
+static const SENSOR_DEVICE_ATTR_RO(in13_input, mc13783_adc_gp, 13);
+static const SENSOR_DEVICE_ATTR_RO(in14_input, mc13783_adc_gp, 14);
+static const SENSOR_DEVICE_ATTR_RO(in15_input, mc13783_adc_gp, 15);
+static const SENSOR_DEVICE_ATTR_RO(in16_input, mc13783_adc_uid, 16);
+static const SENSOR_DEVICE_ATTR_RO(temp1_input, mc13783_adc_temp, 17);
 
-static struct attribute *mc13783_attr_base[] = {
+static const struct attribute *const mc13783_attr_base[] = {
 	&dev_attr_name.attr,
 	&sensor_dev_attr_in2_input.dev_attr.attr,
 	&sensor_dev_attr_in5_input.dev_attr.attr,
@@ -186,11 +186,11 @@ static struct attribute *mc13783_attr_base[] = {
 };
 
 static const struct attribute_group mc13783_group_base = {
-	.attrs = mc13783_attr_base,
+	.attrs_const = mc13783_attr_base,
 };
 
 /* these are only used if MC13783_ADC_16CHANS is provided in driver data */
-static struct attribute *mc13783_attr_16chans[] = {
+static const struct attribute *const mc13783_attr_16chans[] = {
 	&sensor_dev_attr_in8_input.dev_attr.attr,
 	&sensor_dev_attr_in9_input.dev_attr.attr,
 	&sensor_dev_attr_in10_input.dev_attr.attr,
@@ -199,11 +199,11 @@ static struct attribute *mc13783_attr_16chans[] = {
 };
 
 static const struct attribute_group mc13783_group_16chans = {
-	.attrs = mc13783_attr_16chans,
+	.attrs_const = mc13783_attr_16chans,
 };
 
 /* last four channels may be occupied by the touchscreen */
-static struct attribute *mc13783_attr_ts[] = {
+static const struct attribute *const mc13783_attr_ts[] = {
 	&sensor_dev_attr_in12_input.dev_attr.attr,
 	&sensor_dev_attr_in13_input.dev_attr.attr,
 	&sensor_dev_attr_in14_input.dev_attr.attr,
@@ -212,7 +212,7 @@ static struct attribute *mc13783_attr_ts[] = {
 };
 
 static const struct attribute_group mc13783_group_ts = {
-	.attrs = mc13783_attr_ts,
+	.attrs_const = mc13783_attr_ts,
 };
 
 static int mc13783_adc_use_touchscreen(struct platform_device *pdev)
