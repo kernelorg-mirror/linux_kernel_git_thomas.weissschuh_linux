@@ -352,10 +352,10 @@ static struct i2c_driver w83791d_driver = {
 
 /* following are the sysfs callback functions */
 #define show_in_reg(reg) \
-static ssize_t show_##reg(struct device *dev, struct device_attribute *attr, \
+static ssize_t show_##reg(struct device *dev, const struct device_attribute *attr, \
 			char *buf) \
 { \
-	struct sensor_device_attribute *sensor_attr = \
+	const struct sensor_device_attribute *sensor_attr = \
 						to_sensor_dev_attr(attr); \
 	struct w83791d_data *data = w83791d_update_device(dev); \
 	int nr = sensor_attr->index; \
@@ -368,10 +368,10 @@ show_in_reg(in_max);
 
 #define store_in_reg(REG, reg) \
 static ssize_t store_in_##reg(struct device *dev, \
-				struct device_attribute *attr, \
+				const struct device_attribute *attr, \
 				const char *buf, size_t count) \
 { \
-	struct sensor_device_attribute *sensor_attr = \
+	const struct sensor_device_attribute *sensor_attr = \
 						to_sensor_dev_attr(attr); \
 	struct i2c_client *client = to_i2c_client(dev); \
 	struct w83791d_data *data = i2c_get_clientdata(client); \
@@ -390,7 +390,7 @@ static ssize_t store_in_##reg(struct device *dev, \
 store_in_reg(MIN, min);
 store_in_reg(MAX, max);
 
-static struct sensor_device_attribute sda_in_input[] = {
+static const struct sensor_device_attribute sda_in_input[] = {
 	SENSOR_ATTR(in0_input, S_IRUGO, show_in, NULL, 0),
 	SENSOR_ATTR(in1_input, S_IRUGO, show_in, NULL, 1),
 	SENSOR_ATTR(in2_input, S_IRUGO, show_in, NULL, 2),
@@ -403,7 +403,7 @@ static struct sensor_device_attribute sda_in_input[] = {
 	SENSOR_ATTR(in9_input, S_IRUGO, show_in, NULL, 9),
 };
 
-static struct sensor_device_attribute sda_in_min[] = {
+static const struct sensor_device_attribute sda_in_min[] = {
 	SENSOR_ATTR(in0_min, S_IWUSR | S_IRUGO, show_in_min, store_in_min, 0),
 	SENSOR_ATTR(in1_min, S_IWUSR | S_IRUGO, show_in_min, store_in_min, 1),
 	SENSOR_ATTR(in2_min, S_IWUSR | S_IRUGO, show_in_min, store_in_min, 2),
@@ -416,7 +416,7 @@ static struct sensor_device_attribute sda_in_min[] = {
 	SENSOR_ATTR(in9_min, S_IWUSR | S_IRUGO, show_in_min, store_in_min, 9),
 };
 
-static struct sensor_device_attribute sda_in_max[] = {
+static const struct sensor_device_attribute sda_in_max[] = {
 	SENSOR_ATTR(in0_max, S_IWUSR | S_IRUGO, show_in_max, store_in_max, 0),
 	SENSOR_ATTR(in1_max, S_IWUSR | S_IRUGO, show_in_max, store_in_max, 1),
 	SENSOR_ATTR(in2_max, S_IWUSR | S_IRUGO, show_in_max, store_in_max, 2),
@@ -430,10 +430,10 @@ static struct sensor_device_attribute sda_in_max[] = {
 };
 
 
-static ssize_t show_beep(struct device *dev, struct device_attribute *attr,
+static ssize_t show_beep(struct device *dev, const struct device_attribute *attr,
 			char *buf)
 {
-	struct sensor_device_attribute *sensor_attr =
+	const struct sensor_device_attribute *sensor_attr =
 						to_sensor_dev_attr(attr);
 	struct w83791d_data *data = w83791d_update_device(dev);
 	int bitnr = sensor_attr->index;
@@ -441,10 +441,10 @@ static ssize_t show_beep(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", (data->beep_mask >> bitnr) & 1);
 }
 
-static ssize_t store_beep(struct device *dev, struct device_attribute *attr,
+static ssize_t store_beep(struct device *dev, const struct device_attribute *attr,
 			const char *buf, size_t count)
 {
-	struct sensor_device_attribute *sensor_attr =
+	const struct sensor_device_attribute *sensor_attr =
 						to_sensor_dev_attr(attr);
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83791d_data *data = i2c_get_clientdata(client);
@@ -476,10 +476,10 @@ static ssize_t store_beep(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
+static ssize_t show_alarm(struct device *dev, const struct device_attribute *attr,
 			char *buf)
 {
-	struct sensor_device_attribute *sensor_attr =
+	const struct sensor_device_attribute *sensor_attr =
 						to_sensor_dev_attr(attr);
 	struct w83791d_data *data = w83791d_update_device(dev);
 	int bitnr = sensor_attr->index;
@@ -491,7 +491,7 @@ static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
  * Note: The bitmask for the beep enable/disable is different than
  * the bitmask for the alarm.
  */
-static struct sensor_device_attribute sda_in_beep[] = {
+static const struct sensor_device_attribute sda_in_beep[] = {
 	SENSOR_ATTR(in0_beep, S_IWUSR | S_IRUGO, show_beep, store_beep, 0),
 	SENSOR_ATTR(in1_beep, S_IWUSR | S_IRUGO, show_beep, store_beep, 13),
 	SENSOR_ATTR(in2_beep, S_IWUSR | S_IRUGO, show_beep, store_beep, 2),
@@ -504,7 +504,7 @@ static struct sensor_device_attribute sda_in_beep[] = {
 	SENSOR_ATTR(in9_beep, S_IWUSR | S_IRUGO, show_beep, store_beep, 14),
 };
 
-static struct sensor_device_attribute sda_in_alarm[] = {
+static const struct sensor_device_attribute sda_in_alarm[] = {
 	SENSOR_ATTR(in0_alarm, S_IRUGO, show_alarm, NULL, 0),
 	SENSOR_ATTR(in1_alarm, S_IRUGO, show_alarm, NULL, 1),
 	SENSOR_ATTR(in2_alarm, S_IRUGO, show_alarm, NULL, 2),
@@ -518,10 +518,10 @@ static struct sensor_device_attribute sda_in_alarm[] = {
 };
 
 #define show_fan_reg(reg) \
-static ssize_t show_##reg(struct device *dev, struct device_attribute *attr, \
+static ssize_t show_##reg(struct device *dev, const struct device_attribute *attr, \
 				char *buf) \
 { \
-	struct sensor_device_attribute *sensor_attr = \
+	const struct sensor_device_attribute *sensor_attr = \
 						to_sensor_dev_attr(attr); \
 	struct w83791d_data *data = w83791d_update_device(dev); \
 	int nr = sensor_attr->index; \
@@ -532,10 +532,10 @@ static ssize_t show_##reg(struct device *dev, struct device_attribute *attr, \
 show_fan_reg(fan);
 show_fan_reg(fan_min);
 
-static ssize_t store_fan_min(struct device *dev, struct device_attribute *attr,
+static ssize_t store_fan_min(struct device *dev, const struct device_attribute *attr,
 				const char *buf, size_t count)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83791d_data *data = i2c_get_clientdata(client);
 	int nr = sensor_attr->index;
@@ -554,10 +554,10 @@ static ssize_t store_fan_min(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-static ssize_t show_fan_div(struct device *dev, struct device_attribute *attr,
+static ssize_t show_fan_div(struct device *dev, const struct device_attribute *attr,
 				char *buf)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
 	struct w83791d_data *data = w83791d_update_device(dev);
 	return sprintf(buf, "%u\n", DIV_FROM_REG(data->fan_div[nr]));
@@ -569,10 +569,10 @@ static ssize_t show_fan_div(struct device *dev, struct device_attribute *attr,
  * least surprise; the user doesn't expect the fan minimum to change just
  * because the divisor changed.
  */
-static ssize_t store_fan_div(struct device *dev, struct device_attribute *attr,
+static ssize_t store_fan_div(struct device *dev, const struct device_attribute *attr,
 				const char *buf, size_t count)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83791d_data *data = i2c_get_clientdata(client);
 	int nr = sensor_attr->index;
@@ -659,7 +659,7 @@ err_exit:
 	return count;
 }
 
-static struct sensor_device_attribute sda_fan_input[] = {
+static const struct sensor_device_attribute sda_fan_input[] = {
 	SENSOR_ATTR(fan1_input, S_IRUGO, show_fan, NULL, 0),
 	SENSOR_ATTR(fan2_input, S_IRUGO, show_fan, NULL, 1),
 	SENSOR_ATTR(fan3_input, S_IRUGO, show_fan, NULL, 2),
@@ -667,7 +667,7 @@ static struct sensor_device_attribute sda_fan_input[] = {
 	SENSOR_ATTR(fan5_input, S_IRUGO, show_fan, NULL, 4),
 };
 
-static struct sensor_device_attribute sda_fan_min[] = {
+static const struct sensor_device_attribute sda_fan_min[] = {
 	SENSOR_ATTR(fan1_min, S_IWUSR | S_IRUGO,
 			show_fan_min, store_fan_min, 0),
 	SENSOR_ATTR(fan2_min, S_IWUSR | S_IRUGO,
@@ -680,7 +680,7 @@ static struct sensor_device_attribute sda_fan_min[] = {
 			show_fan_min, store_fan_min, 4),
 };
 
-static struct sensor_device_attribute sda_fan_div[] = {
+static const struct sensor_device_attribute sda_fan_div[] = {
 	SENSOR_ATTR(fan1_div, S_IWUSR | S_IRUGO,
 			show_fan_div, store_fan_div, 0),
 	SENSOR_ATTR(fan2_div, S_IWUSR | S_IRUGO,
@@ -693,7 +693,7 @@ static struct sensor_device_attribute sda_fan_div[] = {
 			show_fan_div, store_fan_div, 4),
 };
 
-static struct sensor_device_attribute sda_fan_beep[] = {
+static const struct sensor_device_attribute sda_fan_beep[] = {
 	SENSOR_ATTR(fan1_beep, S_IWUSR | S_IRUGO, show_beep, store_beep, 6),
 	SENSOR_ATTR(fan2_beep, S_IWUSR | S_IRUGO, show_beep, store_beep, 7),
 	SENSOR_ATTR(fan3_beep, S_IWUSR | S_IRUGO, show_beep, store_beep, 11),
@@ -701,7 +701,7 @@ static struct sensor_device_attribute sda_fan_beep[] = {
 	SENSOR_ATTR(fan5_beep, S_IWUSR | S_IRUGO, show_beep, store_beep, 22),
 };
 
-static struct sensor_device_attribute sda_fan_alarm[] = {
+static const struct sensor_device_attribute sda_fan_alarm[] = {
 	SENSOR_ATTR(fan1_alarm, S_IRUGO, show_alarm, NULL, 6),
 	SENSOR_ATTR(fan2_alarm, S_IRUGO, show_alarm, NULL, 7),
 	SENSOR_ATTR(fan3_alarm, S_IRUGO, show_alarm, NULL, 11),
@@ -710,19 +710,19 @@ static struct sensor_device_attribute sda_fan_alarm[] = {
 };
 
 /* read/write PWMs */
-static ssize_t show_pwm(struct device *dev, struct device_attribute *attr,
+static ssize_t show_pwm(struct device *dev, const struct device_attribute *attr,
 				char *buf)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
 	struct w83791d_data *data = w83791d_update_device(dev);
 	return sprintf(buf, "%u\n", data->pwm[nr]);
 }
 
-static ssize_t store_pwm(struct device *dev, struct device_attribute *attr,
+static ssize_t store_pwm(struct device *dev, const struct device_attribute *attr,
 		const char *buf, size_t count)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83791d_data *data = i2c_get_clientdata(client);
 	int nr = sensor_attr->index;
@@ -738,7 +738,7 @@ static ssize_t store_pwm(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-static struct sensor_device_attribute sda_pwm[] = {
+static const struct sensor_device_attribute sda_pwm[] = {
 	SENSOR_ATTR(pwm1, S_IWUSR | S_IRUGO,
 			show_pwm, store_pwm, 0),
 	SENSOR_ATTR(pwm2, S_IWUSR | S_IRUGO,
@@ -751,19 +751,19 @@ static struct sensor_device_attribute sda_pwm[] = {
 			show_pwm, store_pwm, 4),
 };
 
-static ssize_t show_pwmenable(struct device *dev, struct device_attribute *attr,
+static ssize_t show_pwmenable(struct device *dev, const struct device_attribute *attr,
 				char *buf)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int nr = sensor_attr->index;
 	struct w83791d_data *data = w83791d_update_device(dev);
 	return sprintf(buf, "%u\n", data->pwm_enable[nr] + 1);
 }
 
 static ssize_t store_pwmenable(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
+		const struct device_attribute *attr, const char *buf, size_t count)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83791d_data *data = i2c_get_clientdata(client);
 	int nr = sensor_attr->index;
@@ -807,7 +807,7 @@ static ssize_t store_pwmenable(struct device *dev,
 
 	return count;
 }
-static struct sensor_device_attribute sda_pwmenable[] = {
+static const struct sensor_device_attribute sda_pwmenable[] = {
 	SENSOR_ATTR(pwm1_enable, S_IWUSR | S_IRUGO,
 			show_pwmenable, store_pwmenable, 0),
 	SENSOR_ATTR(pwm2_enable, S_IWUSR | S_IRUGO,
@@ -818,18 +818,18 @@ static struct sensor_device_attribute sda_pwmenable[] = {
 
 /* For Smart Fan I / Thermal Cruise */
 static ssize_t show_temp_target(struct device *dev,
-			struct device_attribute *attr, char *buf)
+			const struct device_attribute *attr, char *buf)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	struct w83791d_data *data = w83791d_update_device(dev);
 	int nr = sensor_attr->index;
 	return sprintf(buf, "%d\n", TEMP1_FROM_REG(data->temp_target[nr]));
 }
 
 static ssize_t store_temp_target(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
+		const struct device_attribute *attr, const char *buf, size_t count)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83791d_data *data = i2c_get_clientdata(client);
 	int nr = sensor_attr->index;
@@ -849,7 +849,7 @@ static ssize_t store_temp_target(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute sda_temp_target[] = {
+static const struct sensor_device_attribute sda_temp_target[] = {
 	SENSOR_ATTR(temp1_target, S_IWUSR | S_IRUGO,
 			show_temp_target, store_temp_target, 0),
 	SENSOR_ATTR(temp2_target, S_IWUSR | S_IRUGO,
@@ -859,18 +859,18 @@ static struct sensor_device_attribute sda_temp_target[] = {
 };
 
 static ssize_t show_temp_tolerance(struct device *dev,
-			struct device_attribute *attr, char *buf)
+			const struct device_attribute *attr, char *buf)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	struct w83791d_data *data = w83791d_update_device(dev);
 	int nr = sensor_attr->index;
 	return sprintf(buf, "%d\n", TEMP1_FROM_REG(data->temp_tolerance[nr]));
 }
 
 static ssize_t store_temp_tolerance(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
+		const struct device_attribute *attr, const char *buf, size_t count)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83791d_data *data = i2c_get_clientdata(client);
 	int nr = sensor_attr->index;
@@ -911,7 +911,7 @@ static ssize_t store_temp_tolerance(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute sda_temp_tolerance[] = {
+static const struct sensor_device_attribute sda_temp_tolerance[] = {
 	SENSOR_ATTR(temp1_tolerance, S_IWUSR | S_IRUGO,
 			show_temp_tolerance, store_temp_tolerance, 0),
 	SENSOR_ATTR(temp2_tolerance, S_IWUSR | S_IRUGO,
@@ -921,18 +921,18 @@ static struct sensor_device_attribute sda_temp_tolerance[] = {
 };
 
 /* read/write the temperature1, includes measured value and limits */
-static ssize_t show_temp1(struct device *dev, struct device_attribute *devattr,
+static ssize_t show_temp1(struct device *dev, const struct device_attribute *devattr,
 				char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct w83791d_data *data = w83791d_update_device(dev);
 	return sprintf(buf, "%d\n", TEMP1_FROM_REG(data->temp1[attr->index]));
 }
 
-static ssize_t store_temp1(struct device *dev, struct device_attribute *devattr,
+static ssize_t store_temp1(struct device *dev, const struct device_attribute *devattr,
 				const char *buf, size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83791d_data *data = i2c_get_clientdata(client);
 	int nr = attr->index;
@@ -951,10 +951,10 @@ static ssize_t store_temp1(struct device *dev, struct device_attribute *devattr,
 }
 
 /* read/write temperature2-3, includes measured value and limits */
-static ssize_t show_temp23(struct device *dev, struct device_attribute *devattr,
+static ssize_t show_temp23(struct device *dev, const struct device_attribute *devattr,
 				char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct w83791d_data *data = w83791d_update_device(dev);
 	int nr = attr->nr;
 	int index = attr->index;
@@ -962,10 +962,10 @@ static ssize_t show_temp23(struct device *dev, struct device_attribute *devattr,
 }
 
 static ssize_t store_temp23(struct device *dev,
-				struct device_attribute *devattr,
+				const struct device_attribute *devattr,
 				const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83791d_data *data = i2c_get_clientdata(client);
 	long val;
@@ -988,13 +988,13 @@ static ssize_t store_temp23(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute_2 sda_temp_input[] = {
+static const struct sensor_device_attribute_2 sda_temp_input[] = {
 	SENSOR_ATTR_2(temp1_input, S_IRUGO, show_temp1, NULL, 0, 0),
 	SENSOR_ATTR_2(temp2_input, S_IRUGO, show_temp23, NULL, 0, 0),
 	SENSOR_ATTR_2(temp3_input, S_IRUGO, show_temp23, NULL, 1, 0),
 };
 
-static struct sensor_device_attribute_2 sda_temp_max[] = {
+static const struct sensor_device_attribute_2 sda_temp_max[] = {
 	SENSOR_ATTR_2(temp1_max, S_IRUGO | S_IWUSR,
 			show_temp1, store_temp1, 0, 1),
 	SENSOR_ATTR_2(temp2_max, S_IRUGO | S_IWUSR,
@@ -1003,7 +1003,7 @@ static struct sensor_device_attribute_2 sda_temp_max[] = {
 			show_temp23, store_temp23, 1, 1),
 };
 
-static struct sensor_device_attribute_2 sda_temp_max_hyst[] = {
+static const struct sensor_device_attribute_2 sda_temp_max_hyst[] = {
 	SENSOR_ATTR_2(temp1_max_hyst, S_IRUGO | S_IWUSR,
 			show_temp1, store_temp1, 0, 2),
 	SENSOR_ATTR_2(temp2_max_hyst, S_IRUGO | S_IWUSR,
@@ -1016,20 +1016,20 @@ static struct sensor_device_attribute_2 sda_temp_max_hyst[] = {
  * Note: The bitmask for the beep enable/disable is different than
  * the bitmask for the alarm.
  */
-static struct sensor_device_attribute sda_temp_beep[] = {
+static const struct sensor_device_attribute sda_temp_beep[] = {
 	SENSOR_ATTR(temp1_beep, S_IWUSR | S_IRUGO, show_beep, store_beep, 4),
 	SENSOR_ATTR(temp2_beep, S_IWUSR | S_IRUGO, show_beep, store_beep, 5),
 	SENSOR_ATTR(temp3_beep, S_IWUSR | S_IRUGO, show_beep, store_beep, 1),
 };
 
-static struct sensor_device_attribute sda_temp_alarm[] = {
+static const struct sensor_device_attribute sda_temp_alarm[] = {
 	SENSOR_ATTR(temp1_alarm, S_IRUGO, show_alarm, NULL, 4),
 	SENSOR_ATTR(temp2_alarm, S_IRUGO, show_alarm, NULL, 5),
 	SENSOR_ATTR(temp3_alarm, S_IRUGO, show_alarm, NULL, 13),
 };
 
 /* get realtime status of all sensors items: voltage, temp, fan */
-static ssize_t alarms_show(struct device *dev, struct device_attribute *attr,
+static ssize_t alarms_show(struct device *dev, const struct device_attribute *attr,
 			   char *buf)
 {
 	struct w83791d_data *data = w83791d_update_device(dev);
@@ -1044,14 +1044,14 @@ static DEVICE_ATTR_RO(alarms);
 #define GLOBAL_BEEP_ENABLE_MASK		(1 << GLOBAL_BEEP_ENABLE_SHIFT)
 
 static ssize_t show_beep_enable(struct device *dev,
-				struct device_attribute *attr, char *buf)
+				const struct device_attribute *attr, char *buf)
 {
 	struct w83791d_data *data = w83791d_update_device(dev);
 	return sprintf(buf, "%d\n", data->beep_enable);
 }
 
 static ssize_t show_beep_mask(struct device *dev,
-				struct device_attribute *attr, char *buf)
+				const struct device_attribute *attr, char *buf)
 {
 	struct w83791d_data *data = w83791d_update_device(dev);
 	return sprintf(buf, "%d\n", BEEP_MASK_FROM_REG(data->beep_mask));
@@ -1059,7 +1059,7 @@ static ssize_t show_beep_mask(struct device *dev,
 
 
 static ssize_t store_beep_mask(struct device *dev,
-				struct device_attribute *attr,
+				const struct device_attribute *attr,
 				const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -1094,7 +1094,7 @@ static ssize_t store_beep_mask(struct device *dev,
 }
 
 static ssize_t store_beep_enable(struct device *dev,
-				struct device_attribute *attr,
+				const struct device_attribute *attr,
 				const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -1127,7 +1127,7 @@ static ssize_t store_beep_enable(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute sda_beep_ctrl[] = {
+static const struct sensor_device_attribute sda_beep_ctrl[] = {
 	SENSOR_ATTR(beep_enable, S_IRUGO | S_IWUSR,
 			show_beep_enable, store_beep_enable, 0),
 	SENSOR_ATTR(beep_mask, S_IRUGO | S_IWUSR,
@@ -1136,7 +1136,7 @@ static struct sensor_device_attribute sda_beep_ctrl[] = {
 
 /* cpu voltage regulation information */
 static ssize_t cpu0_vid_show(struct device *dev,
-			     struct device_attribute *attr, char *buf)
+			     const struct device_attribute *attr, char *buf)
 {
 	struct w83791d_data *data = w83791d_update_device(dev);
 	return sprintf(buf, "%d\n", vid_from_reg(data->vid, data->vrm));
@@ -1144,14 +1144,14 @@ static ssize_t cpu0_vid_show(struct device *dev,
 
 static DEVICE_ATTR_RO(cpu0_vid);
 
-static ssize_t vrm_show(struct device *dev, struct device_attribute *attr,
+static ssize_t vrm_show(struct device *dev, const struct device_attribute *attr,
 			char *buf)
 {
 	struct w83791d_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%d\n", data->vrm);
 }
 
-static ssize_t vrm_store(struct device *dev, struct device_attribute *attr,
+static ssize_t vrm_store(struct device *dev, const struct device_attribute *attr,
 			 const char *buf, size_t count)
 {
 	struct w83791d_data *data = dev_get_drvdata(dev);
@@ -1198,7 +1198,7 @@ static DEVICE_ATTR_RW(vrm);
 	&sda_temp_beep[X].dev_attr.attr,	\
 	&sda_temp_alarm[X].dev_attr.attr
 
-static struct attribute *w83791d_attributes[] = {
+static const struct attribute *const w83791d_attributes[] = {
 	IN_UNIT_ATTRS(0),
 	IN_UNIT_ATTRS(1),
 	IN_UNIT_ATTRS(2),
@@ -1236,7 +1236,7 @@ static struct attribute *w83791d_attributes[] = {
 };
 
 static const struct attribute_group w83791d_group = {
-	.attrs = w83791d_attributes,
+	.attrs_const = w83791d_attributes,
 };
 
 /*
@@ -1244,7 +1244,7 @@ static const struct attribute_group w83791d_group = {
  * in use for GPIO in which case their sysfs-interface should not be made
  * available
  */
-static struct attribute *w83791d_attributes_fanpwm45[] = {
+static const struct attribute *const w83791d_attributes_fanpwm45[] = {
 	FAN_UNIT_ATTRS(3),
 	FAN_UNIT_ATTRS(4),
 	&sda_pwm[3].dev_attr.attr,
@@ -1253,7 +1253,7 @@ static struct attribute *w83791d_attributes_fanpwm45[] = {
 };
 
 static const struct attribute_group w83791d_group_fanpwm45 = {
-	.attrs = w83791d_attributes_fanpwm45,
+	.attrs_const = w83791d_attributes_fanpwm45,
 };
 
 static int w83791d_detect_subclients(struct i2c_client *client)
