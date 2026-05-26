@@ -28,7 +28,7 @@ static const char * const input_names[] = {
 };
 
 static ssize_t show_voltage(struct device *dev,
-			    struct device_attribute *attr, char *buf)
+			    const struct device_attribute *attr, char *buf)
 {
 	struct wm831x *wm831x = dev_get_drvdata(dev);
 	int channel = to_sensor_dev_attr(attr)->index;
@@ -42,7 +42,7 @@ static ssize_t show_voltage(struct device *dev,
 }
 
 static ssize_t show_chip_temp(struct device *dev,
-			      struct device_attribute *attr, char *buf)
+			      const struct device_attribute *attr, char *buf)
 {
 	struct wm831x *wm831x = dev_get_drvdata(dev);
 	int channel = to_sensor_dev_attr(attr)->index;
@@ -60,7 +60,7 @@ static ssize_t show_chip_temp(struct device *dev,
 }
 
 static ssize_t show_label(struct device *dev,
-			  struct device_attribute *attr, char *buf)
+			  const struct device_attribute *attr, char *buf)
 {
 	int channel = to_sensor_dev_attr(attr)->index;
 
@@ -68,13 +68,13 @@ static ssize_t show_label(struct device *dev,
 }
 
 #define WM831X_VOLTAGE(id, name) \
-	static SENSOR_DEVICE_ATTR(in##id##_input, S_IRUGO, show_voltage, \
-				  NULL, name)
+	static const SENSOR_DEVICE_ATTR(in##id##_input, S_IRUGO, show_voltage, \
+					NULL, name)
 
 #define WM831X_NAMED_VOLTAGE(id, name) \
 	WM831X_VOLTAGE(id, name); \
-	static SENSOR_DEVICE_ATTR(in##id##_label, S_IRUGO, show_label,	\
-				  NULL, name)
+	static const SENSOR_DEVICE_ATTR(in##id##_label, S_IRUGO, show_label,	\
+					NULL, name)
 
 WM831X_VOLTAGE(0, WM831X_AUX_AUX1);
 WM831X_VOLTAGE(1, WM831X_AUX_AUX2);
@@ -87,20 +87,20 @@ WM831X_NAMED_VOLTAGE(6, WM831X_AUX_BATT);
 WM831X_NAMED_VOLTAGE(7, WM831X_AUX_WALL);
 WM831X_NAMED_VOLTAGE(8, WM831X_AUX_BKUP_BATT);
 
-static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, show_chip_temp, NULL,
-			  WM831X_AUX_CHIP_TEMP);
-static SENSOR_DEVICE_ATTR(temp1_label, S_IRUGO, show_label, NULL,
-			  WM831X_AUX_CHIP_TEMP);
+static const SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, show_chip_temp, NULL,
+				WM831X_AUX_CHIP_TEMP);
+static const SENSOR_DEVICE_ATTR(temp1_label, S_IRUGO, show_label, NULL,
+				WM831X_AUX_CHIP_TEMP);
 /*
  * Report as a voltage since conversion depends on external components
  * and that's what the ABI wants.
  */
-static SENSOR_DEVICE_ATTR(temp2_input, S_IRUGO, show_voltage, NULL,
-			  WM831X_AUX_BATT_TEMP);
-static SENSOR_DEVICE_ATTR(temp2_label, S_IRUGO, show_label, NULL,
-			  WM831X_AUX_BATT_TEMP);
+static const SENSOR_DEVICE_ATTR(temp2_input, S_IRUGO, show_voltage, NULL,
+				WM831X_AUX_BATT_TEMP);
+static const SENSOR_DEVICE_ATTR(temp2_label, S_IRUGO, show_label, NULL,
+				WM831X_AUX_BATT_TEMP);
 
-static struct attribute *wm831x_attrs[] = {
+static const struct attribute *const wm831x_attrs[] = {
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_in1_input.dev_attr.attr,
 	&sensor_dev_attr_in2_input.dev_attr.attr,
