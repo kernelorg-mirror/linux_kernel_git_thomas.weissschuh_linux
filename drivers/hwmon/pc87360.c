@@ -404,15 +404,15 @@ static struct pc87360_data *pc87360_update_device(struct device *dev)
 }
 
 static ssize_t in_input_show(struct device *dev,
-			     struct device_attribute *devattr, char *buf)
+			     const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", IN_FROM_REG(data->in[attr->index],
 		       data->in_vref));
 }
 
-static struct sensor_device_attribute in_input[] = {
+static const struct sensor_device_attribute in_input[] = {
 	SENSOR_ATTR_RO(in0_input, in_input, 0),
 	SENSOR_ATTR_RO(in1_input, in_input, 1),
 	SENSOR_ATTR_RO(in2_input, in_input, 2),
@@ -427,14 +427,14 @@ static struct sensor_device_attribute in_input[] = {
 };
 
 static ssize_t in_status_show(struct device *dev,
-			      struct device_attribute *devattr, char *buf)
+			      const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", data->in_status[attr->index]);
 }
 
-static struct sensor_device_attribute in_status[] = {
+static const struct sensor_device_attribute in_status[] = {
 	SENSOR_ATTR_RO(in0_status, in_status, 0),
 	SENSOR_ATTR_RO(in1_status, in_status, 1),
 	SENSOR_ATTR_RO(in2_status, in_status, 2),
@@ -449,19 +449,19 @@ static struct sensor_device_attribute in_status[] = {
 };
 
 static ssize_t in_min_show(struct device *dev,
-			   struct device_attribute *devattr, char *buf)
+			   const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", IN_FROM_REG(data->in_min[attr->index],
 		       data->in_vref));
 }
 
 static ssize_t in_min_store(struct device *dev,
-			    struct device_attribute *devattr, const char *buf,
+			    const struct device_attribute *devattr, const char *buf,
 			    size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	long val;
 	int err;
@@ -478,7 +478,7 @@ static ssize_t in_min_store(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute in_min[] = {
+static const struct sensor_device_attribute in_min[] = {
 	SENSOR_ATTR_RW(in0_min, in_min, 0),
 	SENSOR_ATTR_RW(in1_min, in_min, 1),
 	SENSOR_ATTR_RW(in2_min, in_min, 2),
@@ -493,19 +493,19 @@ static struct sensor_device_attribute in_min[] = {
 };
 
 static ssize_t in_max_show(struct device *dev,
-			   struct device_attribute *devattr, char *buf)
+			   const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", IN_FROM_REG(data->in_max[attr->index],
 		       data->in_vref));
 }
 
 static ssize_t in_max_store(struct device *dev,
-			    struct device_attribute *devattr, const char *buf,
+			    const struct device_attribute *devattr, const char *buf,
 			    size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	long val;
 	int err;
@@ -523,7 +523,7 @@ static ssize_t in_max_store(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute in_max[] = {
+static const struct sensor_device_attribute in_max[] = {
 	SENSOR_ATTR_RW(in0_max, in_max, 0),
 	SENSOR_ATTR_RW(in1_max, in_max, 1),
 	SENSOR_ATTR_RW(in2_max, in_max, 2),
@@ -549,7 +549,7 @@ static struct sensor_device_attribute in_max[] = {
  */
 
 static ssize_t in_min_alarm_show(struct device *dev,
-				 struct device_attribute *devattr, char *buf)
+				 const struct device_attribute *devattr, char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
 	unsigned nr = to_sensor_dev_attr(devattr)->index;
@@ -557,7 +557,7 @@ static ssize_t in_min_alarm_show(struct device *dev,
 	return sprintf(buf, "%u\n", !!(data->in_status[nr] & CHAN_ALM_MIN));
 }
 
-static struct sensor_device_attribute in_min_alarm[] = {
+static const struct sensor_device_attribute in_min_alarm[] = {
 	SENSOR_ATTR_RO(in0_min_alarm, in_min_alarm, 0),
 	SENSOR_ATTR_RO(in1_min_alarm, in_min_alarm, 1),
 	SENSOR_ATTR_RO(in2_min_alarm, in_min_alarm, 2),
@@ -572,7 +572,7 @@ static struct sensor_device_attribute in_min_alarm[] = {
 };
 
 static ssize_t in_max_alarm_show(struct device *dev,
-				 struct device_attribute *devattr, char *buf)
+				 const struct device_attribute *devattr, char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
 	unsigned nr = to_sensor_dev_attr(devattr)->index;
@@ -580,7 +580,7 @@ static ssize_t in_max_alarm_show(struct device *dev,
 	return sprintf(buf, "%u\n", !!(data->in_status[nr] & CHAN_ALM_MAX));
 }
 
-static struct sensor_device_attribute in_max_alarm[] = {
+static const struct sensor_device_attribute in_max_alarm[] = {
 	SENSOR_ATTR_RO(in0_max_alarm, in_max_alarm, 0),
 	SENSOR_ATTR_RO(in1_max_alarm, in_max_alarm, 1),
 	SENSOR_ATTR_RO(in2_max_alarm, in_max_alarm, 2),
@@ -603,21 +603,21 @@ static struct sensor_device_attribute in_max_alarm[] = {
 	&in_max_alarm[X].dev_attr.attr
 
 static ssize_t cpu0_vid_show(struct device *dev,
-			     struct device_attribute *attr, char *buf)
+			     const struct device_attribute *attr, char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", vid_from_reg(data->vid, data->vrm));
 }
 static DEVICE_ATTR_RO(cpu0_vid);
 
-static ssize_t vrm_show(struct device *dev, struct device_attribute *attr,
+static ssize_t vrm_show(struct device *dev, const struct device_attribute *attr,
 			char *buf)
 {
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%u\n", data->vrm);
 }
 
-static ssize_t vrm_store(struct device *dev, struct device_attribute *attr,
+static ssize_t vrm_store(struct device *dev, const struct device_attribute *attr,
 			 const char *buf, size_t count)
 {
 	struct pc87360_data *data = dev_get_drvdata(dev);
@@ -637,14 +637,14 @@ static ssize_t vrm_store(struct device *dev, struct device_attribute *attr,
 static DEVICE_ATTR_RW(vrm);
 
 static ssize_t alarms_in_show(struct device *dev,
-			      struct device_attribute *attr, char *buf)
+			      const struct device_attribute *attr, char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", data->in_alarms);
 }
 static DEVICE_ATTR_RO(alarms_in);
 
-static struct attribute *pc8736x_vin_attr_array[] = {
+static const struct attribute *const pc8736x_vin_attr_array[] = {
 	VIN_UNIT_ATTRS(0),
 	VIN_UNIT_ATTRS(1),
 	VIN_UNIT_ATTRS(2),
@@ -662,13 +662,13 @@ static struct attribute *pc8736x_vin_attr_array[] = {
 	NULL
 };
 static const struct attribute_group pc8736x_vin_group = {
-	.attrs = pc8736x_vin_attr_array,
+	.attrs_const = pc8736x_vin_attr_array,
 };
 
 static ssize_t therm_input_show(struct device *dev,
-				struct device_attribute *devattr, char *buf)
+				const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", IN_FROM_REG(data->in[attr->index],
 		       data->in_vref));
@@ -678,40 +678,40 @@ static ssize_t therm_input_show(struct device *dev,
  * the +11 term below reflects the fact that VLM units 11,12,13 are
  * used in the chip to measure voltage across the thermistors
  */
-static struct sensor_device_attribute therm_input[] = {
+static const struct sensor_device_attribute therm_input[] = {
 	SENSOR_ATTR_RO(temp4_input, therm_input, 0 + 11),
 	SENSOR_ATTR_RO(temp5_input, therm_input, 1 + 11),
 	SENSOR_ATTR_RO(temp6_input, therm_input, 2 + 11),
 };
 
 static ssize_t therm_status_show(struct device *dev,
-				 struct device_attribute *devattr, char *buf)
+				 const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", data->in_status[attr->index]);
 }
 
-static struct sensor_device_attribute therm_status[] = {
+static const struct sensor_device_attribute therm_status[] = {
 	SENSOR_ATTR_RO(temp4_status, therm_status, 0 + 11),
 	SENSOR_ATTR_RO(temp5_status, therm_status, 1 + 11),
 	SENSOR_ATTR_RO(temp6_status, therm_status, 2 + 11),
 };
 
 static ssize_t therm_min_show(struct device *dev,
-			      struct device_attribute *devattr, char *buf)
+			      const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", IN_FROM_REG(data->in_min[attr->index],
 		       data->in_vref));
 }
 
 static ssize_t therm_min_store(struct device *dev,
-			       struct device_attribute *devattr,
+			       const struct device_attribute *devattr,
 			       const char *buf, size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	long val;
 	int err;
@@ -728,26 +728,26 @@ static ssize_t therm_min_store(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute therm_min[] = {
+static const struct sensor_device_attribute therm_min[] = {
 	SENSOR_ATTR_RW(temp4_min, therm_min, 0 + 11),
 	SENSOR_ATTR_RW(temp5_min, therm_min, 1 + 11),
 	SENSOR_ATTR_RW(temp6_min, therm_min, 2 + 11),
 };
 
 static ssize_t therm_max_show(struct device *dev,
-			      struct device_attribute *devattr, char *buf)
+			      const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", IN_FROM_REG(data->in_max[attr->index],
 		       data->in_vref));
 }
 
 static ssize_t therm_max_store(struct device *dev,
-			       struct device_attribute *devattr,
+			       const struct device_attribute *devattr,
 			       const char *buf, size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	long val;
 	int err;
@@ -764,26 +764,26 @@ static ssize_t therm_max_store(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute therm_max[] = {
+static const struct sensor_device_attribute therm_max[] = {
 	SENSOR_ATTR_RW(temp4_max, therm_max, 0 + 11),
 	SENSOR_ATTR_RW(temp5_max, therm_max, 1 + 11),
 	SENSOR_ATTR_RW(temp6_max, therm_max, 2 + 11),
 };
 
 static ssize_t therm_crit_show(struct device *dev,
-			       struct device_attribute *devattr, char *buf)
+			       const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", IN_FROM_REG(data->in_crit[attr->index-11],
 		       data->in_vref));
 }
 
 static ssize_t therm_crit_store(struct device *dev,
-				struct device_attribute *devattr,
+				const struct device_attribute *devattr,
 				const char *buf, size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	long val;
 	int err;
@@ -800,7 +800,7 @@ static ssize_t therm_crit_store(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute therm_crit[] = {
+static const struct sensor_device_attribute therm_crit[] = {
 	SENSOR_ATTR_RW(temp4_crit, therm_crit, 0 + 11),
 	SENSOR_ATTR_RW(temp5_crit, therm_crit, 1 + 11),
 	SENSOR_ATTR_RW(temp6_crit, therm_crit, 2 + 11),
@@ -811,7 +811,7 @@ static struct sensor_device_attribute therm_crit[] = {
  * status register (sec 11.5.12)
  */
 static ssize_t therm_min_alarm_show(struct device *dev,
-				    struct device_attribute *devattr,
+				    const struct device_attribute *devattr,
 				    char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
@@ -820,14 +820,14 @@ static ssize_t therm_min_alarm_show(struct device *dev,
 	return sprintf(buf, "%u\n", !!(data->in_status[nr] & CHAN_ALM_MIN));
 }
 
-static struct sensor_device_attribute therm_min_alarm[] = {
+static const struct sensor_device_attribute therm_min_alarm[] = {
 	SENSOR_ATTR_RO(temp4_min_alarm, therm_min_alarm, 0 + 11),
 	SENSOR_ATTR_RO(temp5_min_alarm, therm_min_alarm, 1 + 11),
 	SENSOR_ATTR_RO(temp6_min_alarm, therm_min_alarm, 2 + 11),
 };
 
 static ssize_t therm_max_alarm_show(struct device *dev,
-				    struct device_attribute *devattr,
+				    const struct device_attribute *devattr,
 				    char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
@@ -836,14 +836,14 @@ static ssize_t therm_max_alarm_show(struct device *dev,
 	return sprintf(buf, "%u\n", !!(data->in_status[nr] & CHAN_ALM_MAX));
 }
 
-static struct sensor_device_attribute therm_max_alarm[] = {
+static const struct sensor_device_attribute therm_max_alarm[] = {
 	SENSOR_ATTR_RO(temp4_max_alarm, therm_max_alarm, 0 + 11),
 	SENSOR_ATTR_RO(temp5_max_alarm, therm_max_alarm, 1 + 11),
 	SENSOR_ATTR_RO(temp6_max_alarm, therm_max_alarm, 2 + 11),
 };
 
 static ssize_t therm_crit_alarm_show(struct device *dev,
-				     struct device_attribute *devattr,
+				     const struct device_attribute *devattr,
 				     char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
@@ -852,7 +852,7 @@ static ssize_t therm_crit_alarm_show(struct device *dev,
 	return sprintf(buf, "%u\n", !!(data->in_status[nr] & TEMP_ALM_CRIT));
 }
 
-static struct sensor_device_attribute therm_crit_alarm[] = {
+static const struct sensor_device_attribute therm_crit_alarm[] = {
 	SENSOR_ATTR_RO(temp4_crit_alarm, therm_crit_alarm, 0 + 11),
 	SENSOR_ATTR_RO(temp5_crit_alarm, therm_crit_alarm, 1 + 11),
 	SENSOR_ATTR_RO(temp6_crit_alarm, therm_crit_alarm, 2 + 11),
@@ -868,57 +868,57 @@ static struct sensor_device_attribute therm_crit_alarm[] = {
 	&therm_max_alarm[X].dev_attr.attr, \
 	&therm_crit_alarm[X].dev_attr.attr
 
-static struct attribute *pc8736x_therm_attr_array[] = {
+static const struct attribute *const pc8736x_therm_attr_array[] = {
 	THERM_UNIT_ATTRS(0),
 	THERM_UNIT_ATTRS(1),
 	THERM_UNIT_ATTRS(2),
 	NULL
 };
 static const struct attribute_group pc8736x_therm_group = {
-	.attrs = pc8736x_therm_attr_array,
+	.attrs_const = pc8736x_therm_attr_array,
 };
 
 static ssize_t temp_input_show(struct device *dev,
-			       struct device_attribute *devattr, char *buf)
+			       const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp[attr->index]));
 }
 
-static struct sensor_device_attribute temp_input[] = {
+static const struct sensor_device_attribute temp_input[] = {
 	SENSOR_ATTR_RO(temp1_input, temp_input, 0),
 	SENSOR_ATTR_RO(temp2_input, temp_input, 1),
 	SENSOR_ATTR_RO(temp3_input, temp_input, 2),
 };
 
 static ssize_t temp_status_show(struct device *dev,
-				struct device_attribute *devattr, char *buf)
+				const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%d\n", data->temp_status[attr->index]);
 }
 
-static struct sensor_device_attribute temp_status[] = {
+static const struct sensor_device_attribute temp_status[] = {
 	SENSOR_ATTR_RO(temp1_status, temp_status, 0),
 	SENSOR_ATTR_RO(temp2_status, temp_status, 1),
 	SENSOR_ATTR_RO(temp3_status, temp_status, 2),
 };
 
 static ssize_t temp_min_show(struct device *dev,
-			     struct device_attribute *devattr, char *buf)
+			     const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp_min[attr->index]));
 }
 
 static ssize_t temp_min_store(struct device *dev,
-			      struct device_attribute *devattr,
+			      const struct device_attribute *devattr,
 			      const char *buf, size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	long val;
 	int err;
@@ -935,25 +935,25 @@ static ssize_t temp_min_store(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute temp_min[] = {
+static const struct sensor_device_attribute temp_min[] = {
 	SENSOR_ATTR_RW(temp1_min, temp_min, 0),
 	SENSOR_ATTR_RW(temp2_min, temp_min, 1),
 	SENSOR_ATTR_RW(temp3_min, temp_min, 2),
 };
 
 static ssize_t temp_max_show(struct device *dev,
-			     struct device_attribute *devattr, char *buf)
+			     const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp_max[attr->index]));
 }
 
 static ssize_t temp_max_store(struct device *dev,
-			      struct device_attribute *devattr,
+			      const struct device_attribute *devattr,
 			      const char *buf, size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	long val;
 	int err;
@@ -970,26 +970,26 @@ static ssize_t temp_max_store(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute temp_max[] = {
+static const struct sensor_device_attribute temp_max[] = {
 	SENSOR_ATTR_RW(temp1_max, temp_max, 0),
 	SENSOR_ATTR_RW(temp2_max, temp_max, 1),
 	SENSOR_ATTR_RW(temp3_max, temp_max, 2),
 };
 
 static ssize_t temp_crit_show(struct device *dev,
-			      struct device_attribute *devattr, char *buf)
+			      const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%d\n",
 		       TEMP_FROM_REG(data->temp_crit[attr->index]));
 }
 
 static ssize_t temp_crit_store(struct device *dev,
-			       struct device_attribute *devattr,
+			       const struct device_attribute *devattr,
 			       const char *buf, size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	long val;
 	int err;
@@ -1006,7 +1006,7 @@ static ssize_t temp_crit_store(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute temp_crit[] = {
+static const struct sensor_device_attribute temp_crit[] = {
 	SENSOR_ATTR_RW(temp1_crit, temp_crit, 0),
 	SENSOR_ATTR_RW(temp2_crit, temp_crit, 1),
 	SENSOR_ATTR_RW(temp3_crit, temp_crit, 2),
@@ -1018,7 +1018,7 @@ static struct sensor_device_attribute temp_crit[] = {
  * 12.3.2) that show_temp_alarm() reads (via data->temp_alarms)
  */
 static ssize_t temp_min_alarm_show(struct device *dev,
-				   struct device_attribute *devattr,
+				   const struct device_attribute *devattr,
 				   char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
@@ -1027,14 +1027,14 @@ static ssize_t temp_min_alarm_show(struct device *dev,
 	return sprintf(buf, "%u\n", !!(data->temp_status[nr] & CHAN_ALM_MIN));
 }
 
-static struct sensor_device_attribute temp_min_alarm[] = {
+static const struct sensor_device_attribute temp_min_alarm[] = {
 	SENSOR_ATTR_RO(temp1_min_alarm, temp_min_alarm, 0),
 	SENSOR_ATTR_RO(temp2_min_alarm, temp_min_alarm, 1),
 	SENSOR_ATTR_RO(temp3_min_alarm, temp_min_alarm, 2),
 };
 
 static ssize_t temp_max_alarm_show(struct device *dev,
-				   struct device_attribute *devattr,
+				   const struct device_attribute *devattr,
 				   char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
@@ -1043,14 +1043,14 @@ static ssize_t temp_max_alarm_show(struct device *dev,
 	return sprintf(buf, "%u\n", !!(data->temp_status[nr] & CHAN_ALM_MAX));
 }
 
-static struct sensor_device_attribute temp_max_alarm[] = {
+static const struct sensor_device_attribute temp_max_alarm[] = {
 	SENSOR_ATTR_RO(temp1_max_alarm, temp_max_alarm, 0),
 	SENSOR_ATTR_RO(temp2_max_alarm, temp_max_alarm, 1),
 	SENSOR_ATTR_RO(temp3_max_alarm, temp_max_alarm, 2),
 };
 
 static ssize_t temp_crit_alarm_show(struct device *dev,
-				    struct device_attribute *devattr,
+				    const struct device_attribute *devattr,
 				    char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
@@ -1059,7 +1059,7 @@ static ssize_t temp_crit_alarm_show(struct device *dev,
 	return sprintf(buf, "%u\n", !!(data->temp_status[nr] & TEMP_ALM_CRIT));
 }
 
-static struct sensor_device_attribute temp_crit_alarm[] = {
+static const struct sensor_device_attribute temp_crit_alarm[] = {
 	SENSOR_ATTR_RO(temp1_crit_alarm, temp_crit_alarm, 0),
 	SENSOR_ATTR_RO(temp2_crit_alarm, temp_crit_alarm, 1),
 	SENSOR_ATTR_RO(temp3_crit_alarm, temp_crit_alarm, 2),
@@ -1067,7 +1067,7 @@ static struct sensor_device_attribute temp_crit_alarm[] = {
 
 #define TEMP_FAULT	0x40	/* open diode */
 static ssize_t temp_fault_show(struct device *dev,
-			       struct device_attribute *devattr, char *buf)
+			       const struct device_attribute *devattr, char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
 	unsigned nr = to_sensor_dev_attr(devattr)->index;
@@ -1075,7 +1075,7 @@ static ssize_t temp_fault_show(struct device *dev,
 	return sprintf(buf, "%u\n", !!(data->temp_status[nr] & TEMP_FAULT));
 }
 
-static struct sensor_device_attribute temp_fault[] = {
+static const struct sensor_device_attribute temp_fault[] = {
 	SENSOR_ATTR_RO(temp1_fault, temp_fault, 0),
 	SENSOR_ATTR_RO(temp2_fault, temp_fault, 1),
 	SENSOR_ATTR_RO(temp3_fault, temp_fault, 2),
@@ -1094,20 +1094,20 @@ static struct sensor_device_attribute temp_fault[] = {
 	NULL					\
 }
 
-static struct attribute *pc8736x_temp_attr[][10] = {
+static const struct attribute *const pc8736x_temp_attr[][10] = {
 	TEMP_UNIT_ATTRS(0),
 	TEMP_UNIT_ATTRS(1),
 	TEMP_UNIT_ATTRS(2)
 };
 
 static const struct attribute_group pc8736x_temp_attr_group[] = {
-	{ .attrs = pc8736x_temp_attr[0] },
-	{ .attrs = pc8736x_temp_attr[1] },
-	{ .attrs = pc8736x_temp_attr[2] }
+	{ .attrs_const = pc8736x_temp_attr[0] },
+	{ .attrs_const = pc8736x_temp_attr[1] },
+	{ .attrs_const = pc8736x_temp_attr[2] }
 };
 
 static ssize_t alarms_temp_show(struct device *dev,
-				struct device_attribute *attr, char *buf)
+				const struct device_attribute *attr, char *buf)
 {
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", data->temp_alarms);
@@ -1116,64 +1116,64 @@ static ssize_t alarms_temp_show(struct device *dev,
 static DEVICE_ATTR_RO(alarms_temp);
 
 static ssize_t fan_input_show(struct device *dev,
-			      struct device_attribute *devattr, char *buf)
+			      const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", FAN_FROM_REG(data->fan[attr->index],
 		       FAN_DIV_FROM_REG(data->fan_status[attr->index])));
 }
 
-static struct sensor_device_attribute fan_input[] = {
+static const struct sensor_device_attribute fan_input[] = {
 	SENSOR_ATTR_RO(fan1_input, fan_input, 0),
 	SENSOR_ATTR_RO(fan2_input, fan_input, 1),
 	SENSOR_ATTR_RO(fan3_input, fan_input, 2),
 };
 
 static ssize_t fan_status_show(struct device *dev,
-			       struct device_attribute *devattr, char *buf)
+			       const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n",
 		       FAN_STATUS_FROM_REG(data->fan_status[attr->index]));
 }
 
-static struct sensor_device_attribute fan_status[] = {
+static const struct sensor_device_attribute fan_status[] = {
 	SENSOR_ATTR_RO(fan1_status, fan_status, 0),
 	SENSOR_ATTR_RO(fan2_status, fan_status, 1),
 	SENSOR_ATTR_RO(fan3_status, fan_status, 2),
 };
 
 static ssize_t fan_div_show(struct device *dev,
-			    struct device_attribute *devattr, char *buf)
+			    const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n",
 		       FAN_DIV_FROM_REG(data->fan_status[attr->index]));
 }
 
-static struct sensor_device_attribute fan_div[] = {
+static const struct sensor_device_attribute fan_div[] = {
 	SENSOR_ATTR_RO(fan1_div, fan_div, 0),
 	SENSOR_ATTR_RO(fan2_div, fan_div, 1),
 	SENSOR_ATTR_RO(fan3_div, fan_div, 2),
 };
 
 static ssize_t fan_min_show(struct device *dev,
-			    struct device_attribute *devattr, char *buf)
+			    const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", FAN_FROM_REG(data->fan_min[attr->index],
 		       FAN_DIV_FROM_REG(data->fan_status[attr->index])));
 }
 
 static ssize_t fan_min_store(struct device *dev,
-			     struct device_attribute *devattr,
+			     const struct device_attribute *devattr,
 			     const char *buf, size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	long fan_min;
 	int err;
@@ -1207,7 +1207,7 @@ static ssize_t fan_min_store(struct device *dev,
 	return count;
 }
 
-static struct sensor_device_attribute fan_min[] = {
+static const struct sensor_device_attribute fan_min[] = {
 	SENSOR_ATTR_RW(fan1_min, fan_min, 0),
 	SENSOR_ATTR_RW(fan2_min, fan_min, 1),
 	SENSOR_ATTR_RW(fan3_min, fan_min, 2),
@@ -1221,22 +1221,22 @@ static struct sensor_device_attribute fan_min[] = {
 	NULL				\
 }
 
-static struct attribute *pc8736x_fan_attr[][5] = {
+static const struct attribute *const pc8736x_fan_attr[][5] = {
 	FAN_UNIT_ATTRS(0),
 	FAN_UNIT_ATTRS(1),
 	FAN_UNIT_ATTRS(2)
 };
 
 static const struct attribute_group pc8736x_fan_attr_group[] = {
-	{ .attrs = pc8736x_fan_attr[0], },
-	{ .attrs = pc8736x_fan_attr[1], },
-	{ .attrs = pc8736x_fan_attr[2], },
+	{ .attrs_const = pc8736x_fan_attr[0], },
+	{ .attrs_const = pc8736x_fan_attr[1], },
+	{ .attrs_const = pc8736x_fan_attr[2], },
 };
 
-static ssize_t pwm_show(struct device *dev, struct device_attribute *devattr,
+static ssize_t pwm_show(struct device *dev, const struct device_attribute *devattr,
 			char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n",
 		       PWM_FROM_REG(data->pwm[attr->index],
@@ -1244,10 +1244,10 @@ static ssize_t pwm_show(struct device *dev, struct device_attribute *devattr,
 						      attr->index)));
 }
 
-static ssize_t pwm_store(struct device *dev, struct device_attribute *devattr,
+static ssize_t pwm_store(struct device *dev, const struct device_attribute *devattr,
 			 const char *buf, size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	long val;
 	int err;
@@ -1265,14 +1265,14 @@ static ssize_t pwm_store(struct device *dev, struct device_attribute *devattr,
 	return count;
 }
 
-static struct sensor_device_attribute pwm[] = {
+static const struct sensor_device_attribute pwm[] = {
 	SENSOR_ATTR_RW(pwm1, pwm, 0),
 	SENSOR_ATTR_RW(pwm2, pwm, 1),
 	SENSOR_ATTR_RW(pwm3, pwm, 2),
 };
 
 static ssize_t name_show(struct device *dev,
-			struct device_attribute *devattr, char *buf)
+			const struct device_attribute *devattr, char *buf)
 {
 	struct pc87360_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%s\n", data->name);
