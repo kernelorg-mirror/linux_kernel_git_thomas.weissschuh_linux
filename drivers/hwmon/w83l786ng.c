@@ -230,7 +230,7 @@ static struct w83l786ng_data *w83l786ng_update_device(struct device *dev)
 /* following are the sysfs callback functions */
 #define show_in_reg(reg) \
 static ssize_t \
-show_##reg(struct device *dev, struct device_attribute *attr, \
+show_##reg(struct device *dev, const struct device_attribute *attr, \
 	   char *buf) \
 { \
 	int nr = to_sensor_dev_attr(attr)->index; \
@@ -244,7 +244,7 @@ show_in_reg(in_max)
 
 #define store_in_reg(REG, reg) \
 static ssize_t \
-store_in_##reg(struct device *dev, struct device_attribute *attr, \
+store_in_##reg(struct device *dev, const struct device_attribute *attr, \
 	       const char *buf, size_t count) \
 { \
 	int nr = to_sensor_dev_attr(attr)->index; \
@@ -265,26 +265,26 @@ store_in_##reg(struct device *dev, struct device_attribute *attr, \
 store_in_reg(MIN, min)
 store_in_reg(MAX, max)
 
-static struct sensor_device_attribute sda_in_input[] = {
+static const struct sensor_device_attribute sda_in_input[] = {
 	SENSOR_ATTR(in0_input, S_IRUGO, show_in, NULL, 0),
 	SENSOR_ATTR(in1_input, S_IRUGO, show_in, NULL, 1),
 	SENSOR_ATTR(in2_input, S_IRUGO, show_in, NULL, 2),
 };
 
-static struct sensor_device_attribute sda_in_min[] = {
+static const struct sensor_device_attribute sda_in_min[] = {
 	SENSOR_ATTR(in0_min, S_IWUSR | S_IRUGO, show_in_min, store_in_min, 0),
 	SENSOR_ATTR(in1_min, S_IWUSR | S_IRUGO, show_in_min, store_in_min, 1),
 	SENSOR_ATTR(in2_min, S_IWUSR | S_IRUGO, show_in_min, store_in_min, 2),
 };
 
-static struct sensor_device_attribute sda_in_max[] = {
+static const struct sensor_device_attribute sda_in_max[] = {
 	SENSOR_ATTR(in0_max, S_IWUSR | S_IRUGO, show_in_max, store_in_max, 0),
 	SENSOR_ATTR(in1_max, S_IWUSR | S_IRUGO, show_in_max, store_in_max, 1),
 	SENSOR_ATTR(in2_max, S_IWUSR | S_IRUGO, show_in_max, store_in_max, 2),
 };
 
 #define show_fan_reg(reg) \
-static ssize_t show_##reg(struct device *dev, struct device_attribute *attr, \
+static ssize_t show_##reg(struct device *dev, const struct device_attribute *attr, \
 			  char *buf) \
 { \
 	int nr = to_sensor_dev_attr(attr)->index; \
@@ -297,7 +297,7 @@ show_fan_reg(fan);
 show_fan_reg(fan_min);
 
 static ssize_t
-store_fan_min(struct device *dev, struct device_attribute *attr,
+store_fan_min(struct device *dev, const struct device_attribute *attr,
 	      const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -320,7 +320,7 @@ store_fan_min(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t
-show_fan_div(struct device *dev, struct device_attribute *attr,
+show_fan_div(struct device *dev, const struct device_attribute *attr,
 	     char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -335,7 +335,7 @@ show_fan_div(struct device *dev, struct device_attribute *attr,
  * because the divisor changed.
  */
 static ssize_t
-store_fan_div(struct device *dev, struct device_attribute *attr,
+store_fan_div(struct device *dev, const struct device_attribute *attr,
 	      const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -389,19 +389,19 @@ store_fan_div(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-static struct sensor_device_attribute sda_fan_input[] = {
+static const struct sensor_device_attribute sda_fan_input[] = {
 	SENSOR_ATTR(fan1_input, S_IRUGO, show_fan, NULL, 0),
 	SENSOR_ATTR(fan2_input, S_IRUGO, show_fan, NULL, 1),
 };
 
-static struct sensor_device_attribute sda_fan_min[] = {
+static const struct sensor_device_attribute sda_fan_min[] = {
 	SENSOR_ATTR(fan1_min, S_IWUSR | S_IRUGO, show_fan_min,
 		    store_fan_min, 0),
 	SENSOR_ATTR(fan2_min, S_IWUSR | S_IRUGO, show_fan_min,
 		    store_fan_min, 1),
 };
 
-static struct sensor_device_attribute sda_fan_div[] = {
+static const struct sensor_device_attribute sda_fan_div[] = {
 	SENSOR_ATTR(fan1_div, S_IWUSR | S_IRUGO, show_fan_div,
 		    store_fan_div, 0),
 	SENSOR_ATTR(fan2_div, S_IWUSR | S_IRUGO, show_fan_div,
@@ -412,9 +412,9 @@ static struct sensor_device_attribute sda_fan_div[] = {
 /* read/write the temperature, includes measured value and limits */
 
 static ssize_t
-show_temp(struct device *dev, struct device_attribute *attr, char *buf)
+show_temp(struct device *dev, const struct device_attribute *attr, char *buf)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -423,10 +423,10 @@ show_temp(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_temp(struct device *dev, struct device_attribute *attr,
+store_temp(struct device *dev, const struct device_attribute *attr,
 	   const char *buf, size_t count)
 {
-	struct sensor_device_attribute_2 *sensor_attr =
+	const struct sensor_device_attribute_2 *sensor_attr =
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
@@ -448,19 +448,19 @@ store_temp(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-static struct sensor_device_attribute_2 sda_temp_input[] = {
+static const struct sensor_device_attribute_2 sda_temp_input[] = {
 	SENSOR_ATTR_2(temp1_input, S_IRUGO, show_temp, NULL, 0, 0),
 	SENSOR_ATTR_2(temp2_input, S_IRUGO, show_temp, NULL, 1, 0),
 };
 
-static struct sensor_device_attribute_2 sda_temp_max[] = {
+static const struct sensor_device_attribute_2 sda_temp_max[] = {
 	SENSOR_ATTR_2(temp1_max, S_IRUGO | S_IWUSR,
 		      show_temp, store_temp, 0, 1),
 	SENSOR_ATTR_2(temp2_max, S_IRUGO | S_IWUSR,
 		      show_temp, store_temp, 1, 1),
 };
 
-static struct sensor_device_attribute_2 sda_temp_max_hyst[] = {
+static const struct sensor_device_attribute_2 sda_temp_max_hyst[] = {
 	SENSOR_ATTR_2(temp1_max_hyst, S_IRUGO | S_IWUSR,
 		      show_temp, store_temp, 0, 2),
 	SENSOR_ATTR_2(temp2_max_hyst, S_IRUGO | S_IWUSR,
@@ -468,7 +468,7 @@ static struct sensor_device_attribute_2 sda_temp_max_hyst[] = {
 };
 
 #define show_pwm_reg(reg) \
-static ssize_t show_##reg(struct device *dev, struct device_attribute *attr, \
+static ssize_t show_##reg(struct device *dev, const struct device_attribute *attr, \
 			  char *buf) \
 { \
 	struct w83l786ng_data *data = w83l786ng_update_device(dev); \
@@ -481,7 +481,7 @@ show_pwm_reg(pwm_enable)
 show_pwm_reg(pwm)
 
 static ssize_t
-store_pwm_mode(struct device *dev, struct device_attribute *attr,
+store_pwm_mode(struct device *dev, const struct device_attribute *attr,
 	       const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -509,7 +509,7 @@ store_pwm_mode(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t
-store_pwm(struct device *dev, struct device_attribute *attr,
+store_pwm(struct device *dev, const struct device_attribute *attr,
 	  const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -533,7 +533,7 @@ store_pwm(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t
-store_pwm_enable(struct device *dev, struct device_attribute *attr,
+store_pwm_enable(struct device *dev, const struct device_attribute *attr,
 		 const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -560,19 +560,19 @@ store_pwm_enable(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-static struct sensor_device_attribute sda_pwm[] = {
+static const struct sensor_device_attribute sda_pwm[] = {
 	SENSOR_ATTR(pwm1, S_IWUSR | S_IRUGO, show_pwm, store_pwm, 0),
 	SENSOR_ATTR(pwm2, S_IWUSR | S_IRUGO, show_pwm, store_pwm, 1),
 };
 
-static struct sensor_device_attribute sda_pwm_mode[] = {
+static const struct sensor_device_attribute sda_pwm_mode[] = {
 	SENSOR_ATTR(pwm1_mode, S_IWUSR | S_IRUGO, show_pwm_mode,
 		    store_pwm_mode, 0),
 	SENSOR_ATTR(pwm2_mode, S_IWUSR | S_IRUGO, show_pwm_mode,
 		    store_pwm_mode, 1),
 };
 
-static struct sensor_device_attribute sda_pwm_enable[] = {
+static const struct sensor_device_attribute sda_pwm_enable[] = {
 	SENSOR_ATTR(pwm1_enable, S_IWUSR | S_IRUGO, show_pwm_enable,
 		    store_pwm_enable, 0),
 	SENSOR_ATTR(pwm2_enable, S_IWUSR | S_IRUGO, show_pwm_enable,
@@ -581,7 +581,7 @@ static struct sensor_device_attribute sda_pwm_enable[] = {
 
 /* For Smart Fan I/Thermal Cruise and Smart Fan II */
 static ssize_t
-show_tolerance(struct device *dev, struct device_attribute *attr, char *buf)
+show_tolerance(struct device *dev, const struct device_attribute *attr, char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct w83l786ng_data *data = w83l786ng_update_device(dev);
@@ -589,7 +589,7 @@ show_tolerance(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 static ssize_t
-store_tolerance(struct device *dev, struct device_attribute *attr,
+store_tolerance(struct device *dev, const struct device_attribute *attr,
 		const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -618,7 +618,7 @@ store_tolerance(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-static struct sensor_device_attribute sda_tolerance[] = {
+static const struct sensor_device_attribute sda_tolerance[] = {
 	SENSOR_ATTR(pwm1_tolerance, S_IWUSR | S_IRUGO,
 		    show_tolerance, store_tolerance, 0),
 	SENSOR_ATTR(pwm2_tolerance, S_IWUSR | S_IRUGO,
@@ -649,7 +649,7 @@ static struct sensor_device_attribute sda_tolerance[] = {
 #define TOLERANCE_UNIT_ATTRS(X)	\
 	&sda_tolerance[X].dev_attr.attr
 
-static struct attribute *w83l786ng_attrs[] = {
+static const struct attribute *const w83l786ng_attrs[] = {
 	IN_UNIT_ATTRS(0),
 	IN_UNIT_ATTRS(1),
 	IN_UNIT_ATTRS(2),
