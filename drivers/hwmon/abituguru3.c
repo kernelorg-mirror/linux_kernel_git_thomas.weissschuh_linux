@@ -823,10 +823,10 @@ static int abituguru3_read_increment_offset(struct abituguru3_data *data,
 static struct abituguru3_data *abituguru3_update_device(struct device *dev);
 
 static ssize_t show_value(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
 	int value;
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru3_data *data = abituguru3_update_device(dev);
 	const struct abituguru3_sensor_info *sensor;
 
@@ -856,10 +856,10 @@ static ssize_t show_value(struct device *dev,
 }
 
 static ssize_t show_alarm(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
 	int port;
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru3_data *data = abituguru3_update_device(dev);
 
 	if (!data)
@@ -881,9 +881,9 @@ static ssize_t show_alarm(struct device *dev,
 }
 
 static ssize_t show_mask(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru3_data *data = dev_get_drvdata(dev);
 
 	if (data->settings[data->sensors[attr->index].port][0] & attr->nr)
@@ -893,16 +893,16 @@ static ssize_t show_mask(struct device *dev,
 }
 
 static ssize_t show_label(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
+	const struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(devattr);
 	struct abituguru3_data *data = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%s\n", data->sensors[attr->index].name);
 }
 
 static ssize_t show_name(struct device *dev,
-	struct device_attribute *devattr, char *buf)
+	const struct device_attribute *devattr, char *buf)
 {
 	return sprintf(buf, "%s\n", ABIT_UGURU3_NAME);
 }
@@ -951,7 +951,7 @@ struct sensor_device_attribute_2 abituguru3_sysfs_templ[3][10] = { {
 	SENSOR_ATTR_2(fan%d_label, 0444, show_label, NULL, 0, 0)
 } };
 
-static struct sensor_device_attribute_2 abituguru3_sysfs_attr[] = {
+static const struct sensor_device_attribute_2 abituguru3_sysfs_attr[] = {
 	SENSOR_ATTR_2(name, 0444, show_name, NULL, 0, 0),
 };
 
