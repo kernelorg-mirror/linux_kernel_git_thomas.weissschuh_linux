@@ -156,16 +156,16 @@ static int reg_to_rpm(u16 reg)
 	return 5400540 / reg;
 }
 
-static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
+static ssize_t name_show(struct device *dev, const struct device_attribute *devattr,
 			 char *buf)
 {
 	return sysfs_emit(buf, "%s\n", DEVNAME);
 }
 
 static ssize_t in_value_show(struct device *dev,
-			     struct device_attribute *devattr, char *buf)
+			     const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
 	int val;
 
@@ -179,18 +179,18 @@ static ssize_t in_value_show(struct device *dev,
 }
 
 static ssize_t in_label_show(struct device *dev,
-			     struct device_attribute *devattr, char *buf)
+			     const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 
 	return sysfs_emit(buf, "%s\n",
 			  SCH5636_IN_LABELS[attr->index]);
 }
 
 static ssize_t temp_value_show(struct device *dev,
-			       struct device_attribute *devattr, char *buf)
+			       const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
 	int val;
 
@@ -202,9 +202,9 @@ static ssize_t temp_value_show(struct device *dev,
 }
 
 static ssize_t temp_fault_show(struct device *dev,
-			       struct device_attribute *devattr, char *buf)
+			       const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
 	int val;
 
@@ -216,9 +216,9 @@ static ssize_t temp_fault_show(struct device *dev,
 }
 
 static ssize_t temp_alarm_show(struct device *dev,
-			       struct device_attribute *devattr, char *buf)
+			       const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
 	int val;
 
@@ -230,9 +230,9 @@ static ssize_t temp_alarm_show(struct device *dev,
 }
 
 static ssize_t fan_value_show(struct device *dev,
-			      struct device_attribute *devattr, char *buf)
+			      const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
 	int val;
 
@@ -247,9 +247,9 @@ static ssize_t fan_value_show(struct device *dev,
 }
 
 static ssize_t fan_fault_show(struct device *dev,
-			      struct device_attribute *devattr, char *buf)
+			      const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
 	int val;
 
@@ -261,9 +261,9 @@ static ssize_t fan_fault_show(struct device *dev,
 }
 
 static ssize_t fan_alarm_show(struct device *dev,
-			      struct device_attribute *devattr, char *buf)
+			      const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
 	int val;
 
@@ -274,7 +274,7 @@ static ssize_t fan_alarm_show(struct device *dev,
 	return sysfs_emit(buf, "%d\n", val);
 }
 
-static struct sensor_device_attribute sch5636_attr[] = {
+static const struct sensor_device_attribute sch5636_attr[] = {
 	SENSOR_ATTR_RO(name, name, 0),
 	SENSOR_ATTR_RO(in0_input, in_value, 0),
 	SENSOR_ATTR_RO(in0_label, in_label, 0),
@@ -288,7 +288,7 @@ static struct sensor_device_attribute sch5636_attr[] = {
 	SENSOR_ATTR_RO(in4_label, in_label, 4),
 };
 
-static struct sensor_device_attribute sch5636_temp_attr[] = {
+static const struct sensor_device_attribute sch5636_temp_attr[] = {
 	SENSOR_ATTR_RO(temp1_input, temp_value, 0),
 	SENSOR_ATTR_RO(temp1_fault, temp_fault, 0),
 	SENSOR_ATTR_RO(temp1_alarm, temp_alarm, 0),
@@ -339,7 +339,7 @@ static struct sensor_device_attribute sch5636_temp_attr[] = {
 	SENSOR_ATTR_RO(temp16_alarm, temp_alarm, 15),
 };
 
-static struct sensor_device_attribute sch5636_fan_attr[] = {
+static const struct sensor_device_attribute sch5636_fan_attr[] = {
 	SENSOR_ATTR_RO(fan1_input, fan_value, 0),
 	SENSOR_ATTR_RO(fan1_fault, fan_fault, 0),
 	SENSOR_ATTR_RO(fan1_alarm, fan_alarm, 0),
