@@ -348,11 +348,11 @@ static struct vt1211_data *vt1211_update_device(struct device *dev)
 #define SHOW_SET_IN_MAX	2
 #define SHOW_IN_ALARM	3
 
-static ssize_t show_in(struct device *dev, struct device_attribute *attr,
+static ssize_t show_in(struct device *dev, const struct device_attribute *attr,
 		       char *buf)
 {
 	struct vt1211_data *data = vt1211_update_device(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int fn = sensor_attr_2->nr;
@@ -379,11 +379,11 @@ static ssize_t show_in(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", res);
 }
 
-static ssize_t set_in(struct device *dev, struct device_attribute *attr,
+static ssize_t set_in(struct device *dev, const struct device_attribute *attr,
 		      const char *buf, size_t count)
 {
 	struct vt1211_data *data = dev_get_drvdata(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int fn = sensor_attr_2->nr;
@@ -422,11 +422,11 @@ static ssize_t set_in(struct device *dev, struct device_attribute *attr,
 #define SHOW_SET_TEMP_MAX_HYST	2
 #define SHOW_TEMP_ALARM		3
 
-static ssize_t show_temp(struct device *dev, struct device_attribute *attr,
+static ssize_t show_temp(struct device *dev, const struct device_attribute *attr,
 			 char *buf)
 {
 	struct vt1211_data *data = vt1211_update_device(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int fn = sensor_attr_2->nr;
@@ -453,11 +453,11 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", res);
 }
 
-static ssize_t set_temp(struct device *dev, struct device_attribute *attr,
+static ssize_t set_temp(struct device *dev, const struct device_attribute *attr,
 			const char *buf, size_t count)
 {
 	struct vt1211_data *data = dev_get_drvdata(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int fn = sensor_attr_2->nr;
@@ -498,11 +498,11 @@ static ssize_t set_temp(struct device *dev, struct device_attribute *attr,
 #define SHOW_SET_FAN_DIV	2
 #define SHOW_FAN_ALARM		3
 
-static ssize_t show_fan(struct device *dev, struct device_attribute *attr,
+static ssize_t show_fan(struct device *dev, const struct device_attribute *attr,
 			char *buf)
 {
 	struct vt1211_data *data = vt1211_update_device(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int fn = sensor_attr_2->nr;
@@ -529,11 +529,11 @@ static ssize_t show_fan(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", res);
 }
 
-static ssize_t set_fan(struct device *dev, struct device_attribute *attr,
+static ssize_t set_fan(struct device *dev, const struct device_attribute *attr,
 		       const char *buf, size_t count)
 {
 	struct vt1211_data *data = dev_get_drvdata(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int fn = sensor_attr_2->nr;
@@ -604,11 +604,11 @@ EXIT:
 #define SHOW_SET_PWM_FREQ		2
 #define SHOW_SET_PWM_AUTO_CHANNELS_TEMP	3
 
-static ssize_t show_pwm(struct device *dev, struct device_attribute *attr,
+static ssize_t show_pwm(struct device *dev, const struct device_attribute *attr,
 			char *buf)
 {
 	struct vt1211_data *data = vt1211_update_device(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int fn = sensor_attr_2->nr;
@@ -635,11 +635,11 @@ static ssize_t show_pwm(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", res);
 }
 
-static ssize_t set_pwm(struct device *dev, struct device_attribute *attr,
+static ssize_t set_pwm(struct device *dev, const struct device_attribute *attr,
 		       const char *buf, size_t count)
 {
 	struct vt1211_data *data = dev_get_drvdata(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int fn = sensor_attr_2->nr;
@@ -759,11 +759,11 @@ EXIT:
  */
 
 static ssize_t show_pwm_auto_point_temp(struct device *dev,
-					struct device_attribute *attr,
+					const struct device_attribute *attr,
 					char *buf)
 {
 	struct vt1211_data *data = vt1211_update_device(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int ap = sensor_attr_2->nr;
@@ -773,11 +773,11 @@ static ssize_t show_pwm_auto_point_temp(struct device *dev,
 }
 
 static ssize_t set_pwm_auto_point_temp(struct device *dev,
-				       struct device_attribute *attr,
+				       const struct device_attribute *attr,
 				       const char *buf, size_t count)
 {
 	struct vt1211_data *data = dev_get_drvdata(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int ap = sensor_attr_2->nr;
@@ -823,11 +823,11 @@ static ssize_t set_pwm_auto_point_temp(struct device *dev,
  */
 
 static ssize_t show_pwm_auto_point_pwm(struct device *dev,
-				       struct device_attribute *attr,
+				       const struct device_attribute *attr,
 				       char *buf)
 {
 	struct vt1211_data *data = vt1211_update_device(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int ap = sensor_attr_2->nr;
@@ -836,11 +836,11 @@ static ssize_t show_pwm_auto_point_pwm(struct device *dev,
 }
 
 static ssize_t set_pwm_auto_point_pwm(struct device *dev,
-				      struct device_attribute *attr,
+				      const struct device_attribute *attr,
 				      const char *buf, size_t count)
 {
 	struct vt1211_data *data = dev_get_drvdata(dev);
-	struct sensor_device_attribute_2 *sensor_attr_2 =
+	const struct sensor_device_attribute_2 *sensor_attr_2 =
 						to_sensor_dev_attr_2(attr);
 	int ix = sensor_attr_2->index;
 	int ap = sensor_attr_2->nr;
@@ -864,7 +864,7 @@ static ssize_t set_pwm_auto_point_pwm(struct device *dev,
  * Miscellaneous sysfs interfaces (VRM, VID, name, and (legacy) alarms)
  * --------------------------------------------------------------------- */
 
-static ssize_t show_vrm(struct device *dev, struct device_attribute *attr,
+static ssize_t show_vrm(struct device *dev, const struct device_attribute *attr,
 			char *buf)
 {
 	struct vt1211_data *data = dev_get_drvdata(dev);
@@ -872,7 +872,7 @@ static ssize_t show_vrm(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", data->vrm);
 }
 
-static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
+static ssize_t set_vrm(struct device *dev, const struct device_attribute *attr,
 		       const char *buf, size_t count)
 {
 	struct vt1211_data *data = dev_get_drvdata(dev);
@@ -891,7 +891,7 @@ static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-static ssize_t show_vid(struct device *dev, struct device_attribute *attr,
+static ssize_t show_vid(struct device *dev, const struct device_attribute *attr,
 			char *buf)
 {
 	struct vt1211_data *data = dev_get_drvdata(dev);
@@ -900,7 +900,7 @@ static ssize_t show_vid(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t show_name(struct device *dev,
-			 struct device_attribute *attr, char *buf)
+			 const struct device_attribute *attr, char *buf)
 {
 	struct vt1211_data *data = dev_get_drvdata(dev);
 
@@ -908,7 +908,7 @@ static ssize_t show_name(struct device *dev,
 }
 
 static ssize_t show_alarms(struct device *dev,
-			   struct device_attribute *attr, char *buf)
+			   const struct device_attribute *attr, char *buf)
 {
 	struct vt1211_data *data = vt1211_update_device(dev);
 
@@ -930,7 +930,7 @@ static ssize_t show_alarms(struct device *dev,
 		show_in, NULL, SHOW_IN_ALARM, ix) \
 }
 
-static struct sensor_device_attribute_2 vt1211_sysfs_in[][4] = {
+static const struct sensor_device_attribute_2 vt1211_sysfs_in[][4] = {
 	SENSOR_ATTR_IN(0),
 	SENSOR_ATTR_IN(1),
 	SENSOR_ATTR_IN(2),
@@ -947,7 +947,7 @@ static struct sensor_device_attribute_2 vt1211_sysfs_in[][4] = {
 	NULL					\
 }
 
-static struct attribute *vt1211_in_attr[][5] = {
+static const struct attribute *vt1211_in_attr[][5] = {
 	IN_UNIT_ATTRS(0),
 	IN_UNIT_ATTRS(1),
 	IN_UNIT_ATTRS(2),
@@ -957,12 +957,12 @@ static struct attribute *vt1211_in_attr[][5] = {
 };
 
 static const struct attribute_group vt1211_in_attr_group[] = {
-	{ .attrs = vt1211_in_attr[0] },
-	{ .attrs = vt1211_in_attr[1] },
-	{ .attrs = vt1211_in_attr[2] },
-	{ .attrs = vt1211_in_attr[3] },
-	{ .attrs = vt1211_in_attr[4] },
-	{ .attrs = vt1211_in_attr[5] }
+	{ .attrs_const = vt1211_in_attr[0] },
+	{ .attrs_const = vt1211_in_attr[1] },
+	{ .attrs_const = vt1211_in_attr[2] },
+	{ .attrs_const = vt1211_in_attr[3] },
+	{ .attrs_const = vt1211_in_attr[4] },
+	{ .attrs_const = vt1211_in_attr[5] }
 };
 
 #define SENSOR_ATTR_TEMP(ix) \
@@ -976,7 +976,7 @@ static const struct attribute_group vt1211_in_attr_group[] = {
 		show_temp, NULL, SHOW_TEMP_ALARM, ix-1) \
 }
 
-static struct sensor_device_attribute_2 vt1211_sysfs_temp[][4] = {
+static const struct sensor_device_attribute_2 vt1211_sysfs_temp[][4] = {
 	SENSOR_ATTR_TEMP(1),
 	SENSOR_ATTR_TEMP(2),
 	SENSOR_ATTR_TEMP(3),
@@ -994,7 +994,7 @@ static struct sensor_device_attribute_2 vt1211_sysfs_temp[][4] = {
 	NULL					\
 }
 
-static struct attribute *vt1211_temp_attr[][5] = {
+static const struct attribute *vt1211_temp_attr[][5] = {
 	TEMP_UNIT_ATTRS(0),
 	TEMP_UNIT_ATTRS(1),
 	TEMP_UNIT_ATTRS(2),
@@ -1005,13 +1005,13 @@ static struct attribute *vt1211_temp_attr[][5] = {
 };
 
 static const struct attribute_group vt1211_temp_attr_group[] = {
-	{ .attrs = vt1211_temp_attr[0] },
-	{ .attrs = vt1211_temp_attr[1] },
-	{ .attrs = vt1211_temp_attr[2] },
-	{ .attrs = vt1211_temp_attr[3] },
-	{ .attrs = vt1211_temp_attr[4] },
-	{ .attrs = vt1211_temp_attr[5] },
-	{ .attrs = vt1211_temp_attr[6] }
+	{ .attrs_const = vt1211_temp_attr[0] },
+	{ .attrs_const = vt1211_temp_attr[1] },
+	{ .attrs_const = vt1211_temp_attr[2] },
+	{ .attrs_const = vt1211_temp_attr[3] },
+	{ .attrs_const = vt1211_temp_attr[4] },
+	{ .attrs_const = vt1211_temp_attr[5] },
+	{ .attrs_const = vt1211_temp_attr[6] }
 };
 
 #define SENSOR_ATTR_FAN(ix) \
@@ -1060,7 +1060,7 @@ static const struct attribute_group vt1211_temp_attr_group[] = {
 		show_pwm_auto_point_pwm, NULL, \
 		ap-1, ix-1)
 
-static struct sensor_device_attribute_2 vt1211_sysfs_fan_pwm[] = {
+static const struct sensor_device_attribute_2 vt1211_sysfs_fan_pwm[] = {
 	SENSOR_ATTR_FAN(1),
 	SENSOR_ATTR_FAN(2),
 	SENSOR_ATTR_PWM(1),
@@ -1085,11 +1085,11 @@ static struct sensor_device_attribute_2 vt1211_sysfs_fan_pwm[] = {
 	SENSOR_ATTR_PWM_AUTO_POINT_PWM_RO(2, 4),
 };
 
-static struct device_attribute vt1211_sysfs_misc[] = {
-	__ATTR(vrm, S_IRUGO | S_IWUSR, show_vrm, set_vrm),
-	__ATTR(cpu0_vid, S_IRUGO, show_vid, NULL),
-	__ATTR(name, S_IRUGO, show_name, NULL),
-	__ATTR(alarms, S_IRUGO, show_alarms, NULL),
+static const struct device_attribute vt1211_sysfs_misc[] = {
+	__DEVICE_ATTR(vrm, S_IRUGO | S_IWUSR, show_vrm, set_vrm),
+	__DEVICE_ATTR(cpu0_vid, S_IRUGO, show_vid, NULL),
+	__DEVICE_ATTR(name, S_IRUGO, show_name, NULL),
+	__DEVICE_ATTR(alarms, S_IRUGO, show_alarms, NULL),
 };
 
 /* ---------------------------------------------------------------------
