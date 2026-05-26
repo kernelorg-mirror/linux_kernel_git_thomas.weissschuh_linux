@@ -608,7 +608,7 @@ static ssize_t cpu0_vid_show(struct device *dev,
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", vid_from_reg(data->vid, data->vrm));
 }
-static DEVICE_ATTR_RO(cpu0_vid);
+static const DEVICE_ATTR_RO(cpu0_vid);
 
 static ssize_t vrm_show(struct device *dev, const struct device_attribute *attr,
 			char *buf)
@@ -634,7 +634,7 @@ static ssize_t vrm_store(struct device *dev, const struct device_attribute *attr
 	data->vrm = val;
 	return count;
 }
-static DEVICE_ATTR_RW(vrm);
+static const DEVICE_ATTR_RW(vrm);
 
 static ssize_t alarms_in_show(struct device *dev,
 			      const struct device_attribute *attr, char *buf)
@@ -642,7 +642,7 @@ static ssize_t alarms_in_show(struct device *dev,
 	struct pc87360_data *data = pc87360_update_device(dev);
 	return sprintf(buf, "%u\n", data->in_alarms);
 }
-static DEVICE_ATTR_RO(alarms_in);
+static const DEVICE_ATTR_RO(alarms_in);
 
 static const struct attribute *const pc8736x_vin_attr_array[] = {
 	VIN_UNIT_ATTRS(0),
@@ -1113,7 +1113,7 @@ static ssize_t alarms_temp_show(struct device *dev,
 	return sprintf(buf, "%u\n", data->temp_alarms);
 }
 
-static DEVICE_ATTR_RO(alarms_temp);
+static const DEVICE_ATTR_RO(alarms_temp);
 
 static ssize_t fan_input_show(struct device *dev,
 			      const struct device_attribute *devattr, char *buf)
@@ -1278,7 +1278,7 @@ static ssize_t name_show(struct device *dev,
 	return sprintf(buf, "%s\n", data->name);
 }
 
-static DEVICE_ATTR_RO(name);
+static const DEVICE_ATTR_RO(name);
 
 static void pc87360_remove_files(struct device *dev)
 {
