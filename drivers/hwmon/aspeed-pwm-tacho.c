@@ -574,10 +574,10 @@ static int aspeed_get_fan_tach_ch_rpm(struct aspeed_pwm_tacho_data *priv,
 	return (clk_source * 60) / (2 * raw_data * tach_div);
 }
 
-static ssize_t pwm_store(struct device *dev, struct device_attribute *attr,
+static ssize_t pwm_store(struct device *dev, const struct device_attribute *attr,
 			 const char *buf, size_t count)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int index = sensor_attr->index;
 	int ret;
 	struct aspeed_pwm_tacho_data *priv = dev_get_drvdata(dev);
@@ -599,20 +599,20 @@ static ssize_t pwm_store(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-static ssize_t pwm_show(struct device *dev, struct device_attribute *attr,
+static ssize_t pwm_show(struct device *dev, const struct device_attribute *attr,
 			char *buf)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int index = sensor_attr->index;
 	struct aspeed_pwm_tacho_data *priv = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%u\n", priv->pwm_port_fan_ctrl[index]);
 }
 
-static ssize_t rpm_show(struct device *dev, struct device_attribute *attr,
+static ssize_t rpm_show(struct device *dev, const struct device_attribute *attr,
 			char *buf)
 {
-	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
+	const struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	int index = sensor_attr->index;
 	int rpm;
 	struct aspeed_pwm_tacho_data *priv = dev_get_drvdata(dev);
@@ -625,7 +625,7 @@ static ssize_t rpm_show(struct device *dev, struct device_attribute *attr,
 }
 
 static umode_t pwm_is_visible(struct kobject *kobj,
-			      struct attribute *a, int index)
+			      const struct attribute *a, int index)
 {
 	struct device *dev = kobj_to_dev(kobj);
 	struct aspeed_pwm_tacho_data *priv = dev_get_drvdata(dev);
@@ -636,7 +636,7 @@ static umode_t pwm_is_visible(struct kobject *kobj,
 }
 
 static umode_t fan_dev_is_visible(struct kobject *kobj,
-				  struct attribute *a, int index)
+				  const struct attribute *a, int index)
 {
 	struct device *dev = kobj_to_dev(kobj);
 	struct aspeed_pwm_tacho_data *priv = dev_get_drvdata(dev);
@@ -646,15 +646,15 @@ static umode_t fan_dev_is_visible(struct kobject *kobj,
 	return a->mode;
 }
 
-static SENSOR_DEVICE_ATTR_RW(pwm1, pwm, 0);
-static SENSOR_DEVICE_ATTR_RW(pwm2, pwm, 1);
-static SENSOR_DEVICE_ATTR_RW(pwm3, pwm, 2);
-static SENSOR_DEVICE_ATTR_RW(pwm4, pwm, 3);
-static SENSOR_DEVICE_ATTR_RW(pwm5, pwm, 4);
-static SENSOR_DEVICE_ATTR_RW(pwm6, pwm, 5);
-static SENSOR_DEVICE_ATTR_RW(pwm7, pwm, 6);
-static SENSOR_DEVICE_ATTR_RW(pwm8, pwm, 7);
-static struct attribute *pwm_dev_attrs[] = {
+static const SENSOR_DEVICE_ATTR_RW(pwm1, pwm, 0);
+static const SENSOR_DEVICE_ATTR_RW(pwm2, pwm, 1);
+static const SENSOR_DEVICE_ATTR_RW(pwm3, pwm, 2);
+static const SENSOR_DEVICE_ATTR_RW(pwm4, pwm, 3);
+static const SENSOR_DEVICE_ATTR_RW(pwm5, pwm, 4);
+static const SENSOR_DEVICE_ATTR_RW(pwm6, pwm, 5);
+static const SENSOR_DEVICE_ATTR_RW(pwm7, pwm, 6);
+static const SENSOR_DEVICE_ATTR_RW(pwm8, pwm, 7);
+static const struct attribute *const pwm_dev_attrs[] = {
 	&sensor_dev_attr_pwm1.dev_attr.attr,
 	&sensor_dev_attr_pwm2.dev_attr.attr,
 	&sensor_dev_attr_pwm3.dev_attr.attr,
@@ -667,27 +667,27 @@ static struct attribute *pwm_dev_attrs[] = {
 };
 
 static const struct attribute_group pwm_dev_group = {
-	.attrs = pwm_dev_attrs,
-	.is_visible = pwm_is_visible,
+	.attrs_const = pwm_dev_attrs,
+	.is_visible_const = pwm_is_visible,
 };
 
-static SENSOR_DEVICE_ATTR_RO(fan1_input, rpm, 0);
-static SENSOR_DEVICE_ATTR_RO(fan2_input, rpm, 1);
-static SENSOR_DEVICE_ATTR_RO(fan3_input, rpm, 2);
-static SENSOR_DEVICE_ATTR_RO(fan4_input, rpm, 3);
-static SENSOR_DEVICE_ATTR_RO(fan5_input, rpm, 4);
-static SENSOR_DEVICE_ATTR_RO(fan6_input, rpm, 5);
-static SENSOR_DEVICE_ATTR_RO(fan7_input, rpm, 6);
-static SENSOR_DEVICE_ATTR_RO(fan8_input, rpm, 7);
-static SENSOR_DEVICE_ATTR_RO(fan9_input, rpm, 8);
-static SENSOR_DEVICE_ATTR_RO(fan10_input, rpm, 9);
-static SENSOR_DEVICE_ATTR_RO(fan11_input, rpm, 10);
-static SENSOR_DEVICE_ATTR_RO(fan12_input, rpm, 11);
-static SENSOR_DEVICE_ATTR_RO(fan13_input, rpm, 12);
-static SENSOR_DEVICE_ATTR_RO(fan14_input, rpm, 13);
-static SENSOR_DEVICE_ATTR_RO(fan15_input, rpm, 14);
-static SENSOR_DEVICE_ATTR_RO(fan16_input, rpm, 15);
-static struct attribute *fan_dev_attrs[] = {
+static const SENSOR_DEVICE_ATTR_RO(fan1_input, rpm, 0);
+static const SENSOR_DEVICE_ATTR_RO(fan2_input, rpm, 1);
+static const SENSOR_DEVICE_ATTR_RO(fan3_input, rpm, 2);
+static const SENSOR_DEVICE_ATTR_RO(fan4_input, rpm, 3);
+static const SENSOR_DEVICE_ATTR_RO(fan5_input, rpm, 4);
+static const SENSOR_DEVICE_ATTR_RO(fan6_input, rpm, 5);
+static const SENSOR_DEVICE_ATTR_RO(fan7_input, rpm, 6);
+static const SENSOR_DEVICE_ATTR_RO(fan8_input, rpm, 7);
+static const SENSOR_DEVICE_ATTR_RO(fan9_input, rpm, 8);
+static const SENSOR_DEVICE_ATTR_RO(fan10_input, rpm, 9);
+static const SENSOR_DEVICE_ATTR_RO(fan11_input, rpm, 10);
+static const SENSOR_DEVICE_ATTR_RO(fan12_input, rpm, 11);
+static const SENSOR_DEVICE_ATTR_RO(fan13_input, rpm, 12);
+static const SENSOR_DEVICE_ATTR_RO(fan14_input, rpm, 13);
+static const SENSOR_DEVICE_ATTR_RO(fan15_input, rpm, 14);
+static const SENSOR_DEVICE_ATTR_RO(fan16_input, rpm, 15);
+static const struct attribute *const fan_dev_attrs[] = {
 	&sensor_dev_attr_fan1_input.dev_attr.attr,
 	&sensor_dev_attr_fan2_input.dev_attr.attr,
 	&sensor_dev_attr_fan3_input.dev_attr.attr,
@@ -708,8 +708,8 @@ static struct attribute *fan_dev_attrs[] = {
 };
 
 static const struct attribute_group fan_dev_group = {
-	.attrs = fan_dev_attrs,
-	.is_visible = fan_dev_is_visible,
+	.attrs_const = fan_dev_attrs,
+	.is_visible_const = fan_dev_is_visible,
 };
 
 /*
