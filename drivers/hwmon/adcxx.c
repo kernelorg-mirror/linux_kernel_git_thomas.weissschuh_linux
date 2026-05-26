@@ -44,10 +44,10 @@ struct adcxx {
 
 /* sysfs hook function */
 static ssize_t adcxx_show(struct device *dev,
-			  struct device_attribute *devattr, char *buf)
+			  const struct device_attribute *devattr, char *buf)
 {
 	struct spi_device *spi = to_spi_device(dev);
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adcxx *adc = spi_get_drvdata(spi);
 	u8 tx_buf[2];
 	u8 rx_buf[2];
@@ -81,14 +81,14 @@ out:
 }
 
 static ssize_t adcxx_min_show(struct device *dev,
-			      struct device_attribute *devattr, char *buf)
+			      const struct device_attribute *devattr, char *buf)
 {
 	/* The minimum reference is 0 for this chip family */
 	return sprintf(buf, "0\n");
 }
 
 static ssize_t adcxx_max_show(struct device *dev,
-			      struct device_attribute *devattr, char *buf)
+			      const struct device_attribute *devattr, char *buf)
 {
 	struct spi_device *spi = to_spi_device(dev);
 	struct adcxx *adc = spi_get_drvdata(spi);
@@ -105,7 +105,7 @@ static ssize_t adcxx_max_show(struct device *dev,
 }
 
 static ssize_t adcxx_max_store(struct device *dev,
-			       struct device_attribute *devattr,
+			       const struct device_attribute *devattr,
 			       const char *buf, size_t count)
 {
 	struct spi_device *spi = to_spi_device(dev);
@@ -126,12 +126,12 @@ static ssize_t adcxx_max_store(struct device *dev,
 }
 
 static ssize_t adcxx_name_show(struct device *dev,
-			       struct device_attribute *devattr, char *buf)
+			       const struct device_attribute *devattr, char *buf)
 {
 	return sprintf(buf, "%s\n", to_spi_device(dev)->modalias);
 }
 
-static struct sensor_device_attribute ad_input[] = {
+static const struct sensor_device_attribute ad_input[] = {
 	SENSOR_ATTR_RO(name, adcxx_name, 0),
 	SENSOR_ATTR_RO(in_min, adcxx_min, 0),
 	SENSOR_ATTR_RW(in_max, adcxx_max, 0),
