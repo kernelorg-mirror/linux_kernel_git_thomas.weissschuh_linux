@@ -94,7 +94,7 @@ struct asc7621_data {
  * show/store functions.
  */
 #define to_asc7621_param(_sda) \
-	container_of(_sda, struct asc7621_param, sda)
+	container_of_const(_sda, struct asc7621_param, sda)
 
 /*
  * Each parameter to be retrieved needs an asc7621_param structure
@@ -147,21 +147,21 @@ static inline int write_byte(struct i2c_client *client, u8 reg, u8 data)
  */
 
 #define SETUP_SHOW_DATA_PARAM(d, a) \
-	struct sensor_device_attribute *sda = to_sensor_dev_attr(a); \
+	const struct sensor_device_attribute *sda = to_sensor_dev_attr(a); \
 	struct asc7621_data *data = asc7621_update_device(d); \
-	struct asc7621_param *param = to_asc7621_param(sda)
+	const struct asc7621_param *param = to_asc7621_param(sda)
 
 #define SETUP_STORE_DATA_PARAM(d, a) \
-	struct sensor_device_attribute *sda = to_sensor_dev_attr(a); \
+	const struct sensor_device_attribute *sda = to_sensor_dev_attr(a); \
 	struct i2c_client *client = to_i2c_client(d); \
 	struct asc7621_data *data = i2c_get_clientdata(client); \
-	struct asc7621_param *param = to_asc7621_param(sda)
+	const struct asc7621_param *param = to_asc7621_param(sda)
 
 /*
  * u8 is just what it sounds like...an unsigned byte with no
  * special formatting.
  */
-static ssize_t show_u8(struct device *dev, struct device_attribute *attr,
+static ssize_t show_u8(struct device *dev, const struct device_attribute *attr,
 		       char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
@@ -169,7 +169,7 @@ static ssize_t show_u8(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%u\n", data->reg[param->msb[0]]);
 }
 
-static ssize_t store_u8(struct device *dev, struct device_attribute *attr,
+static ssize_t store_u8(struct device *dev, const struct device_attribute *attr,
 			const char *buf, size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -191,7 +191,7 @@ static ssize_t store_u8(struct device *dev, struct device_attribute *attr,
  * Many of the config values occupy only a few bits of a register.
  */
 static ssize_t show_bitmask(struct device *dev,
-			    struct device_attribute *attr, char *buf)
+			    const struct device_attribute *attr, char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
 
@@ -201,7 +201,7 @@ static ssize_t show_bitmask(struct device *dev,
 }
 
 static ssize_t store_bitmask(struct device *dev,
-			     struct device_attribute *attr,
+			     const struct device_attribute *attr,
 			     const char *buf, size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -231,7 +231,7 @@ static ssize_t store_bitmask(struct device *dev,
  * RPM = (90000 * 60) / register value
  */
 static ssize_t show_fan16(struct device *dev,
-			  struct device_attribute *attr, char *buf)
+			  const struct device_attribute *attr, char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
 	u16 regval;
@@ -246,7 +246,7 @@ static ssize_t show_fan16(struct device *dev,
 }
 
 static ssize_t store_fan16(struct device *dev,
-			   struct device_attribute *attr, const char *buf,
+			   const struct device_attribute *attr, const char *buf,
 			   size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -291,7 +291,7 @@ static const int asc7621_in_scaling[] = {
 	2500, 2250, 3300, 5000, 12000
 };
 
-static ssize_t show_in10(struct device *dev, struct device_attribute *attr,
+static ssize_t show_in10(struct device *dev, const struct device_attribute *attr,
 			 char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
@@ -309,7 +309,7 @@ static ssize_t show_in10(struct device *dev, struct device_attribute *attr,
 }
 
 /* 8 bit voltage values (the mins and maxs) */
-static ssize_t show_in8(struct device *dev, struct device_attribute *attr,
+static ssize_t show_in8(struct device *dev, const struct device_attribute *attr,
 			char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
@@ -320,7 +320,7 @@ static ssize_t show_in8(struct device *dev, struct device_attribute *attr,
 			 asc7621_in_scaling[nr]) / 0xc0));
 }
 
-static ssize_t store_in8(struct device *dev, struct device_attribute *attr,
+static ssize_t store_in8(struct device *dev, const struct device_attribute *attr,
 			 const char *buf, size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -345,7 +345,7 @@ static ssize_t store_in8(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t show_temp8(struct device *dev,
-			  struct device_attribute *attr, char *buf)
+			  const struct device_attribute *attr, char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
 
@@ -353,7 +353,7 @@ static ssize_t show_temp8(struct device *dev,
 }
 
 static ssize_t store_temp8(struct device *dev,
-			   struct device_attribute *attr, const char *buf,
+			   const struct device_attribute *attr, const char *buf,
 			   size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -382,7 +382,7 @@ static ssize_t store_temp8(struct device *dev,
 
 /*   mmmmmmmm.llxxxxxx */
 static ssize_t show_temp10(struct device *dev,
-			   struct device_attribute *attr, char *buf)
+			   const struct device_attribute *attr, char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
 	u8 msb, lsb;
@@ -399,7 +399,7 @@ static ssize_t show_temp10(struct device *dev,
 
 /*   mmmmmm.ll */
 static ssize_t show_temp62(struct device *dev,
-			   struct device_attribute *attr, char *buf)
+			   const struct device_attribute *attr, char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
 	u8 regval = data->reg[param->msb[0]];
@@ -409,7 +409,7 @@ static ssize_t show_temp62(struct device *dev,
 }
 
 static ssize_t store_temp62(struct device *dev,
-			    struct device_attribute *attr, const char *buf,
+			    const struct device_attribute *attr, const char *buf,
 			    size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -444,7 +444,7 @@ static const u32 asc7621_range_map[] = {
 };
 
 static ssize_t show_ap2_temp(struct device *dev,
-			     struct device_attribute *attr, char *buf)
+			     const struct device_attribute *attr, char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
 	long auto_point1;
@@ -463,7 +463,7 @@ static ssize_t show_ap2_temp(struct device *dev,
 }
 
 static ssize_t store_ap2_temp(struct device *dev,
-			      struct device_attribute *attr,
+			      const struct device_attribute *attr,
 			      const char *buf, size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -495,7 +495,7 @@ static ssize_t store_ap2_temp(struct device *dev,
 }
 
 static ssize_t show_pwm_ac(struct device *dev,
-			   struct device_attribute *attr, char *buf)
+			   const struct device_attribute *attr, char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
 	u8 config, altbit, regval;
@@ -514,7 +514,7 @@ static ssize_t show_pwm_ac(struct device *dev,
 }
 
 static ssize_t store_pwm_ac(struct device *dev,
-			    struct device_attribute *attr,
+			    const struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -554,7 +554,7 @@ static ssize_t store_pwm_ac(struct device *dev,
 }
 
 static ssize_t show_pwm_enable(struct device *dev,
-			       struct device_attribute *attr, char *buf)
+			       const struct device_attribute *attr, char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
 	u8 config, altbit, minoff, val, newval;
@@ -582,7 +582,7 @@ static ssize_t show_pwm_enable(struct device *dev,
 }
 
 static ssize_t store_pwm_enable(struct device *dev,
-				struct device_attribute *attr,
+				const struct device_attribute *attr,
 				const char *buf, size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -643,7 +643,7 @@ static const u32 asc7621_pwm_freq_map[] = {
 };
 
 static ssize_t show_pwm_freq(struct device *dev,
-			     struct device_attribute *attr, char *buf)
+			     const struct device_attribute *attr, char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
 	u8 regval =
@@ -655,7 +655,7 @@ static ssize_t show_pwm_freq(struct device *dev,
 }
 
 static ssize_t store_pwm_freq(struct device *dev,
-			      struct device_attribute *attr,
+			      const struct device_attribute *attr,
 			      const char *buf, size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -691,7 +691,7 @@ static const u32 asc7621_pwm_auto_spinup_map[] =  {
 };
 
 static ssize_t show_pwm_ast(struct device *dev,
-			    struct device_attribute *attr, char *buf)
+			    const struct device_attribute *attr, char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
 	u8 regval =
@@ -704,7 +704,7 @@ static ssize_t show_pwm_ast(struct device *dev,
 }
 
 static ssize_t store_pwm_ast(struct device *dev,
-			     struct device_attribute *attr,
+			     const struct device_attribute *attr,
 			     const char *buf, size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -740,7 +740,7 @@ static const u32 asc7621_temp_smoothing_time_map[] = {
 };
 
 static ssize_t show_temp_st(struct device *dev,
-			    struct device_attribute *attr, char *buf)
+			    const struct device_attribute *attr, char *buf)
 {
 	SETUP_SHOW_DATA_PARAM(dev, attr);
 	u8 regval =
@@ -751,7 +751,7 @@ static ssize_t show_temp_st(struct device *dev,
 }
 
 static ssize_t store_temp_st(struct device *dev,
-			     struct device_attribute *attr,
+			     const struct device_attribute *attr,
 			     const char *buf, size_t count)
 {
 	SETUP_STORE_DATA_PARAM(dev, attr);
@@ -814,7 +814,7 @@ static ssize_t store_temp_st(struct device *dev,
 	{.sda = SENSOR_ATTR(name, S_IRUGO | S_IWUSR, show_##r, store_##r, n), \
 	  .priority = pri, .msb = rm, .lsb = rl, .mask = m, .shift = s,}
 
-static struct asc7621_param asc7621_params[] = {
+static const struct asc7621_param asc7621_params[] = {
 	PREAD(in0_input, 0, PRI_HIGH, 0x20, 0x13, 0, 0, in10),
 	PREAD(in1_input, 1, PRI_HIGH, 0x21, 0x18, 0, 0, in10),
 	PREAD(in2_input, 2, PRI_HIGH, 0x22, 0x11, 0, 0, in10),
