@@ -74,7 +74,7 @@ static struct atxp1_data *atxp1_update_device(struct device *dev)
 
 /* sys file functions for cpu0_vid */
 static ssize_t cpu0_vid_show(struct device *dev,
-			     struct device_attribute *attr, char *buf)
+			     const struct device_attribute *attr, char *buf)
 {
 	int size;
 	struct atxp1_data *data;
@@ -88,7 +88,7 @@ static ssize_t cpu0_vid_show(struct device *dev,
 }
 
 static ssize_t cpu0_vid_store(struct device *dev,
-			      struct device_attribute *attr, const char *buf,
+			      const struct device_attribute *attr, const char *buf,
 			      size_t count)
 {
 	struct atxp1_data *data = atxp1_update_device(dev);
@@ -146,10 +146,10 @@ static ssize_t cpu0_vid_store(struct device *dev,
  * CPU core reference voltage
  * unit: millivolt
  */
-static DEVICE_ATTR_RW(cpu0_vid);
+static const DEVICE_ATTR_RW(cpu0_vid);
 
 /* sys file functions for GPIO1 */
-static ssize_t gpio1_show(struct device *dev, struct device_attribute *attr,
+static ssize_t gpio1_show(struct device *dev, const struct device_attribute *attr,
 			  char *buf)
 {
 	int size;
@@ -162,7 +162,7 @@ static ssize_t gpio1_show(struct device *dev, struct device_attribute *attr,
 	return size;
 }
 
-static ssize_t gpio1_store(struct device *dev, struct device_attribute *attr,
+static ssize_t gpio1_store(struct device *dev, const struct device_attribute *attr,
 			   const char *buf, size_t count)
 {
 	struct atxp1_data *data = atxp1_update_device(dev);
@@ -191,10 +191,10 @@ static ssize_t gpio1_store(struct device *dev, struct device_attribute *attr,
  * GPIO1 data register
  * unit: Four bit as hex (e.g. 0x0f)
  */
-static DEVICE_ATTR_RW(gpio1);
+static const DEVICE_ATTR_RW(gpio1);
 
 /* sys file functions for GPIO2 */
-static ssize_t gpio2_show(struct device *dev, struct device_attribute *attr,
+static ssize_t gpio2_show(struct device *dev, const struct device_attribute *attr,
 			  char *buf)
 {
 	int size;
@@ -207,7 +207,7 @@ static ssize_t gpio2_show(struct device *dev, struct device_attribute *attr,
 	return size;
 }
 
-static ssize_t gpio2_store(struct device *dev, struct device_attribute *attr,
+static ssize_t gpio2_store(struct device *dev, const struct device_attribute *attr,
 			   const char *buf, size_t count)
 {
 	struct atxp1_data *data = atxp1_update_device(dev);
@@ -235,9 +235,9 @@ static ssize_t gpio2_store(struct device *dev, struct device_attribute *attr,
  * GPIO2 data register
  * unit: Eight bit as hex (e.g. 0xff)
  */
-static DEVICE_ATTR_RW(gpio2);
+static const DEVICE_ATTR_RW(gpio2);
 
-static struct attribute *atxp1_attrs[] = {
+static const struct attribute *const atxp1_attrs[] = {
 	&dev_attr_gpio1.attr,
 	&dev_attr_gpio2.attr,
 	&dev_attr_cpu0_vid.attr,
