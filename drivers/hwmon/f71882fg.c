@@ -511,16 +511,16 @@ static struct f71882fg_data *f71882fg_update_device(struct device *dev)
 	return data;
 }
 
-static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
+static ssize_t name_show(struct device *dev, const struct device_attribute *devattr,
 	char *buf)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%s\n", f71882fg_names[data->type]);
 }
 
-static DEVICE_ATTR_RO(name);
+static const DEVICE_ATTR_RO(name);
 
-static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
+static ssize_t show_temp(struct device *dev, const struct device_attribute *devattr,
 	char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -546,7 +546,7 @@ static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
 	return sprintf(buf, "%d\n", temp);
 }
 
-static ssize_t show_temp_max(struct device *dev, struct device_attribute
+static ssize_t show_temp_max(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -555,7 +555,7 @@ static ssize_t show_temp_max(struct device *dev, struct device_attribute
 	return sprintf(buf, "%d\n", data->temp_high[nr] * 1000);
 }
 
-static ssize_t store_temp_max(struct device *dev, struct device_attribute
+static ssize_t store_temp_max(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -577,7 +577,7 @@ static ssize_t store_temp_max(struct device *dev, struct device_attribute
 	return count;
 }
 
-static ssize_t show_temp_max_hyst(struct device *dev, struct device_attribute
+static ssize_t show_temp_max_hyst(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -595,7 +595,7 @@ static ssize_t show_temp_max_hyst(struct device *dev, struct device_attribute
 	return sprintf(buf, "%d\n", temp_max_hyst);
 }
 
-static ssize_t store_temp_max_hyst(struct device *dev, struct device_attribute
+static ssize_t store_temp_max_hyst(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -630,7 +630,7 @@ static ssize_t store_temp_max_hyst(struct device *dev, struct device_attribute
 	return ret;
 }
 
-static ssize_t show_temp_alarm(struct device *dev, struct device_attribute
+static ssize_t show_temp_alarm(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -642,7 +642,7 @@ static ssize_t show_temp_alarm(struct device *dev, struct device_attribute
 		return sprintf(buf, "0\n");
 }
 
-static ssize_t show_temp_crit(struct device *dev, struct device_attribute
+static ssize_t show_temp_crit(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -651,7 +651,7 @@ static ssize_t show_temp_crit(struct device *dev, struct device_attribute
 	return sprintf(buf, "%d\n", data->temp_ovt[nr] * 1000);
 }
 
-static ssize_t store_temp_crit(struct device *dev, struct device_attribute
+static ssize_t store_temp_crit(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -673,7 +673,7 @@ static ssize_t store_temp_crit(struct device *dev, struct device_attribute
 	return count;
 }
 
-static ssize_t show_temp_crit_hyst(struct device *dev, struct device_attribute
+static ssize_t show_temp_crit_hyst(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -691,7 +691,7 @@ static ssize_t show_temp_crit_hyst(struct device *dev, struct device_attribute
 	return sprintf(buf, "%d\n", temp_crit_hyst);
 }
 
-static ssize_t show_temp_fault(struct device *dev, struct device_attribute
+static ssize_t show_temp_fault(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -707,7 +707,7 @@ static ssize_t show_temp_fault(struct device *dev, struct device_attribute
  * Temp attr for the f71858fg, the f71858fg is special as it has its
  * temperature indexes start at 0 (the others start at 1)
  */
-static struct sensor_device_attribute_2 f71858fg_temp_attr[] = {
+static const struct sensor_device_attribute_2 f71858fg_temp_attr[] = {
 	SENSOR_ATTR_2(temp1_input, S_IRUGO, show_temp, NULL, 0, 0),
 	SENSOR_ATTR_2(temp1_max, S_IRUGO|S_IWUSR, show_temp_max,
 		store_temp_max, 0, 0),
@@ -746,7 +746,7 @@ static struct sensor_device_attribute_2 f71858fg_temp_attr[] = {
 	SENSOR_ATTR_2(temp3_fault, S_IRUGO, show_temp_fault, NULL, 0, 2),
 };
 
-static ssize_t show_temp_type(struct device *dev, struct device_attribute
+static ssize_t show_temp_type(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -756,7 +756,7 @@ static ssize_t show_temp_type(struct device *dev, struct device_attribute
 }
 
 /* Temp attr for the standard models */
-static struct sensor_device_attribute_2 fxxxx_temp_attr[3][9] = { {
+static const struct sensor_device_attribute_2 fxxxx_temp_attr[3][9] = { {
 	SENSOR_ATTR_2(temp1_input, S_IRUGO, show_temp, NULL, 0, 1),
 	SENSOR_ATTR_2(temp1_max, S_IRUGO|S_IWUSR, show_temp_max,
 		store_temp_max, 0, 1),
@@ -807,7 +807,7 @@ static struct sensor_device_attribute_2 fxxxx_temp_attr[3][9] = { {
 	SENSOR_ATTR_2(temp3_fault, S_IRUGO, show_temp_fault, NULL, 0, 3),
 } };
 
-static ssize_t show_temp_beep(struct device *dev, struct device_attribute
+static ssize_t show_temp_beep(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -819,7 +819,7 @@ static ssize_t show_temp_beep(struct device *dev, struct device_attribute
 		return sprintf(buf, "0\n");
 }
 
-static ssize_t store_temp_beep(struct device *dev, struct device_attribute
+static ssize_t store_temp_beep(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -844,7 +844,7 @@ static ssize_t store_temp_beep(struct device *dev, struct device_attribute
 }
 
 /* Temp attr for models which can beep on temp alarm */
-static struct sensor_device_attribute_2 fxxxx_temp_beep_attr[3][2] = { {
+static const struct sensor_device_attribute_2 fxxxx_temp_beep_attr[3][2] = { {
 	SENSOR_ATTR_2(temp1_max_beep, S_IRUGO|S_IWUSR, show_temp_beep,
 		store_temp_beep, 0, 1),
 	SENSOR_ATTR_2(temp1_crit_beep, S_IRUGO|S_IWUSR, show_temp_beep,
@@ -861,7 +861,7 @@ static struct sensor_device_attribute_2 fxxxx_temp_beep_attr[3][2] = { {
 		store_temp_beep, 0, 7),
 } };
 
-static struct sensor_device_attribute_2 f81866_temp_beep_attr[3][2] = { {
+static const struct sensor_device_attribute_2 f81866_temp_beep_attr[3][2] = { {
 	SENSOR_ATTR_2(temp1_max_beep, S_IRUGO|S_IWUSR, show_temp_beep,
 		store_temp_beep, 0, 0),
 	SENSOR_ATTR_2(temp1_crit_beep, S_IRUGO|S_IWUSR, show_temp_beep,
@@ -884,7 +884,7 @@ static struct sensor_device_attribute_2 f81866_temp_beep_attr[3][2] = { {
  * is used as hysteresis value to clear alarms
  * Also like the f71858fg its temperature indexes start at 0
  */
-static struct sensor_device_attribute_2 f8000_temp_attr[] = {
+static const struct sensor_device_attribute_2 f8000_temp_attr[] = {
 	SENSOR_ATTR_2(temp1_input, S_IRUGO, show_temp, NULL, 0, 0),
 	SENSOR_ATTR_2(temp1_max, S_IRUGO|S_IWUSR, show_temp_crit,
 		store_temp_crit, 0, 0),
@@ -908,7 +908,7 @@ static struct sensor_device_attribute_2 f8000_temp_attr[] = {
 	SENSOR_ATTR_2(temp3_fault, S_IRUGO, show_temp_fault, NULL, 0, 2),
 };
 
-static ssize_t show_in(struct device *dev, struct device_attribute *devattr,
+static ssize_t show_in(struct device *dev, const struct device_attribute *devattr,
 	char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -918,7 +918,7 @@ static ssize_t show_in(struct device *dev, struct device_attribute *devattr,
 }
 
 /* in attr for all models */
-static struct sensor_device_attribute_2 fxxxx_in_attr[] = {
+static const struct sensor_device_attribute_2 fxxxx_in_attr[] = {
 	SENSOR_ATTR_2(in0_input, S_IRUGO, show_in, NULL, 0, 0),
 	SENSOR_ATTR_2(in1_input, S_IRUGO, show_in, NULL, 0, 1),
 	SENSOR_ATTR_2(in2_input, S_IRUGO, show_in, NULL, 0, 2),
@@ -932,7 +932,7 @@ static struct sensor_device_attribute_2 fxxxx_in_attr[] = {
 	SENSOR_ATTR_2(in10_input, S_IRUGO, show_in, NULL, 0, 10),
 };
 
-static ssize_t show_in_max(struct device *dev, struct device_attribute
+static ssize_t show_in_max(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -940,7 +940,7 @@ static ssize_t show_in_max(struct device *dev, struct device_attribute
 	return sprintf(buf, "%d\n", data->in1_max * 8);
 }
 
-static ssize_t store_in_max(struct device *dev, struct device_attribute
+static ssize_t store_in_max(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -965,7 +965,7 @@ static ssize_t store_in_max(struct device *dev, struct device_attribute
 	return count;
 }
 
-static ssize_t show_in_beep(struct device *dev, struct device_attribute
+static ssize_t show_in_beep(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -977,7 +977,7 @@ static ssize_t show_in_beep(struct device *dev, struct device_attribute
 		return sprintf(buf, "0\n");
 }
 
-static ssize_t store_in_beep(struct device *dev, struct device_attribute
+static ssize_t store_in_beep(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -1008,7 +1008,7 @@ static ssize_t store_in_beep(struct device *dev, struct device_attribute
 	return count;
 }
 
-static ssize_t show_in_alarm(struct device *dev, struct device_attribute
+static ssize_t show_in_alarm(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -1021,7 +1021,7 @@ static ssize_t show_in_alarm(struct device *dev, struct device_attribute
 }
 
 /* For models with in1 alarm capability */
-static struct sensor_device_attribute_2 fxxxx_in1_alarm_attr[] = {
+static const struct sensor_device_attribute_2 fxxxx_in1_alarm_attr[] = {
 	SENSOR_ATTR_2(in1_max, S_IRUGO|S_IWUSR, show_in_max, store_in_max,
 		0, 1),
 	SENSOR_ATTR_2(in1_beep, S_IRUGO|S_IWUSR, show_in_beep, store_in_beep,
@@ -1029,7 +1029,7 @@ static struct sensor_device_attribute_2 fxxxx_in1_alarm_attr[] = {
 	SENSOR_ATTR_2(in1_alarm, S_IRUGO, show_in_alarm, NULL, 0, 1),
 };
 
-static ssize_t show_fan(struct device *dev, struct device_attribute *devattr,
+static ssize_t show_fan(struct device *dev, const struct device_attribute *devattr,
 	char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -1043,7 +1043,7 @@ static ssize_t show_fan(struct device *dev, struct device_attribute *devattr,
 }
 
 static ssize_t show_fan_full_speed(struct device *dev,
-				   struct device_attribute *devattr, char *buf)
+				   const struct device_attribute *devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
 	int nr = to_sensor_dev_attr_2(devattr)->index;
@@ -1052,7 +1052,7 @@ static ssize_t show_fan_full_speed(struct device *dev,
 }
 
 static ssize_t store_fan_full_speed(struct device *dev,
-				    struct device_attribute *devattr,
+				    const struct device_attribute *devattr,
 				    const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -1074,7 +1074,7 @@ static ssize_t store_fan_full_speed(struct device *dev,
 	return count;
 }
 
-static ssize_t show_fan_alarm(struct device *dev, struct device_attribute
+static ssize_t show_fan_alarm(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -1087,7 +1087,7 @@ static ssize_t show_fan_alarm(struct device *dev, struct device_attribute
 }
 
 static ssize_t show_pwm(struct device *dev,
-			struct device_attribute *devattr, char *buf)
+			const struct device_attribute *devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
 	int val, nr = to_sensor_dev_attr_2(devattr)->index;
@@ -1108,7 +1108,7 @@ static ssize_t show_pwm(struct device *dev,
 }
 
 static ssize_t store_pwm(struct device *dev,
-			 struct device_attribute *devattr, const char *buf,
+			 const struct device_attribute *devattr, const char *buf,
 			 size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -1149,7 +1149,7 @@ leave:
 }
 
 static ssize_t show_pwm_enable(struct device *dev,
-			       struct device_attribute *devattr, char *buf)
+			       const struct device_attribute *devattr, char *buf)
 {
 	int result = 0;
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -1174,7 +1174,7 @@ static ssize_t show_pwm_enable(struct device *dev,
 	return sprintf(buf, "%d\n", result);
 }
 
-static ssize_t store_pwm_enable(struct device *dev, struct device_attribute
+static ssize_t store_pwm_enable(struct device *dev, const struct device_attribute
 				*devattr, const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -1231,7 +1231,7 @@ leave:
 }
 
 static ssize_t show_pwm_interpolate(struct device *dev,
-				    struct device_attribute *devattr, char *buf)
+				    const struct device_attribute *devattr, char *buf)
 {
 	int result;
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -1243,7 +1243,7 @@ static ssize_t show_pwm_interpolate(struct device *dev,
 }
 
 static ssize_t store_pwm_interpolate(struct device *dev,
-				     struct device_attribute *devattr,
+				     const struct device_attribute *devattr,
 				     const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -1269,7 +1269,7 @@ static ssize_t store_pwm_interpolate(struct device *dev,
 }
 
 /* Fan / PWM attr common to all models */
-static struct sensor_device_attribute_2 fxxxx_fan_attr[4][6] = { {
+static const struct sensor_device_attribute_2 fxxxx_fan_attr[4][6] = { {
 	SENSOR_ATTR_2(fan1_input, S_IRUGO, show_fan, NULL, 0, 0),
 	SENSOR_ATTR_2(fan1_full_speed, S_IRUGO|S_IWUSR,
 		      show_fan_full_speed,
@@ -1316,7 +1316,7 @@ static struct sensor_device_attribute_2 fxxxx_fan_attr[4][6] = { {
 } };
 
 static ssize_t show_simple_pwm(struct device *dev,
-			       struct device_attribute *devattr, char *buf)
+			       const struct device_attribute *devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
 	int val, nr = to_sensor_dev_attr_2(devattr)->index;
@@ -1326,7 +1326,7 @@ static ssize_t show_simple_pwm(struct device *dev,
 }
 
 static ssize_t store_simple_pwm(struct device *dev,
-				struct device_attribute *devattr,
+				const struct device_attribute *devattr,
 				const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -1348,14 +1348,14 @@ static ssize_t store_simple_pwm(struct device *dev,
 }
 
 /* Attr for the third fan of the f71808a, which only has manual pwm */
-static struct sensor_device_attribute_2 f71808a_fan3_attr[] = {
+static const struct sensor_device_attribute_2 f71808a_fan3_attr[] = {
 	SENSOR_ATTR_2(fan3_input, S_IRUGO, show_fan, NULL, 0, 2),
 	SENSOR_ATTR_2(fan3_alarm, S_IRUGO, show_fan_alarm, NULL, 0, 2),
 	SENSOR_ATTR_2(pwm3, S_IRUGO|S_IWUSR,
 		      show_simple_pwm, store_simple_pwm, 0, 2),
 };
 
-static ssize_t show_fan_beep(struct device *dev, struct device_attribute
+static ssize_t show_fan_beep(struct device *dev, const struct device_attribute
 	*devattr, char *buf)
 {
 	struct f71882fg_data *data = f71882fg_update_device(dev);
@@ -1367,7 +1367,7 @@ static ssize_t show_fan_beep(struct device *dev, struct device_attribute
 		return sprintf(buf, "0\n");
 }
 
-static ssize_t store_fan_beep(struct device *dev, struct device_attribute
+static ssize_t store_fan_beep(struct device *dev, const struct device_attribute
 	*devattr, const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -1392,7 +1392,7 @@ static ssize_t store_fan_beep(struct device *dev, struct device_attribute
 }
 
 /* Attr for models which can beep on Fan alarm */
-static struct sensor_device_attribute_2 fxxxx_fan_beep_attr[] = {
+static const struct sensor_device_attribute_2 fxxxx_fan_beep_attr[] = {
 	SENSOR_ATTR_2(fan1_beep, S_IRUGO|S_IWUSR, show_fan_beep,
 		store_fan_beep, 0, 0),
 	SENSOR_ATTR_2(fan2_beep, S_IRUGO|S_IWUSR, show_fan_beep,
@@ -1404,7 +1404,7 @@ static struct sensor_device_attribute_2 fxxxx_fan_beep_attr[] = {
 };
 
 static ssize_t show_pwm_auto_point_channel(struct device *dev,
-					   struct device_attribute *devattr,
+					   const struct device_attribute *devattr,
 					   char *buf)
 {
 	int result;
@@ -1418,7 +1418,7 @@ static ssize_t show_pwm_auto_point_channel(struct device *dev,
 }
 
 static ssize_t store_pwm_auto_point_channel(struct device *dev,
-					    struct device_attribute *devattr,
+					    const struct device_attribute *devattr,
 					    const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -1455,7 +1455,7 @@ static ssize_t store_pwm_auto_point_channel(struct device *dev,
 }
 
 static ssize_t show_pwm_auto_point_pwm(struct device *dev,
-				       struct device_attribute *devattr,
+				       const struct device_attribute *devattr,
 				       char *buf)
 {
 	int result;
@@ -1477,7 +1477,7 @@ static ssize_t show_pwm_auto_point_pwm(struct device *dev,
 }
 
 static ssize_t store_pwm_auto_point_pwm(struct device *dev,
-					struct device_attribute *devattr,
+					const struct device_attribute *devattr,
 					const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -1510,7 +1510,7 @@ static ssize_t store_pwm_auto_point_pwm(struct device *dev,
 }
 
 static ssize_t show_pwm_auto_point_temp(struct device *dev,
-					struct device_attribute *devattr,
+					const struct device_attribute *devattr,
 					char *buf)
 {
 	int result;
@@ -1523,7 +1523,7 @@ static ssize_t show_pwm_auto_point_temp(struct device *dev,
 }
 
 static ssize_t store_pwm_auto_point_temp(struct device *dev,
-					 struct device_attribute *devattr,
+					 const struct device_attribute *devattr,
 					 const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -1551,7 +1551,7 @@ static ssize_t store_pwm_auto_point_temp(struct device *dev,
 }
 
 static ssize_t show_pwm_auto_point_temp_hyst(struct device *dev,
-					     struct device_attribute *devattr,
+					     const struct device_attribute *devattr,
 					     char *buf)
 {
 	int result = 0;
@@ -1571,7 +1571,7 @@ static ssize_t show_pwm_auto_point_temp_hyst(struct device *dev,
 }
 
 static ssize_t store_pwm_auto_point_temp_hyst(struct device *dev,
-					      struct device_attribute *devattr,
+					      const struct device_attribute *devattr,
 					      const char *buf, size_t count)
 {
 	struct f71882fg_data *data = dev_get_drvdata(dev);
@@ -1610,7 +1610,7 @@ static ssize_t store_pwm_auto_point_temp_hyst(struct device *dev,
  * PWM attr for the f71862fg, fewer pwms and fewer zones per pwm than the
  * standard models
  */
-static struct sensor_device_attribute_2 f71862fg_auto_pwm_attr[3][7] = { {
+static const struct sensor_device_attribute_2 f71862fg_auto_pwm_attr[3][7] = { {
 	SENSOR_ATTR_2(pwm1_auto_channels_temp, S_IRUGO|S_IWUSR,
 		      show_pwm_auto_point_channel,
 		      store_pwm_auto_point_channel, 0, 0),
@@ -1683,7 +1683,7 @@ static struct sensor_device_attribute_2 f71862fg_auto_pwm_attr[3][7] = { {
  * pwm setting when the temperature is above the pwmX_auto_point1_temp can be
  * programmed instead of being hardcoded to 0xff
  */
-static struct sensor_device_attribute_2 f71869_auto_pwm_attr[3][8] = { {
+static const struct sensor_device_attribute_2 f71869_auto_pwm_attr[3][8] = { {
 	SENSOR_ATTR_2(pwm1_auto_channels_temp, S_IRUGO|S_IWUSR,
 		      show_pwm_auto_point_channel,
 		      store_pwm_auto_point_channel, 0, 0),
@@ -1761,7 +1761,7 @@ static struct sensor_device_attribute_2 f71869_auto_pwm_attr[3][8] = { {
 } };
 
 /* PWM attr for the standard models */
-static struct sensor_device_attribute_2 fxxxx_auto_pwm_attr[4][14] = { {
+static const struct sensor_device_attribute_2 fxxxx_auto_pwm_attr[4][14] = { {
 	SENSOR_ATTR_2(pwm1_auto_channels_temp, S_IRUGO|S_IWUSR,
 		      show_pwm_auto_point_channel,
 		      store_pwm_auto_point_channel, 0, 0),
@@ -1928,7 +1928,7 @@ static struct sensor_device_attribute_2 fxxxx_auto_pwm_attr[4][14] = { {
 } };
 
 /* Fan attr specific to the f8000 (4th fan input can only measure speed) */
-static struct sensor_device_attribute_2 f8000_fan_attr[] = {
+static const struct sensor_device_attribute_2 f8000_fan_attr[] = {
 	SENSOR_ATTR_2(fan4_input, S_IRUGO, show_fan, NULL, 0, 3),
 };
 
@@ -1937,7 +1937,7 @@ static struct sensor_device_attribute_2 f8000_fan_attr[] = {
  * Also the register block at offset A0 maps to TEMP1 (so our temp2, as the
  * F8000 starts counting temps at 0), B0 maps the TEMP2 and C0 maps to TEMP0
  */
-static struct sensor_device_attribute_2 f8000_auto_pwm_attr[3][14] = { {
+static const struct sensor_device_attribute_2 f8000_auto_pwm_attr[3][14] = { {
 	SENSOR_ATTR_2(pwm1_auto_channels_temp, S_IRUGO|S_IWUSR,
 		      show_pwm_auto_point_channel,
 		      store_pwm_auto_point_channel, 0, 0),
@@ -2105,7 +2105,7 @@ static inline void superio_exit(int base)
 }
 
 static int f71882fg_create_sysfs_files(struct platform_device *pdev,
-	struct sensor_device_attribute_2 *attr, int count)
+	const struct sensor_device_attribute_2 *attr, int count)
 {
 	int err, i;
 
@@ -2118,7 +2118,7 @@ static int f71882fg_create_sysfs_files(struct platform_device *pdev,
 }
 
 static void f71882fg_remove_sysfs_files(struct platform_device *pdev,
-	struct sensor_device_attribute_2 *attr, int count)
+	const struct sensor_device_attribute_2 *attr, int count)
 {
 	int i;
 
