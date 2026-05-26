@@ -390,7 +390,7 @@ put:
 	return err;
 }
 
-static DEVICE_ATTR_RW(pec);
+static const DEVICE_ATTR_RW(pec);
 
 static void hwmon_remove_pec(void *dev)
 {
