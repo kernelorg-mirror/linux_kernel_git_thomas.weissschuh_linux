@@ -330,10 +330,10 @@ static int lm63_lut_looks_bad(struct device *dev, struct lm63_data *data)
  * Sysfs callback functions and files
  */
 
-static ssize_t show_fan(struct device *dev, struct device_attribute *devattr,
+static ssize_t show_fan(struct device *dev, const struct device_attribute *devattr,
 			char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct lm63_data *data = lm63_update_device(dev);
 	int fan;
 
@@ -344,7 +344,7 @@ static ssize_t show_fan(struct device *dev, struct device_attribute *devattr,
 	return sprintf(buf, "%d\n", fan);
 }
 
-static ssize_t set_fan(struct device *dev, struct device_attribute *dummy,
+static ssize_t set_fan(struct device *dev, const struct device_attribute *dummy,
 		       const char *buf, size_t count)
 {
 	struct lm63_data *data = dev_get_drvdata(dev);
@@ -366,10 +366,10 @@ static ssize_t set_fan(struct device *dev, struct device_attribute *dummy,
 	return count;
 }
 
-static ssize_t show_pwm1(struct device *dev, struct device_attribute *devattr,
+static ssize_t show_pwm1(struct device *dev, const struct device_attribute *devattr,
 			 char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct lm63_data *data = lm63_update_device(dev);
 	int nr = attr->index;
 	int pwm;
@@ -386,10 +386,10 @@ static ssize_t show_pwm1(struct device *dev, struct device_attribute *devattr,
 	return sprintf(buf, "%d\n", pwm);
 }
 
-static ssize_t set_pwm1(struct device *dev, struct device_attribute *devattr,
+static ssize_t set_pwm1(struct device *dev, const struct device_attribute *devattr,
 			const char *buf, size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct lm63_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
 	int nr = attr->index;
@@ -416,14 +416,14 @@ static ssize_t set_pwm1(struct device *dev, struct device_attribute *devattr,
 }
 
 static ssize_t pwm1_enable_show(struct device *dev,
-				struct device_attribute *dummy, char *buf)
+				const struct device_attribute *dummy, char *buf)
 {
 	struct lm63_data *data = lm63_update_device(dev);
 	return sprintf(buf, "%d\n", data->config_fan & 0x20 ? 1 : 2);
 }
 
 static ssize_t pwm1_enable_store(struct device *dev,
-				 struct device_attribute *dummy,
+				 const struct device_attribute *dummy,
 				 const char *buf, size_t count)
 {
 	struct lm63_data *data = dev_get_drvdata(dev);
@@ -549,38 +549,38 @@ static ssize_t pwm1_freq_store(struct device *dev,
  * So we need separate 8bit accessors for local and remote sensor.
  */
 static ssize_t show_local_temp8(struct device *dev,
-				struct device_attribute *devattr,
+				const struct device_attribute *devattr,
 				char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct lm63_data *data = lm63_update_device(dev);
 	return sprintf(buf, "%d\n", TEMP8_FROM_REG(data->temp8[attr->index]));
 }
 
 static ssize_t show_remote_temp8(struct device *dev,
-				 struct device_attribute *devattr,
+				 const struct device_attribute *devattr,
 				 char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct lm63_data *data = lm63_update_device(dev);
 	return sprintf(buf, "%d\n", temp8_from_reg(data, attr->index)
 		       + data->temp2_offset);
 }
 
 static ssize_t show_lut_temp(struct device *dev,
-			      struct device_attribute *devattr,
+			      const struct device_attribute *devattr,
 			      char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct lm63_data *data = lm63_update_device(dev);
 	return sprintf(buf, "%d\n", lut_temp_from_reg(data, attr->index)
 		       + data->temp2_offset);
 }
 
-static ssize_t set_temp8(struct device *dev, struct device_attribute *devattr,
+static ssize_t set_temp8(struct device *dev, const struct device_attribute *devattr,
 			 const char *buf, size_t count)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct lm63_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
 	int nr = attr->index;
@@ -616,10 +616,10 @@ static ssize_t set_temp8(struct device *dev, struct device_attribute *devattr,
 	return count;
 }
 
-static ssize_t show_temp11(struct device *dev, struct device_attribute *devattr,
+static ssize_t show_temp11(struct device *dev, const struct device_attribute *devattr,
 			   char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct lm63_data *data = lm63_update_device(dev);
 	int nr = attr->index;
 	int temp;
@@ -646,7 +646,7 @@ static ssize_t show_temp11(struct device *dev, struct device_attribute *devattr,
 	return sprintf(buf, "%d\n", temp);
 }
 
-static ssize_t set_temp11(struct device *dev, struct device_attribute *devattr,
+static ssize_t set_temp11(struct device *dev, const struct device_attribute *devattr,
 			  const char *buf, size_t count)
 {
 	static const u8 reg[6] = {
@@ -658,7 +658,7 @@ static ssize_t set_temp11(struct device *dev, struct device_attribute *devattr,
 		LM63_REG_REMOTE_OFFSET_LSB,
 	};
 
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct lm63_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
 	long val;
@@ -688,7 +688,7 @@ static ssize_t set_temp11(struct device *dev, struct device_attribute *devattr,
  * an absolute to user-space
  */
 static ssize_t temp2_crit_hyst_show(struct device *dev,
-				    struct device_attribute *dummy, char *buf)
+				    const struct device_attribute *dummy, char *buf)
 {
 	struct lm63_data *data = lm63_update_device(dev);
 	int temp;
@@ -702,9 +702,9 @@ static ssize_t temp2_crit_hyst_show(struct device *dev,
 }
 
 static ssize_t show_lut_temp_hyst(struct device *dev,
-				  struct device_attribute *devattr, char *buf)
+				  const struct device_attribute *devattr, char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct lm63_data *data = lm63_update_device(dev);
 	int temp;
 
@@ -762,7 +762,7 @@ static ssize_t pwm1_auto_point_temp_hyst_store(struct device *dev,
  * hysteresis value and we have to store a relative one
  */
 static ssize_t temp2_crit_hyst_store(struct device *dev,
-				     struct device_attribute *dummy,
+				     const struct device_attribute *dummy,
 				     const char *buf, size_t count)
 {
 	struct lm63_data *data = lm63_update_device(dev);
@@ -808,7 +808,7 @@ static void lm63_set_convrate(struct lm63_data *data, unsigned int interval)
 }
 
 static ssize_t update_interval_show(struct device *dev,
-				    struct device_attribute *attr, char *buf)
+				    const struct device_attribute *attr, char *buf)
 {
 	struct lm63_data *data = dev_get_drvdata(dev);
 
@@ -816,7 +816,7 @@ static ssize_t update_interval_show(struct device *dev,
 }
 
 static ssize_t update_interval_store(struct device *dev,
-				     struct device_attribute *attr,
+				     const struct device_attribute *attr,
 				     const char *buf, size_t count)
 {
 	struct lm63_data *data = dev_get_drvdata(dev);
@@ -835,7 +835,7 @@ static ssize_t update_interval_store(struct device *dev,
 }
 
 static ssize_t temp2_type_show(struct device *dev,
-			       struct device_attribute *attr, char *buf)
+			       const struct device_attribute *attr, char *buf)
 {
 	struct lm63_data *data = dev_get_drvdata(dev);
 
@@ -843,7 +843,7 @@ static ssize_t temp2_type_show(struct device *dev,
 }
 
 static ssize_t temp2_type_store(struct device *dev,
-				struct device_attribute *attr,
+				const struct device_attribute *attr,
 				const char *buf, size_t count)
 {
 	struct lm63_data *data = dev_get_drvdata(dev);
@@ -869,134 +869,134 @@ static ssize_t temp2_type_store(struct device *dev,
 	return count;
 }
 
-static ssize_t alarms_show(struct device *dev, struct device_attribute *dummy,
+static ssize_t alarms_show(struct device *dev, const struct device_attribute *dummy,
 			   char *buf)
 {
 	struct lm63_data *data = lm63_update_device(dev);
 	return sprintf(buf, "%u\n", data->alarms);
 }
 
-static ssize_t show_alarm(struct device *dev, struct device_attribute *devattr,
+static ssize_t show_alarm(struct device *dev, const struct device_attribute *devattr,
 			  char *buf)
 {
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	const struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct lm63_data *data = lm63_update_device(dev);
 	int bitnr = attr->index;
 
 	return sprintf(buf, "%u\n", (data->alarms >> bitnr) & 1);
 }
 
-static SENSOR_DEVICE_ATTR(fan1_input, S_IRUGO, show_fan, NULL, 0);
-static SENSOR_DEVICE_ATTR(fan1_min, S_IWUSR | S_IRUGO, show_fan,
+static const SENSOR_DEVICE_ATTR(fan1_input, S_IRUGO, show_fan, NULL, 0);
+static const SENSOR_DEVICE_ATTR(fan1_min, S_IWUSR | S_IRUGO, show_fan,
 	set_fan, 1);
 
-static SENSOR_DEVICE_ATTR(pwm1, S_IWUSR | S_IRUGO, show_pwm1, set_pwm1, 0);
-static DEVICE_ATTR_RW(pwm1_enable);
-static DEVICE_ATTR_RW(pwm1_freq);
-static DEVICE_ATTR_RW(pwm1_auto_point_temp_hyst);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point1_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1, S_IWUSR | S_IRUGO, show_pwm1, set_pwm1, 0);
+static const DEVICE_ATTR_RW(pwm1_enable);
+static const DEVICE_ATTR_RW(pwm1_freq);
+static const DEVICE_ATTR_RW(pwm1_auto_point_temp_hyst);
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point1_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 1);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point1_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point1_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 3);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point1_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point1_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 3);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point2_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point2_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 2);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point2_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point2_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 4);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point2_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point2_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 4);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point3_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point3_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 3);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point3_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point3_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 5);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point3_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point3_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 5);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point4_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point4_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 4);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point4_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point4_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 6);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point4_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point4_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 6);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point5_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point5_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 5);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point5_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point5_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 7);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point5_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point5_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 7);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point6_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point6_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 6);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point6_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point6_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 8);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point6_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point6_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 8);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point7_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point7_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 7);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point7_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point7_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 9);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point7_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point7_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 9);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point8_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point8_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 8);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point8_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point8_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 10);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point8_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point8_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 10);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point9_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point9_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 9);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point9_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point9_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 11);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point9_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point9_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 11);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point10_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point10_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 10);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point10_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point10_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 12);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point10_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point10_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 12);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point11_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point11_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 11);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point11_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point11_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 13);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point11_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point11_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 13);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point12_pwm, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point12_pwm, S_IWUSR | S_IRUGO,
 	show_pwm1, set_pwm1, 12);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point12_temp, S_IWUSR | S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point12_temp, S_IWUSR | S_IRUGO,
 	show_lut_temp, set_temp8, 14);
-static SENSOR_DEVICE_ATTR(pwm1_auto_point12_temp_hyst, S_IRUGO,
+static const SENSOR_DEVICE_ATTR(pwm1_auto_point12_temp_hyst, S_IRUGO,
 	show_lut_temp_hyst, NULL, 14);
 
-static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, show_local_temp8, NULL, 0);
-static SENSOR_DEVICE_ATTR(temp1_max, S_IWUSR | S_IRUGO, show_local_temp8,
+static const SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, show_local_temp8, NULL, 0);
+static const SENSOR_DEVICE_ATTR(temp1_max, S_IWUSR | S_IRUGO, show_local_temp8,
 	set_temp8, 1);
 
-static SENSOR_DEVICE_ATTR(temp2_input, S_IRUGO, show_temp11, NULL, 0);
-static SENSOR_DEVICE_ATTR(temp2_min, S_IWUSR | S_IRUGO, show_temp11,
+static const SENSOR_DEVICE_ATTR(temp2_input, S_IRUGO, show_temp11, NULL, 0);
+static const SENSOR_DEVICE_ATTR(temp2_min, S_IWUSR | S_IRUGO, show_temp11,
 	set_temp11, 1);
-static SENSOR_DEVICE_ATTR(temp2_max, S_IWUSR | S_IRUGO, show_temp11,
+static const SENSOR_DEVICE_ATTR(temp2_max, S_IWUSR | S_IRUGO, show_temp11,
 	set_temp11, 2);
-static SENSOR_DEVICE_ATTR(temp2_offset, S_IWUSR | S_IRUGO, show_temp11,
+static const SENSOR_DEVICE_ATTR(temp2_offset, S_IWUSR | S_IRUGO, show_temp11,
 	set_temp11, 3);
-static SENSOR_DEVICE_ATTR(temp2_crit, S_IRUGO, show_remote_temp8,
+static const SENSOR_DEVICE_ATTR(temp2_crit, S_IRUGO, show_remote_temp8,
 	set_temp8, 2);
-static DEVICE_ATTR_RW(temp2_crit_hyst);
+static const DEVICE_ATTR_RW(temp2_crit_hyst);
 
-static DEVICE_ATTR_RW(temp2_type);
+static const DEVICE_ATTR_RW(temp2_type);
 
 /* Individual alarm files */
-static SENSOR_DEVICE_ATTR(fan1_min_alarm, S_IRUGO, show_alarm, NULL, 0);
-static SENSOR_DEVICE_ATTR(temp2_crit_alarm, S_IRUGO, show_alarm, NULL, 1);
-static SENSOR_DEVICE_ATTR(temp2_fault, S_IRUGO, show_alarm, NULL, 2);
-static SENSOR_DEVICE_ATTR(temp2_min_alarm, S_IRUGO, show_alarm, NULL, 3);
-static SENSOR_DEVICE_ATTR(temp2_max_alarm, S_IRUGO, show_alarm, NULL, 4);
-static SENSOR_DEVICE_ATTR(temp1_max_alarm, S_IRUGO, show_alarm, NULL, 6);
+static const SENSOR_DEVICE_ATTR(fan1_min_alarm, S_IRUGO, show_alarm, NULL, 0);
+static const SENSOR_DEVICE_ATTR(temp2_crit_alarm, S_IRUGO, show_alarm, NULL, 1);
+static const SENSOR_DEVICE_ATTR(temp2_fault, S_IRUGO, show_alarm, NULL, 2);
+static const SENSOR_DEVICE_ATTR(temp2_min_alarm, S_IRUGO, show_alarm, NULL, 3);
+static const SENSOR_DEVICE_ATTR(temp2_max_alarm, S_IRUGO, show_alarm, NULL, 4);
+static const SENSOR_DEVICE_ATTR(temp1_max_alarm, S_IRUGO, show_alarm, NULL, 6);
 /* Raw alarm file for compatibility */
-static DEVICE_ATTR_RO(alarms);
+static const DEVICE_ATTR_RO(alarms);
 
-static DEVICE_ATTR_RW(update_interval);
+static const DEVICE_ATTR_RW(update_interval);
 
-static struct attribute *lm63_attributes[] = {
+static const struct attribute *const lm63_attributes[] = {
 	&sensor_dev_attr_pwm1.dev_attr.attr,
 	&dev_attr_pwm1_enable.attr,
 	&dev_attr_pwm1_freq.attr,
@@ -1045,16 +1045,16 @@ static struct attribute *lm63_attributes[] = {
 	NULL
 };
 
-static struct attribute *lm63_attributes_temp2_type[] = {
+static const struct attribute *const lm63_attributes_temp2_type[] = {
 	&dev_attr_temp2_type.attr,
 	NULL
 };
 
 static const struct attribute_group lm63_group_temp2_type = {
-	.attrs = lm63_attributes_temp2_type,
+	.attrs_const = lm63_attributes_temp2_type,
 };
 
-static struct attribute *lm63_attributes_extra_lut[] = {
+static const struct attribute *const lm63_attributes_extra_lut[] = {
 	&sensor_dev_attr_pwm1_auto_point9_pwm.dev_attr.attr,
 	&sensor_dev_attr_pwm1_auto_point9_temp.dev_attr.attr,
 	&sensor_dev_attr_pwm1_auto_point9_temp_hyst.dev_attr.attr,
@@ -1071,7 +1071,7 @@ static struct attribute *lm63_attributes_extra_lut[] = {
 };
 
 static const struct attribute_group lm63_group_extra_lut = {
-	.attrs = lm63_attributes_extra_lut,
+	.attrs_const = lm63_attributes_extra_lut,
 };
 
 /*
@@ -1082,7 +1082,7 @@ static const struct attribute_group lm63_group_extra_lut = {
  * register is true.
  */
 static umode_t lm63_attribute_mode(struct kobject *kobj,
-				   struct attribute *attr, int index)
+				   const struct attribute *attr, int index)
 {
 	struct device *dev = kobj_to_dev(kobj);
 	struct lm63_data *data = dev_get_drvdata(dev);
@@ -1096,11 +1096,11 @@ static umode_t lm63_attribute_mode(struct kobject *kobj,
 }
 
 static const struct attribute_group lm63_group = {
-	.is_visible = lm63_attribute_mode,
-	.attrs = lm63_attributes,
+	.is_visible_const = lm63_attribute_mode,
+	.attrs_const = lm63_attributes,
 };
 
-static struct attribute *lm63_attributes_fan1[] = {
+static const struct attribute *const lm63_attributes_fan1[] = {
 	&sensor_dev_attr_fan1_input.dev_attr.attr,
 	&sensor_dev_attr_fan1_min.dev_attr.attr,
 
@@ -1109,7 +1109,7 @@ static struct attribute *lm63_attributes_fan1[] = {
 };
 
 static const struct attribute_group lm63_group_fan1 = {
-	.attrs = lm63_attributes_fan1,
+	.attrs_const = lm63_attributes_fan1,
 };
 
 /*
