@@ -223,12 +223,12 @@ static struct gl518_data *gl518_update_device(struct device *dev)
  * Sysfs stuff
  */
 
-#define show(type, suffix, value)					\
-static ssize_t show_##suffix(struct device *dev,			\
-			     struct device_attribute *attr, char *buf)	\
-{									\
-	struct gl518_data *data = gl518_update_device(dev);		\
-	return sprintf(buf, "%d\n", type##_FROM_REG(data->value));	\
+#define show(type, suffix, value)						\
+static ssize_t show_##suffix(struct device *dev,				\
+			     const struct device_attribute *attr, char *buf)	\
+{										\
+	struct gl518_data *data = gl518_update_device(dev);			\
+	return sprintf(buf, "%d\n", type##_FROM_REG(data->value));		\
 }
 
 show(TEMP, temp_input1, temp_in);
@@ -252,7 +252,7 @@ show(BOOL, beep_enable, beep_enable);
 show(BEEP_MASK, beep_mask, beep_mask);
 
 static ssize_t fan_input_show(struct device *dev,
-			      struct device_attribute *attr, char *buf)
+			      const struct device_attribute *attr, char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct gl518_data *data = gl518_update_device(dev);
@@ -260,7 +260,7 @@ static ssize_t fan_input_show(struct device *dev,
 					DIV_FROM_REG(data->fan_div[nr])));
 }
 
-static ssize_t fan_min_show(struct device *dev, struct device_attribute *attr,
+static ssize_t fan_min_show(struct device *dev, const struct device_attribute *attr,
 			    char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -269,7 +269,7 @@ static ssize_t fan_min_show(struct device *dev, struct device_attribute *attr,
 					DIV_FROM_REG(data->fan_div[nr])));
 }
 
-static ssize_t fan_div_show(struct device *dev, struct device_attribute *attr,
+static ssize_t fan_div_show(struct device *dev, const struct device_attribute *attr,
 			    char *buf)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -279,7 +279,7 @@ static ssize_t fan_div_show(struct device *dev, struct device_attribute *attr,
 
 #define set(type, suffix, value, reg)					\
 static ssize_t set_##suffix(struct device *dev,				\
-			    struct device_attribute *attr,		\
+			    const struct device_attribute *attr,	\
 			    const char *buf, size_t count)		\
 {									\
 	struct gl518_data *data = dev_get_drvdata(dev);			\
@@ -298,7 +298,7 @@ static ssize_t set_##suffix(struct device *dev,				\
 
 #define set_bits(type, suffix, value, reg, mask, shift)			\
 static ssize_t set_##suffix(struct device *dev,				\
-			    struct device_attribute *attr,		\
+			    const struct device_attribute *attr,	\
 			    const char *buf, size_t count)		\
 {									\
 	struct gl518_data *data = dev_get_drvdata(dev);			\
@@ -338,7 +338,7 @@ set_bits(BOOL, beep_enable, beep_enable, GL518_REG_CONF, 0x04, 2);
 set(BEEP_MASK, beep_mask, beep_mask, GL518_REG_ALARM);
 
 static ssize_t fan_min_store(struct device *dev,
-			     struct device_attribute *attr, const char *buf,
+			     const struct device_attribute *attr, const char *buf,
 			     size_t count)
 {
 	struct gl518_data *data = dev_get_drvdata(dev);
@@ -372,7 +372,7 @@ static ssize_t fan_min_store(struct device *dev,
 }
 
 static ssize_t fan_div_store(struct device *dev,
-			     struct device_attribute *attr, const char *buf,
+			     const struct device_attribute *attr, const char *buf,
 			     size_t count)
 {
 	struct gl518_data *data = dev_get_drvdata(dev);
@@ -416,36 +416,36 @@ static ssize_t fan_div_store(struct device *dev,
 	return count;
 }
 
-static DEVICE_ATTR(temp1_input, 0444, show_temp_input1, NULL);
-static DEVICE_ATTR(temp1_max, 0644, show_temp_max1, set_temp_max1);
-static DEVICE_ATTR(temp1_max_hyst, 0644,
-		   show_temp_hyst1, set_temp_hyst1);
-static DEVICE_ATTR(fan1_auto, 0644, show_fan_auto1, set_fan_auto1);
-static SENSOR_DEVICE_ATTR_RO(fan1_input, fan_input, 0);
-static SENSOR_DEVICE_ATTR_RO(fan2_input, fan_input, 1);
-static SENSOR_DEVICE_ATTR_RW(fan1_min, fan_min, 0);
-static SENSOR_DEVICE_ATTR_RW(fan2_min, fan_min, 1);
-static SENSOR_DEVICE_ATTR_RW(fan1_div, fan_div, 0);
-static SENSOR_DEVICE_ATTR_RW(fan2_div, fan_div, 1);
-static DEVICE_ATTR(in0_input, 0444, show_in_input0, NULL);
-static DEVICE_ATTR(in1_input, 0444, show_in_input1, NULL);
-static DEVICE_ATTR(in2_input, 0444, show_in_input2, NULL);
-static DEVICE_ATTR(in3_input, 0444, show_in_input3, NULL);
-static DEVICE_ATTR(in0_min, 0644, show_in_min0, set_in_min0);
-static DEVICE_ATTR(in1_min, 0644, show_in_min1, set_in_min1);
-static DEVICE_ATTR(in2_min, 0644, show_in_min2, set_in_min2);
-static DEVICE_ATTR(in3_min, 0644, show_in_min3, set_in_min3);
-static DEVICE_ATTR(in0_max, 0644, show_in_max0, set_in_max0);
-static DEVICE_ATTR(in1_max, 0644, show_in_max1, set_in_max1);
-static DEVICE_ATTR(in2_max, 0644, show_in_max2, set_in_max2);
-static DEVICE_ATTR(in3_max, 0644, show_in_max3, set_in_max3);
-static DEVICE_ATTR(alarms, 0444, show_alarms, NULL);
-static DEVICE_ATTR(beep_enable, 0644,
-		   show_beep_enable, set_beep_enable);
-static DEVICE_ATTR(beep_mask, 0644,
-		   show_beep_mask, set_beep_mask);
+static const DEVICE_ATTR(temp1_input, 0444, show_temp_input1, NULL);
+static const DEVICE_ATTR(temp1_max, 0644, show_temp_max1, set_temp_max1);
+static const DEVICE_ATTR(temp1_max_hyst, 0644,
+			 show_temp_hyst1, set_temp_hyst1);
+static const DEVICE_ATTR(fan1_auto, 0644, show_fan_auto1, set_fan_auto1);
+static const SENSOR_DEVICE_ATTR_RO(fan1_input, fan_input, 0);
+static const SENSOR_DEVICE_ATTR_RO(fan2_input, fan_input, 1);
+static const SENSOR_DEVICE_ATTR_RW(fan1_min, fan_min, 0);
+static const SENSOR_DEVICE_ATTR_RW(fan2_min, fan_min, 1);
+static const SENSOR_DEVICE_ATTR_RW(fan1_div, fan_div, 0);
+static const SENSOR_DEVICE_ATTR_RW(fan2_div, fan_div, 1);
+static const DEVICE_ATTR(in0_input, 0444, show_in_input0, NULL);
+static const DEVICE_ATTR(in1_input, 0444, show_in_input1, NULL);
+static const DEVICE_ATTR(in2_input, 0444, show_in_input2, NULL);
+static const DEVICE_ATTR(in3_input, 0444, show_in_input3, NULL);
+static const DEVICE_ATTR(in0_min, 0644, show_in_min0, set_in_min0);
+static const DEVICE_ATTR(in1_min, 0644, show_in_min1, set_in_min1);
+static const DEVICE_ATTR(in2_min, 0644, show_in_min2, set_in_min2);
+static const DEVICE_ATTR(in3_min, 0644, show_in_min3, set_in_min3);
+static const DEVICE_ATTR(in0_max, 0644, show_in_max0, set_in_max0);
+static const DEVICE_ATTR(in1_max, 0644, show_in_max1, set_in_max1);
+static const DEVICE_ATTR(in2_max, 0644, show_in_max2, set_in_max2);
+static const DEVICE_ATTR(in3_max, 0644, show_in_max3, set_in_max3);
+static const DEVICE_ATTR(alarms, 0444, show_alarms, NULL);
+static const DEVICE_ATTR(beep_enable, 0644,
+			 show_beep_enable, set_beep_enable);
+static const DEVICE_ATTR(beep_mask, 0644,
+			 show_beep_mask, set_beep_mask);
 
-static ssize_t alarm_show(struct device *dev, struct device_attribute *attr,
+static ssize_t alarm_show(struct device *dev, const struct device_attribute *attr,
 			  char *buf)
 {
 	int bitnr = to_sensor_dev_attr(attr)->index;
@@ -453,15 +453,15 @@ static ssize_t alarm_show(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%u\n", (data->alarms >> bitnr) & 1);
 }
 
-static SENSOR_DEVICE_ATTR_RO(in0_alarm, alarm, 0);
-static SENSOR_DEVICE_ATTR_RO(in1_alarm, alarm, 1);
-static SENSOR_DEVICE_ATTR_RO(in2_alarm, alarm, 2);
-static SENSOR_DEVICE_ATTR_RO(in3_alarm, alarm, 3);
-static SENSOR_DEVICE_ATTR_RO(temp1_alarm, alarm, 4);
-static SENSOR_DEVICE_ATTR_RO(fan1_alarm, alarm, 5);
-static SENSOR_DEVICE_ATTR_RO(fan2_alarm, alarm, 6);
+static const SENSOR_DEVICE_ATTR_RO(in0_alarm, alarm, 0);
+static const SENSOR_DEVICE_ATTR_RO(in1_alarm, alarm, 1);
+static const SENSOR_DEVICE_ATTR_RO(in2_alarm, alarm, 2);
+static const SENSOR_DEVICE_ATTR_RO(in3_alarm, alarm, 3);
+static const SENSOR_DEVICE_ATTR_RO(temp1_alarm, alarm, 4);
+static const SENSOR_DEVICE_ATTR_RO(fan1_alarm, alarm, 5);
+static const SENSOR_DEVICE_ATTR_RO(fan2_alarm, alarm, 6);
 
-static ssize_t beep_show(struct device *dev, struct device_attribute *attr,
+static ssize_t beep_show(struct device *dev, const struct device_attribute *attr,
 			 char *buf)
 {
 	int bitnr = to_sensor_dev_attr(attr)->index;
@@ -469,7 +469,7 @@ static ssize_t beep_show(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%u\n", (data->beep_mask >> bitnr) & 1);
 }
 
-static ssize_t beep_store(struct device *dev, struct device_attribute *attr,
+static ssize_t beep_store(struct device *dev, const struct device_attribute *attr,
 			  const char *buf, size_t count)
 {
 	struct gl518_data *data = dev_get_drvdata(dev);
@@ -496,15 +496,15 @@ static ssize_t beep_store(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-static SENSOR_DEVICE_ATTR_RW(in0_beep, beep, 0);
-static SENSOR_DEVICE_ATTR_RW(in1_beep, beep, 1);
-static SENSOR_DEVICE_ATTR_RW(in2_beep, beep, 2);
-static SENSOR_DEVICE_ATTR_RW(in3_beep, beep, 3);
-static SENSOR_DEVICE_ATTR_RW(temp1_beep, beep, 4);
-static SENSOR_DEVICE_ATTR_RW(fan1_beep, beep, 5);
-static SENSOR_DEVICE_ATTR_RW(fan2_beep, beep, 6);
+static const SENSOR_DEVICE_ATTR_RW(in0_beep, beep, 0);
+static const SENSOR_DEVICE_ATTR_RW(in1_beep, beep, 1);
+static const SENSOR_DEVICE_ATTR_RW(in2_beep, beep, 2);
+static const SENSOR_DEVICE_ATTR_RW(in3_beep, beep, 3);
+static const SENSOR_DEVICE_ATTR_RW(temp1_beep, beep, 4);
+static const SENSOR_DEVICE_ATTR_RW(fan1_beep, beep, 5);
+static const SENSOR_DEVICE_ATTR_RW(fan2_beep, beep, 6);
 
-static struct attribute *gl518_attributes[] = {
+static const struct attribute *const gl518_attributes[] = {
 	&dev_attr_in3_input.attr,
 	&dev_attr_in0_min.attr,
 	&dev_attr_in1_min.attr,
@@ -548,10 +548,10 @@ static struct attribute *gl518_attributes[] = {
 };
 
 static const struct attribute_group gl518_group = {
-	.attrs = gl518_attributes,
+	.attrs_const = gl518_attributes,
 };
 
-static struct attribute *gl518_attributes_r80[] = {
+static const struct attribute *const gl518_attributes_r80[] = {
 	&dev_attr_in0_input.attr,
 	&dev_attr_in1_input.attr,
 	&dev_attr_in2_input.attr,
@@ -559,7 +559,7 @@ static struct attribute *gl518_attributes_r80[] = {
 };
 
 static const struct attribute_group gl518_group_r80 = {
-	.attrs = gl518_attributes_r80,
+	.attrs_const = gl518_attributes_r80,
 };
 
 /*
