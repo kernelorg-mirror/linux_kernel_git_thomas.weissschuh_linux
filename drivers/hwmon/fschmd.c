@@ -592,7 +592,7 @@ static ssize_t alert_led_store(struct device *dev,
 	return count;
 }
 
-static DEVICE_ATTR_RW(alert_led);
+static const DEVICE_ATTR_RW(alert_led);
 
 static const struct sensor_device_attribute fschmd_attr[] = {
 	SENSOR_ATTR_RO(in0_input, in_value, 0),
