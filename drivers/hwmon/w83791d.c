@@ -1036,7 +1036,7 @@ static ssize_t alarms_show(struct device *dev, const struct device_attribute *at
 	return sprintf(buf, "%u\n", data->alarms);
 }
 
-static DEVICE_ATTR_RO(alarms);
+static const DEVICE_ATTR_RO(alarms);
 
 /* Beep control */
 
@@ -1142,7 +1142,7 @@ static ssize_t cpu0_vid_show(struct device *dev,
 	return sprintf(buf, "%d\n", vid_from_reg(data->vid, data->vrm));
 }
 
-static DEVICE_ATTR_RO(cpu0_vid);
+static const DEVICE_ATTR_RO(cpu0_vid);
 
 static ssize_t vrm_show(struct device *dev, const struct device_attribute *attr,
 			char *buf)
@@ -1175,7 +1175,7 @@ static ssize_t vrm_store(struct device *dev, const struct device_attribute *attr
 	return count;
 }
 
-static DEVICE_ATTR_RW(vrm);
+static const DEVICE_ATTR_RW(vrm);
 
 #define IN_UNIT_ATTRS(X) \
 	&sda_in_input[X].dev_attr.attr,	\
