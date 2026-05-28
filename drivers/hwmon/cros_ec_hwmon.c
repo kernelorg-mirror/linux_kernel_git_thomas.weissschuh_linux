@@ -9,6 +9,7 @@
 #include <linux/device.h>
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
+#include <linux/kstrtox.h>
 #include <linux/math.h>
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -137,6 +138,22 @@ static int cros_ec_hwmon_get_thermal_config(struct cros_ec_device *cros_ec, u8 i
 	return 0;
 }
 
+static int cros_ec_hwmon_set_thermal_config(struct cros_ec_device *cros_ec, u8 index,
+					    const struct ec_thermal_config *config)
+{
+	struct ec_params_thermal_set_threshold_v1 req = {};
+	int ret;
+
+	req.sensor_num = index;
+	req.cfg = *config;
+	ret = cros_ec_cmd(cros_ec, 1, EC_CMD_THERMAL_SET_THRESHOLD,
+			  &req, sizeof(req), NULL, 0);
+	if (ret < 0)
+		return ret;
+
+	return 0;
+}
+
 static int cros_ec_hwmon_read_temp_threshold(struct cros_ec_device *cros_ec, u8 index,
 					     enum ec_temp_thresholds threshold, u32 *temp)
 {
@@ -175,6 +192,15 @@ static bool cros_ec_hwmon_kelvin_to_millicelsius_overflow(long t, long *ret)
 	if (check_add_overflow(*ret, CROS_EC_HWMON_ABSOLUTE_ZERO_MILLICELSIUS, ret))
 		return true;
 
+	return false;
+}
+
+static bool cros_ec_hwmon_millicelsius_to_kelvin_overflow(long t, long *ret)
+{
+	if (check_sub_overflow(t, CROS_EC_HWMON_ABSOLUTE_ZERO_MILLICELSIUS, ret))
+		return true;
+
+	*ret = DIV_ROUND_CLOSEST(*ret, MILLIDEGREE_PER_DEGREE);
 	return false;
 }
 
@@ -436,14 +462,69 @@ static ssize_t temp_auto_point_temp_show(struct device *dev, struct device_attri
 	return sysfs_emit(buf, "%ld\n", temp_millicelsius);
 }
 
+static ssize_t temp_auto_point_temp_store(struct device *dev, struct device_attribute *attr,
+					  const char *buf, size_t size)
+{
+	struct sensor_device_attribute_2 *sattr = to_sensor_dev_attr_2(attr);
+	struct cros_ec_hwmon_priv *priv = dev_get_drvdata(dev);
+	struct ec_thermal_config config;
+	u32 *temp_field;
+	long temp;
+	int ret;
+
+	ret = kstrtol(buf, 10, &temp);
+	if (ret)
+		return ret;
+
+	if (cros_ec_hwmon_millicelsius_to_kelvin_overflow(temp, &temp))
+		return -ERANGE;
+
+	if (overflows_type(temp, *temp_field))
+		return -ERANGE;
+
+	/* 0 would disable the sensors effect on the fan curve */
+	if (temp == 0)
+		return -EINVAL;
+
+	guard(hwmon_lock)(dev);
+
+	ret = cros_ec_hwmon_get_thermal_config(priv->cros_ec, sattr->index, &config);
+	if (ret)
+		return ret;
+
+	/* The temperature sensor is currently not used for fan curves, keep it that way */
+	if (config.temp_fan_off == 0 || config.temp_fan_max == 0)
+		return -EOPNOTSUPP;
+
+	if (cros_ec_hwmon_attr_is_temp_fan_off(sattr))
+		temp_field = &config.temp_fan_off;
+	else /* temp_fan_max */
+		temp_field = &config.temp_fan_max;
+
+	/* Only allow values which are more aggressive than the current ones */
+	if (temp > *temp_field)
+		return -EINVAL;
+
+	*temp_field = temp;
+
+	if (config.temp_fan_off > config.temp_fan_max)
+		return -EINVAL;
+
+	ret = cros_ec_hwmon_set_thermal_config(priv->cros_ec, sattr->index, &config);
+	if (ret)
+		return ret;
+
+	return size;
+}
+
 #define CROS_EC_HWMON_TEMP_AUTO_POINT_ATTRS(_idx)					\
 	static SENSOR_DEVICE_ATTR_2_RO(temp ## _idx ## _auto_point1_pwm,		\
 				       temp_auto_point_pwm,  0, (_idx) - 1);		\
 	static SENSOR_DEVICE_ATTR_2_RO(temp ## _idx ## _auto_point2_pwm,		\
 				       temp_auto_point_pwm,  1, (_idx) - 1);		\
-	static SENSOR_DEVICE_ATTR_2_RO(temp ## _idx ## _auto_point1_temp,		\
+	static SENSOR_DEVICE_ATTR_2_RW(temp ## _idx ## _auto_point1_temp,		\
 				       temp_auto_point_temp,  0, (_idx) - 1);		\
-	static SENSOR_DEVICE_ATTR_2_RO(temp ## _idx ## _auto_point2_temp,		\
+	static SENSOR_DEVICE_ATTR_2_RW(temp ## _idx ## _auto_point2_temp,		\
 				       temp_auto_point_temp,  1, (_idx) - 1)		\
 
 #define CROS_EC_HWMON_TEMP_AUTO_POINT_ATTRS_PTRS(_idx)					\
