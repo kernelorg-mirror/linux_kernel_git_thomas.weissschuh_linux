@@ -29,14 +29,22 @@
 #define CROS_EC_HWMON_PWM_SET_FAN_DUTY_CMD_VERSION	1
 #define CROS_EC_HWMON_THERMAL_AUTO_FAN_CTRL_CMD_VERSION	2
 
+#define CROS_EC_HWMON_NUM_TEMP_SENSORS (EC_TEMP_SENSOR_ENTRIES + EC_TEMP_SENSOR_B_ENTRIES)
+
+struct cros_ec_hwmon_curve_limits {
+	u32 temp_fan_off;
+	u32 temp_fan_max;
+};
+
 struct cros_ec_hwmon_priv {
 	struct cros_ec_device *cros_ec;
-	const char *temp_sensor_names[EC_TEMP_SENSOR_ENTRIES + EC_TEMP_SENSOR_B_ENTRIES];
+	const char *temp_sensor_names[CROS_EC_HWMON_NUM_TEMP_SENSORS];
 	u8 usable_fans;
 	bool fan_control_supported;
 	bool temp_threshold_supported;
 	u8 manual_fans; /* bits to indicate whether the fan is set to manual */
 	u8 manual_fan_pwm[EC_FAN_SPEED_ENTRIES];
+	struct cros_ec_hwmon_curve_limits curve_limits[CROS_EC_HWMON_NUM_TEMP_SENSORS];
 };
 
 struct cros_ec_hwmon_cooling_priv {
@@ -467,8 +475,8 @@ static ssize_t temp_auto_point_temp_store(struct device *dev, struct device_attr
 {
 	struct sensor_device_attribute_2 *sattr = to_sensor_dev_attr_2(attr);
 	struct cros_ec_hwmon_priv *priv = dev_get_drvdata(dev);
+	struct cros_ec_hwmon_curve_limits *curve_limits;
 	struct ec_thermal_config config;
-	u32 *temp_field;
 	long temp;
 	int ret;
 
@@ -479,7 +487,7 @@ static ssize_t temp_auto_point_temp_store(struct device *dev, struct device_attr
 	if (cros_ec_hwmon_millicelsius_to_kelvin_overflow(temp, &temp))
 		return -ERANGE;
 
-	if (overflows_type(temp, *temp_field))
+	if (overflows_type(temp, u32))
 		return -ERANGE;
 
 	/* 0 would disable the sensors effect on the fan curve */
@@ -492,23 +500,15 @@ static ssize_t temp_auto_point_temp_store(struct device *dev, struct device_attr
 	if (ret)
 		return ret;
 
-	/* The temperature sensor is currently not used for fan curves, keep it that way */
-	if (config.temp_fan_off == 0 || config.temp_fan_max == 0)
-		return -EOPNOTSUPP;
+	curve_limits = &priv->curve_limits[sattr->index];
 
-	if (cros_ec_hwmon_attr_is_temp_fan_off(sattr))
-		temp_field = &config.temp_fan_off;
-	else /* temp_fan_max */
-		temp_field = &config.temp_fan_max;
-
-	/* Only allow values which are more aggressive than the current ones */
-	if (temp > *temp_field)
-		return -EINVAL;
-
-	*temp_field = temp;
-
-	if (config.temp_fan_off > config.temp_fan_max)
-		return -EINVAL;
+	if (cros_ec_hwmon_attr_is_temp_fan_off(sattr)) {
+		/* off_new <= off_original && off_new < max_current */
+		config.temp_fan_off = min3((u32)temp, curve_limits->temp_fan_off, config.temp_fan_max);
+	} else { /* temp_fan_max */
+		/* max_new <= max_original && max_new >= off_current */
+		config.temp_fan_max = max(min((u32)temp, curve_limits->temp_fan_max), config.temp_fan_off);
+	}
 
 	ret = cros_ec_hwmon_set_thermal_config(priv->cros_ec, sattr->index, &config);
 	if (ret)
@@ -600,6 +600,12 @@ static umode_t cros_ec_hwmon_fan_curve_is_visible(struct kobject *kobj,
 		return 0;
 
 	if (!priv->temp_sensor_names[sattr->index])
+		return 0;
+
+	if (!priv->curve_limits[sattr->index].temp_fan_off)
+		return 0;
+
+	if (!priv->curve_limits[sattr->index].temp_fan_max)
 		return 0;
 
 	return attr->mode;
@@ -752,6 +758,22 @@ static void cros_ec_hwmon_probe_fans(struct cros_ec_hwmon_priv *priv)
 	}
 }
 
+static void cros_ec_hwmon_probe_fan_curves(struct device *dev, struct cros_ec_hwmon_priv *priv)
+{
+	struct ec_thermal_config config;
+	int ret;
+
+	for (size_t i = 0; i < ARRAY_SIZE(priv->curve_limits); i++) {
+		ret = cros_ec_hwmon_get_thermal_config(priv->cros_ec, i, &config);
+		if (ret) {
+			dev_warn(dev, "XXX %zu %d\n", i, ret);
+			continue;
+		}
+		priv->curve_limits[i].temp_fan_off = config.temp_fan_off;
+		priv->curve_limits[i].temp_fan_max = config.temp_fan_max;
+	}
+}
+
 static inline bool is_cros_ec_cmd_available(struct cros_ec_device *cros_ec,
 					    u16 cmd, u8 version)
 {
@@ -840,6 +862,8 @@ static int cros_ec_hwmon_probe(struct platform_device *pdev)
 	priv->fan_control_supported = cros_ec_hwmon_probe_fan_control_supported(priv->cros_ec);
 	priv->temp_threshold_supported = is_cros_ec_cmd_available(priv->cros_ec,
 								  EC_CMD_THERMAL_GET_THRESHOLD, 1);
+	if (priv->temp_threshold_supported)
+		cros_ec_hwmon_probe_fan_curves(dev, priv);
 	cros_ec_hwmon_register_fan_cooling_devices(dev, priv);
 
 	hwmon_dev = devm_hwmon_device_register_with_info(dev, "cros_ec", priv,
