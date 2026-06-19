@@ -2,7 +2,7 @@
 
 #include "../../kselftest.h"
 #include <sys/signal.h>
-#include <asm/ucontext.h>
+#include <ucontext.h>
 #include <linux/prctl.h>
 #include <errno.h>
 #include <linux/ptrace.h>
@@ -19,11 +19,11 @@
 
 void sigsegv_handler(int signum, siginfo_t *si, void *uc)
 {
-	struct ucontext *ctx = (struct ucontext *)uc;
+	ucontext_t *ctx = (ucontext_t *)uc;
 
 	if (si->si_code == SEGV_CPERR) {
 		ksft_print_msg("Control flow violation happened somewhere\n");
-		ksft_print_msg("PC where violation happened %lx\n", ctx->uc_mcontext.gregs[0]);
+		ksft_print_msg("PC where violation happened %lx\n", ctx->uc_mcontext.__gregs[0]);
 		exit(-1);
 	}
 
