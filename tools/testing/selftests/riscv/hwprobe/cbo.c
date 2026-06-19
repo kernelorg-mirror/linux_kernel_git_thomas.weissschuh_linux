@@ -13,8 +13,7 @@
 #include <signal.h>
 #include <assert.h>
 #include <linux/compiler.h>
-#include <linux/kernel.h>
-#include <asm/ucontext.h>
+#include <ucontext.h>
 #include <getopt.h>
 
 #include "hwprobe.h"
