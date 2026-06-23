@@ -8,6 +8,8 @@
 #ifndef __SPARC64_UCTX_H
 #define __SPARC64_UCTX_H
 
+#include <asm/signal.h>
+
 #define MC_TSTATE	0
 #define MC_PC		1
 #define MC_NPC		2
