@@ -24,18 +24,14 @@ struct xfs_sysfs_attr {
 			 size_t count);
 };
 
-static inline struct xfs_sysfs_attr *
-to_attr(struct attribute *attr)
-{
-	return container_of(attr, struct xfs_sysfs_attr, attr);
-}
+#define to_attr(attr) container_of_const(attr, struct xfs_sysfs_attr, attr)
 
 #define XFS_SYSFS_ATTR_RW(name) \
-	static struct xfs_sysfs_attr xfs_sysfs_attr_##name = __ATTR_RW(name)
+	static const struct xfs_sysfs_attr xfs_sysfs_attr_##name = __ATTR_RW(name)
 #define XFS_SYSFS_ATTR_RO(name) \
-	static struct xfs_sysfs_attr xfs_sysfs_attr_##name = __ATTR_RO(name)
+	static const struct xfs_sysfs_attr xfs_sysfs_attr_##name = __ATTR_RO(name)
 #define XFS_SYSFS_ATTR_WO(name) \
-	static struct xfs_sysfs_attr xfs_sysfs_attr_##name = __ATTR_WO(name)
+	static const struct xfs_sysfs_attr xfs_sysfs_attr_##name = __ATTR_WO(name)
 
 #define ATTR_LIST(name) &xfs_sysfs_attr_##name.attr
 
@@ -45,7 +41,7 @@ xfs_sysfs_object_show(
 	struct attribute	*attr,
 	char			*buf)
 {
-	struct xfs_sysfs_attr *xfs_attr = to_attr(attr);
+	const struct xfs_sysfs_attr *xfs_attr = to_attr(attr);
 
 	return xfs_attr->show ? xfs_attr->show(kobject, buf) : 0;
 }
@@ -57,7 +53,7 @@ xfs_sysfs_object_store(
 	const char		*buf,
 	size_t			count)
 {
-	struct xfs_sysfs_attr *xfs_attr = to_attr(attr);
+	const struct xfs_sysfs_attr *xfs_attr = to_attr(attr);
 
 	return xfs_attr->store ? xfs_attr->store(kobject, buf, count) : 0;
 }
@@ -67,7 +63,7 @@ static const struct sysfs_ops xfs_sysfs_ops = {
 	.store = xfs_sysfs_object_store,
 };
 
-static struct attribute *xfs_mp_attrs[] = {
+static const struct attribute *const xfs_mp_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(xfs_mp);
@@ -315,7 +311,7 @@ bload_node_slack_show(
 }
 XFS_SYSFS_ATTR_RW(bload_node_slack);
 
-static struct attribute *xfs_dbg_attrs[] = {
+static const struct attribute *const xfs_dbg_attrs[] = {
 	ATTR_LIST(bug_on_assert),
 	ATTR_LIST(log_recovery_delay),
 	ATTR_LIST(mount_delay),
@@ -379,7 +375,7 @@ stats_clear_store(
 }
 XFS_SYSFS_ATTR_WO(stats_clear);
 
-static struct attribute *xfs_stats_attrs[] = {
+static const struct attribute *const xfs_stats_attrs[] = {
 	ATTR_LIST(stats),
 	ATTR_LIST(stats_clear),
 	NULL,
@@ -454,7 +450,7 @@ write_grant_head_bytes_show(
 }
 XFS_SYSFS_ATTR_RO(write_grant_head_bytes);
 
-static struct attribute *xfs_log_attrs[] = {
+static const struct attribute *const xfs_log_attrs[] = {
 	ATTR_LIST(log_head_lsn),
 	ATTR_LIST(log_tail_lsn),
 	ATTR_LIST(reserve_grant_head_bytes),
@@ -610,7 +606,7 @@ fail_at_unmount_store(
 }
 XFS_SYSFS_ATTR_RW(fail_at_unmount);
 
-static struct attribute *xfs_error_attrs[] = {
+static const struct attribute *const xfs_error_attrs[] = {
 	ATTR_LIST(max_retries),
 	ATTR_LIST(retry_timeout_seconds),
 	NULL,
@@ -766,7 +762,7 @@ zonegc_low_space_show(
 }
 XFS_SYSFS_ATTR_RW(zonegc_low_space);
 
-static struct attribute *xfs_zoned_attrs[] = {
+static const struct attribute *const xfs_zoned_attrs[] = {
 	ATTR_LIST(max_open_zones),
 	ATTR_LIST(nr_open_zones),
 	ATTR_LIST(zonegc_low_space),

@@ -33,11 +33,7 @@ struct xfs_errortag_attr {
 	unsigned int		tag;
 };
 
-static inline struct xfs_errortag_attr *
-to_attr(struct attribute *attr)
-{
-	return container_of(attr, struct xfs_errortag_attr, attr);
-}
+#define to_attr(attr) container_of_const(attr, struct xfs_errortag_attr, attr)
 
 static inline struct xfs_mount *
 to_mp(struct kobject *kobject)
@@ -89,7 +85,7 @@ static const struct sysfs_ops xfs_errortag_sysfs_ops = {
 };
 
 #define XFS_ERRTAG(_tag, _name, _default)				\
-static struct xfs_errortag_attr xfs_errortag_attr_##_name = {		\
+static const struct xfs_errortag_attr xfs_errortag_attr_##_name = {	\
 	.attr = {.name = __stringify(_name),				\
 		 .mode = VERIFY_OCTAL_PERMISSIONS(S_IWUSR | S_IRUGO) },	\
 	.tag	= XFS_ERRTAG_##_tag,					\
@@ -101,7 +97,7 @@ XFS_ERRTAGS
 #define XFS_ERRTAG(_tag, _name, _default) \
 	&xfs_errortag_attr_##_name.attr,
 #include "xfs_errortag.h"
-static struct attribute *xfs_errortag_attrs[] = {
+static const struct attribute *const xfs_errortag_attrs[] = {
 	XFS_ERRTAGS
 	NULL
 };
