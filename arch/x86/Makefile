@@ -316,6 +316,9 @@ vdso-install-$(CONFIG_X86_64)	   += arch/x86/entry/vdso/vdso64/vdso64.so.dbg
 vdso-install-$(CONFIG_X86_X32_ABI) += arch/x86/entry/vdso/vdso64/vdsox32.so.dbg
 vdso-install-$(CONFIG_COMPAT_32)   += arch/x86/entry/vdso/vdso32/vdso32.so.dbg
 
+# vdsox32.so.dbg is derived from vdso64.so.dbg. Avoid races with CONFIG_IVDSODEBUG
+arch/x86/entry/vdso/vdso64/vdsox32.so.dbg: arch/x86/entry/vdso/vdso64/vdso64.so.dbg
+
 archprepare: checkbin
 checkbin:
 ifdef CONFIG_MITIGATION_RETPOLINE
