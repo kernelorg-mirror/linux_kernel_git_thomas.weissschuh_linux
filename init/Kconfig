@@ -801,6 +801,17 @@ config IKHEADERS
 	  or similar programs.  If you build the headers as a module, a module called
 	  kheaders.ko is built which can be loaded on-demand to get access to headers.
 
+config IVDSODEBUG
+	tristate "Enable vDSO debug information through /sys/kernel/vdso_debug.tar.xz"
+	depends on MMU
+	depends on SYSFS
+	depends on "$(shell,make have-vdso-debug)"
+	help
+	  This option enables access to the vDSO debug information. That can be
+	  used to debug applications and test the vDSO implementation.
+
+	  If configured as M the module will be called vdso_debug.ko.
+
 config LOG_BUF_SHIFT
 	int "Kernel log buffer size (16 => 64KB, 17 => 128KB)"
 	range 12 25

@@ -298,7 +298,7 @@ no-dot-config-targets := $(clean-targets) \
 			 %asm-generic kernelversion %src-pkg dt_binding_check \
 			 dt_style_selftest \
 			 outputmakefile rustavailable rustfmt rustfmtcheck \
-			 run-command
+			 run-command have-vdso-debug
 no-sync-config-targets := $(no-dot-config-targets) %install modules_sign kernelrelease \
 			  image_name
 single-targets := %.a %.i %.ko %.lds %.ll %.lst %.mod %.o %.rsi %.s %/
@@ -1538,6 +1538,37 @@ PHONY += vdso_install
 vdso_install: export INSTALL_FILES = $(vdso-install-y)
 vdso_install:
 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.vdsoinst
+
+# ---------------------------------------------------------------------------
+# vDSO embedded debug symbols
+
+PHONY += vdso_prepare
+
+# Build the targets in $(vdso-install-y)
+# Some architectures may do this already through vdso_prepare,
+# so add a dependency to avoid race conditions
+$(vdso-install-y): vdso_prepare prepare0 FORCE
+	@$(MAKE) $(build)=$(patsubst %/,%,$(dir $@)) $@
+
+tar-opts := --mtime='1970-01-01 00:00:00' --owner=0 --group=0 --sort=name --numeric-owner --mode=u=rw,go=r,a+X
+
+quiet_cmd_vdso_debug_tar_xz = VDSODBG $@
+      cmd_vdso_debug_tar_xz = \
+		rm -rf $(tmp-target); mkdir -p $(tmp-target)/vdso/; \
+		$(MAKE) quiet=@ MODLIB=$(tmp-target) vdso_install; \
+		$(TAR) $(tar-opts) -a -c -f $@ -C $(tmp-target)/vdso/ .
+
+targets += vdso_debug.tar.xz
+vdso_debug.tar.xz: $(vdso-install-y) FORCE
+	$(call if_changed,vdso_debug_tar_xz)
+
+ifdef CONFIG_IVDSODEBUG
+prepare: vdso_debug.tar.xz
+endif
+
+PHONY += have-vdso-debug
+have-vdso-debug:
+	@echo $(if $(vdso-install-y)$(vdso-install-),y,n)
 
 # ---------------------------------------------------------------------------
 # Tools
