@@ -57,6 +57,7 @@ static struct tk_data timekeeper_data[TIMEKEEPERS_MAX];
 
 /* The core timekeeper */
 #define tk_core		(timekeeper_data[TIMEKEEPER_CORE])
+#define tk_core_lock	(tk_core.lock)
 
 #ifdef CONFIG_POSIX_AUX_CLOCKS
 static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)
@@ -163,13 +164,13 @@ unsigned long timekeeper_lock_irqsave(void)
 {
 	unsigned long flags;
 
-	raw_spin_lock_irqsave(&tk_core.lock, flags);
+	raw_spin_lock_irqsave(&tk_core_lock, flags);
 	return flags;
 }
 
 void timekeeper_unlock_irqrestore(unsigned long flags)
 {
-	raw_spin_unlock_irqrestore(&tk_core.lock, flags);
+	raw_spin_unlock_irqrestore(&tk_core_lock, flags);
 }
 
 /*
@@ -291,7 +292,7 @@ static DEFINE_STATIC_KEY_FALSE(clocksource_read_inlined);
  * the tkr's clocksource may change between the read reference, and the
  * clock reference passed to the read function.  This can cause crashes if
  * the wrong clocksource is passed to the wrong read function.
- * This isn't necessary to use when holding the tk_core.lock or doing
+ * This isn't necessary to use when holding the tk_core_lock or doing
  * a read of the fast-timekeeper tkrs (which is protected by its own locking
  * and update logic).
  */
@@ -699,7 +700,7 @@ int pvclock_gtod_register_notifier(struct notifier_block *nb)
 	struct timekeeper *tk = &tk_core.timekeeper;
 	int ret;
 
-	guard(raw_spinlock_irqsave)(&tk_core.lock);
+	guard(raw_spinlock_irqsave)(&tk_core_lock);
 	ret = raw_notifier_chain_register(&pvclock_gtod_chain, nb);
 	update_pvclock_gtod(tk, true);
 
@@ -714,7 +715,7 @@ EXPORT_SYMBOL_GPL(pvclock_gtod_register_notifier);
  */
 int pvclock_gtod_unregister_notifier(struct notifier_block *nb)
 {
-	guard(raw_spinlock_irqsave)(&tk_core.lock);
+	guard(raw_spinlock_irqsave)(&tk_core_lock);
 	return raw_notifier_chain_unregister(&pvclock_gtod_chain, nb);
 }
 EXPORT_SYMBOL_GPL(pvclock_gtod_unregister_notifier);
@@ -1711,7 +1712,7 @@ int do_settimeofday64(const struct timespec64 *ts)
 	if (!timespec64_valid_settod(ts))
 		return -EINVAL;
 
-	scoped_guard (raw_spinlock_irqsave, &tk_core.lock) {
+	scoped_guard (raw_spinlock_irqsave, &tk_core_lock) {
 		struct timekeeper *tks = &tk_core.shadow_timekeeper;
 
 		timekeeping_forward_now(tks);
@@ -1791,7 +1792,7 @@ static int timekeeping_inject_offset(const struct timespec64 *ts)
 {
 	int ret;
 
-	scoped_guard (raw_spinlock_irqsave, &tk_core.lock)
+	scoped_guard (raw_spinlock_irqsave, &tk_core_lock)
 		ret = __timekeeping_inject_offset(&tk_core, ts);
 
 	/* Signal hrtimers about time change */
@@ -1866,7 +1867,7 @@ static int change_clocksource(void *data)
 		return 0;
 	}
 
-	scoped_guard (raw_spinlock_irqsave, &tk_core.lock) {
+	scoped_guard (raw_spinlock_irqsave, &tk_core_lock) {
 		struct timekeeper *tks = &tk_core.shadow_timekeeper;
 
 		timekeeping_forward_now(tks);
@@ -2075,7 +2076,7 @@ void __init timekeeping_init(void)
 	if (clock->enable)
 		clock->enable(clock);
 
-	guard(raw_spinlock_irqsave)(&tk_core.lock);
+	guard(raw_spinlock_irqsave)(&tk_core_lock);
 
 	ntp_init();
 
@@ -2169,7 +2170,7 @@ bool timekeeping_rtc_skipsuspend(void)
  */
 void timekeeping_inject_sleeptime64(const struct timespec64 *delta)
 {
-	scoped_guard(raw_spinlock_irqsave, &tk_core.lock) {
+	scoped_guard(raw_spinlock_irqsave, &tk_core_lock) {
 		struct timekeeper *tks = &tk_core.shadow_timekeeper;
 
 		suspend_timing_needed = false;
@@ -2200,7 +2201,7 @@ void timekeeping_resume(void)
 	clockevents_resume();
 	clocksource_resume();
 
-	raw_spin_lock_irqsave(&tk_core.lock, flags);
+	raw_spin_lock_irqsave(&tk_core_lock, flags);
 
 	/*
 	 * After system resumes, we need to calculate the suspended time and
@@ -2236,7 +2237,7 @@ void timekeeping_resume(void)
 	tks->ntp_error = 0;
 	timekeeping_suspended = 0;
 	timekeeping_update_from_shadow(&tk_core, TK_CLOCK_WAS_SET);
-	raw_spin_unlock_irqrestore(&tk_core.lock, flags);
+	raw_spin_unlock_irqrestore(&tk_core_lock, flags);
 
 	touch_softlockup_watchdog();
 
@@ -2272,7 +2273,7 @@ int timekeeping_suspend(void)
 
 	suspend_timing_needed = true;
 
-	raw_spin_lock_irqsave(&tk_core.lock, flags);
+	raw_spin_lock_irqsave(&tk_core_lock, flags);
 	timekeeping_forward_now(tks);
 	timekeeping_suspended = 1;
 
@@ -2309,7 +2310,7 @@ int timekeeping_suspend(void)
 
 	timekeeping_update_from_shadow(&tk_core, 0);
 	halt_fast_timekeeper(tks);
-	raw_spin_unlock_irqrestore(&tk_core.lock, flags);
+	raw_spin_unlock_irqrestore(&tk_core_lock, flags);
 
 	tick_suspend();
 	clocksource_suspend();
@@ -2665,7 +2666,7 @@ static bool __timekeeping_advance(struct tk_data *tkd, enum timekeeping_adv_mode
 
 static bool timekeeping_advance(enum timekeeping_adv_mode mode)
 {
-	guard(raw_spinlock_irqsave)(&tk_core.lock);
+	guard(raw_spinlock_irqsave)(&tk_core_lock);
 	return __timekeeping_advance(&tk_core, mode);
 }
 
@@ -3077,7 +3078,7 @@ long ktime_get_ntp_seconds(unsigned int id)
  */
 void hardpps(const struct timespec64 *phase_ts, const struct timespec64 *raw_ts)
 {
-	guard(raw_spinlock_irqsave)(&tk_core.lock);
+	guard(raw_spinlock_irqsave)(&tk_core_lock);
 	__hardpps(phase_ts, raw_ts);
 }
 EXPORT_SYMBOL(hardpps);
@@ -3285,7 +3286,7 @@ static void aux_clock_enable(clockid_t id)
 	struct timekeeper *aux_tks = &aux_tkd->shadow_timekeeper;
 
 	/* Prevent the core timekeeper from changing. */
-	guard(raw_spinlock_irq)(&tk_core.lock);
+	guard(raw_spinlock_irq)(&tk_core_lock);
 
 	/*
 	 * Setup the auxiliary clock assuming that the raw core timekeeper
