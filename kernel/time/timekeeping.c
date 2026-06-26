@@ -3381,7 +3381,7 @@ int do_adjtimex(struct __kernel_timex *txc)
 	audit_ntp_log(&result.ad);
 
 	if (result.clock_set)
-		clock_was_set(CLOCK_SET_WALL);
+		clock_was_set(CLOCK_SET_WALL | CLOCK_SET_AUX_ALL);
 
 	ntp_notify_cmos_timer(result.delta.tv_sec != 0);
 
@@ -3586,6 +3586,7 @@ static int aux_clock_set(const clockid_t id, const struct timespec64 *tnew)
 		timekeeping_update_from_shadow(aux_tkd, TK_UPDATE_ALL);
 	}
 
+	clock_was_set(CLOCK_SET_AUX(id));
 	return 0;
 }
 
@@ -3593,15 +3594,21 @@ static int aux_clock_adj(const clockid_t id, struct __kernel_timex *txc)
 {
 	struct tk_data *aux_tkd = aux_get_tk_data(id);
 	struct adjtimex_result result = { };
+	int ret;
 
 	if (!aux_tkd)
 		return -ENODEV;
 
-	/*
-	 * @result is ignored for now as there are neither hrtimers nor a
-	 * RTC related to auxiliary clocks for now.
-	 */
-	return __do_adjtimex(aux_tkd, txc, &result);
+	ret = __do_adjtimex(aux_tkd, txc, &result);
+	if (ret < 0)
+		return ret;
+
+	if (result.clock_set)
+		clock_was_set(CLOCK_SET_AUX(id));
+
+	/* No RTC related to auxiliary clocks for now. */
+
+	return ret;
 }
 
 const struct k_clock clock_aux = {
@@ -3638,6 +3645,8 @@ static void aux_clock_enable(clockid_t id)
 		aux_tks->clock_valid = true;
 		timekeeping_update_from_shadow(aux_tkd, TK_UPDATE_ALL);
 	}
+
+	clock_was_set(CLOCK_SET_AUX(id));
 }
 
 static void aux_clock_disable(clockid_t id)
@@ -3648,6 +3657,8 @@ static void aux_clock_disable(clockid_t id)
 		aux_tkd->shadow_timekeeper.clock_valid = false;
 		timekeeping_update_from_shadow(aux_tkd, TK_UPDATE_ALL);
 	}
+
+	clock_was_set(CLOCK_SET_AUX(id));
 }
 
 static DEFINE_MUTEX(aux_clock_mutex);
