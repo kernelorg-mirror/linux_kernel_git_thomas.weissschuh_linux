@@ -1,0 +1,301 @@
+On Tue, Apr 14 2026 at 09:52, Thomas Weißschuh (Schneider Electric) wrote:
+> Extend the hrtimer subsystem to also handle auxiliary clocks if those
+> are enabled.
+>
+> These hrtimers will be used to implement clock_nanosleep() for
+> auxiliary clocks in a later patch.
+>
+> In contrast to the regular clocks, auxiliary clocks can be disabled at
+> runtime. The hrtimer APIs do not allow signalling of failure states,
+> so a disabled clock can not be reported to the caller. As hrtimers can
+> be reused multiple times it is also not possible to reference-count the
+> auxiliary clock and prevent it from being disabled while it has
+> associated hrtimers alive. Also a timer should never expire too early,
+> which prevents a forced expiration when the clock is disabled.
+> Therefore keep the hrtimers running while the clock is disabled and
+> expire them when the clock is enabled again and the expiration time
+> is reached.
+>
+> Similar to existing hrtimers, only a simple offset is used to convert
+> between auxiliary and monotonic timestamps to reprogram the clocksource.
+> If the auxiliary clock runs at a different rate than the monotonic clock
+> The expiration will not be exact. This works the same as hrtimres based
+> on CLOCK_REALTIME.
+
+That's not really correct.
+
+CLOCK_REALTIME and CLOCK_MONOTONIC are using the same underlying
+frequency and conversion factors. They are strictly coupled by the
+offset. The only thing what makes timers expire truly late is when
+CLOCK_REALTIME is set and jumps forwards. But if the clock is not set
+and only steered by NTP/PTP the coupling is always accurate.
+
+You are right, that user space might observe CLOCK_REALTIME going
+backwards or jumping forward, but user space can monitor the clock set
+events and deal with it. But as long as the clock was not set, the
+kernel has to guarantee that timers do not expire early.
+
+AUX clocks can have different frequencies than CLOCK_MONOTONIC. That
+means if you only use an offset, which is updated once per tick, then
+depending on the frequency ratio, those timers can expire slightly late,
+which is fine, but they can also expire early, which violates the
+guarantee of clock_nanosleep() that the sleep never comes back early.
+
+Let's assume:
+
+       - HZ=100
+
+       - nominal clock frequency of the clocksource 1GHz
+
+       - Adjustment CLOCK_MONOTONIC -200ppm
+
+       - Adjustment CLOCK_AUX +200ppm
+
+   fMono  = 1GHz - 1Ghz * 200ppm = 0.9998 GHz
+   fAux   = 1GHz + 1GHz * 200ppm = 1.0002 GHz
+
+So at the tick when updates happen
+
+   tMono = tMono_base
+   tAux  = tAux_base == tmono + offset
+
+which is correct.
+
+Within the tick period, i.e. before the next update, the advancement of
+the clocks is:
+
+   tMono = tMono_base + tMono_delta
+
+   tAux  = tAux_base + tAux_delta
+
+Taking the full 10ms of the tick period into account this means based on
+CLOCK_MONO:
+
+   tick_delta  = 9998000
+
+   tMono_delta = tick_delta / 0.9998 = 10ms
+
+   tAux_delta  = tick_delta / 1.0002 = 9.99600 ms
+
+That's 4us early, which is not a lot, but trivially to observe in user
+space. That means test cases will fail. Even more so with the pending
+changes, which validate user controlled timers before enqueuing them
+based on ktime_get() and the clock offset, because that does not involve
+wakeup and scheduling. We have the same problem for in kernel users,
+which also rely on not being expired early.
+
+That's also affected by the asynchronous updates of the various time
+keepers.
+
+Who would have thought that having different notions of time is
+complicated?
+
+Fortunately there are only a few places where this matters:
+
+    1) hrtimer_check_user_timer() - new in tip
+
+       Trivial to solve. It just requires to read the actual time of the
+       clock instead of deriving if from ktim_get() by offset.
+
+    2) hrtimer_interrupt->__hrtimer_run_queues
+
+       That's where the actual prevention of early expiry is required.
+
+    3) hrtimer_update_next_event() (hrtimer_bases_first())
+
+       Needs also to be aware because otherwise a timer which was
+       "expired" according to MONO + offset, but prevented in #2, would
+       then rearm the timer interrupt based on MONO + offset again
+       (which means in the past) until the timer actually expires. IOW,
+       4us interrupt storm for nothing.
+
+Let's look at #2:
+
+	for_each_active_base(base, cpu_base, active) {
+		ktime_t basenow = ktime_add(now, *base->offset);
+
+it uses basenow to check whether a timer is expired or not. That's
+correct for the core clock ids, but not necessarily correct for AUX.
+
+So you could do (But don't do so):
+
+	for_each_active_base(base, cpu_base, active & CORE_MASK) {
+		ktime_t basenow = ktime_add(now, *base->offset);
+                ...
+        }
+
+	for_each_active_base(base, cpu_base, active & AUX_MASK) {
+		ktime_t basenow = ktime_add(now, *base->offset);
+                ...
+                if (basenow < base->expires_next)
+                	continue;
+                basenow = ktime_get_with_offset(base->clockid);
+                if (basenow < base->expires_next)
+                	continue;
+	}                        
+
+and do something similar in hrtimer_update_next_event(). But that's
+expensive as it needs to read time from the hardware, which involves
+serializing instructions.
+
+Both invoke hrtimer_update_base() before they start evaluating.
+hrtimer_update_base() invokes ktime_get_update_offsets_now(), which
+updates the offsets if necessary and as the name suggests reads time,
+i.e. CLOCK_MONOTONIC.
+
+__hrtimer_run_queues() gets this time handed in, which allows to do the
+following:
+
+	for_each_active_base(base, cpu_base, active & AUX_MASK) {
+        	ktime_t basenow = mono_to_aux(now, base->mono_ref);
+
+		if (basenow < base->expires_next)
+                	continue;
+	}                        
+
+hrtimer_update_next_event() does not have access to 'now', but as there
+is always a hrtimer_update_base() invocation close enough to the
+invocation of hrtimer_update_next_event() you can store the time
+returned from ktime_get_update_offsets_now() in cpu_base and use that
+for the computation. Or change the callers to hand it in.
+
+monot_to_aux() does:
+
+        s64 delta_mono_ns, adj;
+        unsigned int sft;
+        int mult;
+
+        delta_mono_ns = now - mono_ref->mono_base;
+        mult = mono_ref->mult;
+        sft = mono_ref->shift;
+        
+        adj = (delta_mono_ns * mult) >> sft;
+        return now + adj;
+
+Where does mono_ref come from?
+
+aux_mono_ref[$N] has to be updated when offs_aux[$N] is updated once
+per tick in tk_aux_get_mono_offset():
+
+        cycles = read_clock();
+        mono_now = tkr_mono.base + cycles_to_ns(tkr_mono, cycles);
+        aux_now = tkr_aux.base + cycles_to_ns(tkr_aux, cycles);
+
+        // Should probably be in a separate storage and not in the
+        // timekeeper itself, but that's an implementation detail.
+        aux_tk->mono_ref.offset = aux_now - mono_now;
+        aux_tk->mono_ref.mono_base = mono_now;
+        aux_tk->mono_ref.mult = tkr_mono.mult - tkr_aux.mult;
+        aux_tk->mono_ref.shift = tkr_mono.shift.
+    
+This works because both are guaranteed to have the same shift value as
+that is never changed during the life time of a clocksource.
+
+Scaled math is fun, isn't it?
+
+How does that get propagated to hrtimers?
+
+struct tk_offsets {
+	ktime_t		offs_real;
+        ....
+	ktime_t		offs_tai;
+
+        struct mono_ref	aux_mono_ref[N];
+};
+
+This has to be updated and the aux_clock_offs_seq incremented when:
+
+  1) The AUX clock is set
+
+  2) When the resulting calculation drifts apart significantly
+
+#1 is obvious and #2 can be easily checked on every tick update:
+
+        cycles = read_clock();
+        mono_now = tkr_mono.base + cycles_to_ns(tkr_mono, cycles);
+        aux_now = tkr_aux.base + cycles_to_ns(tkr_aux, cycles);
+
+        // Should probably be in a separate storage and not in the
+        // timekeeper itself, but that's an implementation detail.
+        aux_tk->mono_ref.offset = aux_now - mono_now;
+        aux_tk->mono_ref.mono_base = mono_now;
+        aux_tk->mono_ref.mult = tkr_mono.mult - tkr_aux.mult;
+        aux_tk->mono_ref.shift = tkr_mono.shift.
+
+        // Calculate the deviation 
+        delta = mono_now - tk_offsets.aux_mono_refs[$ID].mono_base;
+        adj = (delta * tk_offsets.aux_mono_refs[$ID].mult) >> tk_offsets.aux_mono_refs[$ID].shift;
+        aux_clc = mono_now + adj;
+        if (abs(aux_clc - aux_now) > 25)
+        	tkr_aux.offset_needs_update = true;
+
+I picked 25ns as an arbitrary threshold as that should be good enough to
+be non-observable at the end.
+
+The update period obviously depends on the changes of tk_mono.mult and
+tk_aux.mult. If they do not change at all, then it's determined by the
+rounding errors of the scaled math. Otherwise the following formula
+applies (plus/minus sign errors I did not check and are at the end
+irrelevant):
+
+        tAux_offs_ref = tdelta_mono + tdelta_mono * (fmono - faux_offs_ref)
+        tAux_curr     = tdelta_mono + tdelta_mono * (fmono - faux_curr)
+==>
+        tAux_offs_ref = tdelta_mono * (1 + fmono - faux_offs_ref)
+        tAux_curr     = tdelta_mono * (1 + fmono - faux_curr)
+
+        tAux_delta    = tAux_offs_ref - tAux_curr
+==>
+        tAux_delta    = tdelta_mono * (1 + fmono - faux_offs_ref - 1 - fmono - faux_curr)
+        tAux_delta    = tdelta_mono * (faux_curr - faux_offs_ref)
+==>
+        tdelta_mono   = tAux_delta / (faux_curr - faux_offs_ref)
+
+As this cares only about the point where it runs out of the tAux_delta
+window, this becomes:
+
+        tdelta_mono   = tAux_delta / abs(faux_curr - faux_offs_ref)
+
+Converting that back to scaled math:
+
+        tdelta_mono   = (tAux_delta << shift) / abs(tkr_aux.mult - tkr_aux.orig_mult)
+        
+where orig_mult is the multiplier at the time tk_offset.aux_mono_ref got
+updated. It does not really matter whether the AUX or the MONO
+multiplier is updated. What matters is the relative change and all of it
+is determined by the shift value.
+
+So with tAux_delta = 25ns this results in the following update periods
+for abs(mult - orig_mult) with shift = 24, which is what e.g. TSC ends up
+with usually.
+
+1  :      419.430400 ms
+2  :      209.715200 ms
+3  :      139.810133 ms
+4  :      104.857600 ms
+5  :       83.886080 ms
+6  :       69.905067 ms
+7  :       59.918629 ms
+8  :       52.428800 ms
+9  :       46.603378 ms
+10 :       41.943040 ms
+
+As the usual NTP updates are in the +/- 1 range for both clocks and not
+very frequent once the PLL has stabilized, this reduces the update time
+significantly. That matters as we really want to avoid shuffling cache
+lines around for nothing especially on large systems.
+
+This update behaviour should be instrumented somehow during testing so
+we can reason about it.
+
+We could then even go a step further and ignore the AUX offset changes
+when a CPU does not have a AUX timer queued. When the first AUX timer is
+queued then this needs to update before evaluating the expiry time and
+keep it updated until the last AUX timer vanished. But that's an
+orthogonal optimization once the dust has settled on the general
+approach.
+
+Thanks,
+
+        tglx
+
