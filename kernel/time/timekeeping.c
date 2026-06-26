@@ -28,6 +28,9 @@
 #include "timekeeping_internal.h"
 #include "ntp_internal.h"
 
+#define CREATE_TRACE_POINTS
+#include <trace/events/timekeeping.h>
+
 #define TK_CLEAR_NTP		(1 << 0)
 #define TK_CLOCK_WAS_SET	(1 << 1)
 
