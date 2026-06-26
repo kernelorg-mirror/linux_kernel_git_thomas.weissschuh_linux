@@ -2844,19 +2844,18 @@ void do_timer(unsigned long ticks)
 
 /**
  * ktime_get_update_offsets_now - hrtimer helper
- * @cwsseq:	pointer to check and store the clock was set sequence number
  * @tko:	Pointer to a timekeeper offset struct to store the offsets
  *
- * Returns current monotonic time and updates the offsets if the
- * sequence number in @cwsseq and tk_offsets.clock_was_set_seq are
- * different.
+ * Returns current monotonic time and updates the offsets if the sequence
+ * numbers in @tko and tk_offsets differ. The latter are updated when the clock
+ * was set.
  *
  * Called from hrtimer_interrupt() or retrigger_next_event()
  */
-ktime_t ktime_get_update_offsets_now(u32 *cwsseq, struct tk_clock_offsets *tko)
+ktime_t ktime_get_update_offsets_now(struct tk_clock_offsets *tko)
 {
 	struct timekeeper *tk = &tk_core.timekeeper;
-	u32 cwsseq_orig = *cwsseq;
+	u32 cwsseq_orig = tko->clock_was_set_seq;
 	unsigned int seq;
 	ktime_t base;
 	u64 nsecs;
@@ -2868,10 +2867,8 @@ ktime_t ktime_get_update_offsets_now(u32 *cwsseq, struct tk_clock_offsets *tko)
 		nsecs = timekeeping_get_ns(&tk->tkr_mono);
 		base = ktime_add_ns(base, nsecs);
 
-		if (cwsseq_orig != tk_offsets.clock_was_set_seq) {
-			*cwsseq = tk_offsets.clock_was_set_seq;
+		if (cwsseq_orig != tk_offsets.clock_was_set_seq)
 			*tko = tk_offsets;
-		}
 
 		/* Handle leapsecond insertion adjustments */
 		if (unlikely(base >= tk->next_leap_ktime))

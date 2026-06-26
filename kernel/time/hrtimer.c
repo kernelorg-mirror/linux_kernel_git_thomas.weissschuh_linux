@@ -684,7 +684,7 @@ static inline ktime_t hrtimer_update_base(struct hrtimer_cpu_base *base)
 {
 	lockdep_assert_held(&base->lock);
 
-	return ktime_get_update_offsets_now(&base->tk_offsets.clock_was_set_seq, &base->tk_offsets);
+	return ktime_get_update_offsets_now(&base->tk_offsets);
 }
 
 /*
