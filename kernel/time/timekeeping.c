@@ -80,6 +80,7 @@ static inline bool tk_is_aux(const struct timekeeper *tk)
 	return tk->id >= TIMEKEEPER_AUX_FIRST && tk->id <= TIMEKEEPER_AUX_LAST;
 }
 static inline struct tk_data *aux_get_tk_data(clockid_t id);
+static inline clockid_t tkid_to_clockid(enum timekeeper_ids tk_id);
 
 /*
  * We need to convert between auxiliary and monotonic clock timestamps.
@@ -369,6 +370,7 @@ static void tk_aux_update_core_mono_conv(struct timekeeper *aux_tk, bool clock_w
 		 * becomes too big.
 		 */
 		deviation = ktime_sub(ktime_mono_to_aux(mono_now, mono_conv), aux_now);
+		trace_timekeeping_auxclock_deviation(tkid_to_clockid(aux_tk->id), deviation);
 		do_update = abs(deviation) >= TK_AUX_UPDATE_DEVIATION_THRESHOLD_NS;
 	}
 
@@ -3421,6 +3423,11 @@ static unsigned long aux_timekeepers;
 static inline unsigned int clockid_to_tkid(unsigned int id)
 {
 	return TIMEKEEPER_AUX_FIRST + id - CLOCK_AUX;
+}
+
+static inline clockid_t tkid_to_clockid(enum timekeeper_ids tk_id)
+{
+	return CLOCK_AUX + tk_id - TIMEKEEPER_AUX_FIRST;
 }
 
 static inline struct tk_data *aux_get_tk_data(clockid_t id)
