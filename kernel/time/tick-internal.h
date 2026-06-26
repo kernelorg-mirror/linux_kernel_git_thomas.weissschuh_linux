@@ -189,6 +189,18 @@ void timer_clear_idle(void);
 #define CLOCK_SET_TIMERFD						\
 	(BIT(HRTIMER_BASE_REALTIME) | BIT(HRTIMER_BASE_REALTIME_SOFT))
 
+#define CLOCK_SET_AUX(clock_id)						\
+	(BIT(HRTIMER_BASE_AUX0 + clock_id - CLOCK_AUX) |		\
+	 BIT(HRTIMER_BASE_AUX0_SOFT + clock_id - CLOCK_AUX))
+
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+#define CLOCK_SET_AUX_ALL	(GENMASK(HRTIMER_BASE_AUX7, HRTIMER_BASE_AUX0) | \
+				 GENMASK(HRTIMER_BASE_AUX7_SOFT, HRTIMER_BASE_AUX0_SOFT))
+static_assert(CLOCK_AUX + 7 == CLOCK_AUX_LAST);
+#else
+#define CLOCK_SET_AUX_ALL      0
+#endif
+
 void clock_was_set(unsigned int bases);
 void clock_was_set_delayed(void);
 
