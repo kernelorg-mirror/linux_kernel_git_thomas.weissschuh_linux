@@ -901,7 +901,7 @@ static bool update_needs_ipi(struct hrtimer_cpu_base *cpu_base, unsigned int act
 {
 	struct hrtimer_clock_base *base;
 	ktime_t expires;
-	u32 seq;
+	u64 seq;
 
 	/*
 	 * Update the base offsets unconditionally so the following
@@ -913,14 +913,14 @@ static bool update_needs_ipi(struct hrtimer_cpu_base *cpu_base, unsigned int act
 	 * it will see it when it finishes the processing and reevaluates
 	 * the next expiring timer.
 	 */
-	seq = cpu_base->tk_offsets.clock_was_set_seq;
+	seq = cpu_base->tk_offsets.clock_seq;
 	hrtimer_update_base(cpu_base);
 
 	/*
 	 * If the sequence did not change over the update then the
 	 * remote CPU already handled it.
 	 */
-	if (seq == cpu_base->tk_offsets.clock_was_set_seq)
+	if (seq == cpu_base->tk_offsets.clock_seq)
 		return false;
 
 	/* If a deferred rearm is pending the remote CPU will take care of it */
