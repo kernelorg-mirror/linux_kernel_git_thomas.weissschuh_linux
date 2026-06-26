@@ -77,6 +77,226 @@ static inline bool tk_is_aux(const struct timekeeper *tk)
 	return tk->id >= TIMEKEEPER_AUX_FIRST && tk->id <= TIMEKEEPER_AUX_LAST;
 }
 static inline struct tk_data *aux_get_tk_data(clockid_t id);
+
+/*
+ * We need to convert between auxiliary and monotonic clock timestamps.
+ *
+ * ktime_mono_to_aux() and ktime_aux_before_mono_and_convert() utilize conversion
+ * factors for converting from one clock to another. These conversion factors are
+ * updated periodically and are based on a common base time stamp derived
+ * from a clocksource readout:
+ *
+ *     cs_base	   = read_clock()
+ *     mono_base_ns  = tk_cs_to_ns(MONO, cs_base)
+ *     aux_base_ns   = tk_cs_to_ns(AUX, cs_base)
+ *
+ * The progression of the clocks relative to the base time is determined
+ * by their conversion factors, which are constant for a given conversion
+ * period:
+ *
+ *     cs_delta = read_clock() - cs_base
+ *     delta_mono_ns = cs_delta * fMONO
+ *     delta_aux_ns  = cs_delta * fAUX
+ *
+ * Ergo:
+ *
+ *     delta_mono_ns - delta_aux_ns = cs_delta * (fMONO - fAUX)
+ *
+ * Substituting cs_delta yields:
+ *                                                    fMONO - fAUX
+ *     delta_mono_ns - delta_aux_ns = delta_mono_ns * ------------
+ *                                                       fMONO
+ * Resolving to delta_aux_ns:
+ *                                                    fMONO - fAUX
+ *     delta_aux_ns = delta_mono_ns - delta_mono_ns * ------------
+ *                                                       fMONO
+ * Which simplifies to:
+ *                                    fAUX
+ *     delta_aux_ns = delta_mono_ns * -----
+ *                                    fMONO
+ *
+ * So a MONOTONIC time value can be converted to an AUX time value by:
+ *
+ *                                                 fAUX
+ *     aux_ts = aux_base + (mono_ts - mono_base) * -----
+ *                                                 fMONO
+ * The opposite conversion is:
+ *                                                 fMONO
+ *     mono_ts = mono_base + (aux_ts - aux_base) * -----
+ *                                                 fAUX
+ *
+ * To avoid expensive divisions and overflow problems in the multiplictation,
+ * the ratios are converted to scaled math. As both factors are guaranteed to have the
+ * same scaled math shift value the ratio is the ratio of the scaled math multipliers:
+ *
+ *     conv_mult_aux = (AUX_mult << conv_shift) / MONO_mult
+ *     conv_mult_mono = (MONO_mult << conv_shift) / AUX_mult
+ *
+ * The actual conversions become:
+ *
+ *     aux_ts = aux_base + (((mono_ts - mono_base) * conv_mult_aux) >> conv_shift)
+ *     mono_ts = mono_base + (((aux_ts - aux_base) * conv_mult_mono) >> conv_shift)
+ *
+ * The multiplicators of both the auxiliary and monotonic clock are guaranteed to be
+ * within +-11% of their shared nominal value. So the maximum factor is 1.11 / 0.89 = ~1.247.
+ * We use 1.5 instead for easy of use and to include a safety margin.
+ * The value of conv_shift can be chosen freely, balancing between the covered
+ * range of input values without overflow and the accuracy of the conversion.
+ * The static worst-case bounds avoid the need to recompute any bounds at runtime.
+ *
+ * For the chosen shift value of 26, this gives the following bounds:
+ *
+ * conv_mult_max = 1.5 << 26 = 0x6000000
+ * conv_range_max = (U64_MAX ns) / conv_mult_max = ~183s
+ * conv_error = 1 / (1 << 24) = ~1.4e-8
+ * conv_range_max_error = ~2.7us
+ *
+ * Increasing the shift value by one halves conv_range_max and conv_error
+ * and quarters conv_range_max_error.
+ */
+
+#define TK_AUX_MONO_CONV_SHIFT			26
+#define TK_AUX_MONO_CONV_MAX_DELTA_NS		(180LL * NSEC_PER_SEC)
+
+static inline u32 tk_aux_calc_conv_mult(u32 this_mult, u32 other_mult)
+{
+	return div_u64(((u64)1 << TK_AUX_MONO_CONV_SHIFT) * other_mult, this_mult);
+}
+
+static inline
+void tk_aux_capture_mono_conv(struct tk_aux_mono_conv *conv,
+			      ktime_t mono_now, u32 mono_mult,
+			      ktime_t aux_now, u32 aux_mult)
+{
+	conv->mono_base = mono_now;
+	conv->aux_base = aux_now;
+
+	if (unlikely(mono_mult != conv->mono_mult || aux_mult != conv->aux_mult)) {
+		conv->aux_to_mono_conv_mult = tk_aux_calc_conv_mult(aux_mult, mono_mult);
+		conv->mono_to_aux_conv_mult = tk_aux_calc_conv_mult(mono_mult, aux_mult);
+
+		conv->mono_mult = mono_mult;
+		conv->aux_mult = aux_mult;
+	}
+}
+
+static __always_inline
+u64 tk_aux_mono_conv_mul_shr_ns(u64 delta, u32 conv_mult)
+{
+	return (delta * conv_mult) >> TK_AUX_MONO_CONV_SHIFT;
+}
+
+static __always_inline
+ktime_t tk_aux_mono_conv_mul_shr_ktime(ktime_t delta, u32 conv_mult)
+{
+	if (delta >= 0)
+		return tk_aux_mono_conv_mul_shr_ns(delta, conv_mult);
+
+	/*
+	 * The converted time is expected to be rounded down due to the scaled math.
+	 * Due to the negation, a rounded down value will now be effectively rounded up.
+	 * Correct for this by subtracting 1.
+	 */
+	return -tk_aux_mono_conv_mul_shr_ns(-delta, conv_mult) - 1;
+}
+
+static ktime_t ktime_mono_from_to_aux(ktime_t this_now, ktime_t this_base, ktime_t other_base,
+				      u32 conv_mult)
+{
+	ktime_t this_delta, other_delta;
+
+	/* Both operands are guaranteed to be positive, no over- or underflow is possible. */
+	this_delta = ktime_sub(this_now, this_base);
+
+	/* Only values in this range can be multiplied without overflow. */
+	this_delta = clamp(this_delta,
+			   -TK_AUX_MONO_CONV_MAX_DELTA_NS,
+			   TK_AUX_MONO_CONV_MAX_DELTA_NS);
+
+	other_delta = tk_aux_mono_conv_mul_shr_ktime(this_delta, conv_mult);
+
+	/*
+	 * Underflow is impossible, as other_base is always positive.
+	 * Overflow is impossible, as other_base will never become big enough.
+	 */
+	return ktime_add(other_base, other_delta);
+}
+
+/**
+ * ktime_mono_to_aux() - Convert a monotonic timestamp to an auxiliary clock one.
+ * @mono:	Timestamp of the monotonic clock to convert.
+ * @c:		Conversion parameters.
+ *
+ * Return: The time of the auxiliary clock at @mono.
+ *
+ * Only values in the near future are converted accurately. This is defined by the interval
+ * [c->mono_base - %TK_AUX_MONO_CONV_MAX_DELTA_NS, c->mono_base + %TK_AUX_MONO_CONV_MAX_DELTA_NS].
+ * Other input values are clamped into this range.
+ */
+ktime_t ktime_mono_to_aux(ktime_t mono, const struct tk_aux_mono_conv *c)
+{
+	return ktime_mono_from_to_aux(mono, c->mono_base, c->aux_base, c->mono_to_aux_conv_mult);
+}
+
+/**
+ * ktime_aux_before_mono_and_convert() - Compare and convert an auxiliary clock timestamp.
+ * @c:			Conversion parameters.
+ * @aux:		Auxiliary clock timestamp.
+ * @mono_ref:		Monotonic clock timestamp to compare against.
+ * @mono_coverted:	Output of @aux converted to monotonic, if the return value is %true.
+ *
+ * Test if an auxiliary clock timestamp is before a monotonic one.
+ * If it is, also convert it to its monotonic equivalent.
+ *
+ * Optimized for timestamps @c->aux_base +- TK_AUX_MONO_CONV_MAX_DELTA_NS.
+ *
+ * Return: Whether @aux is before @mono_ref.
+ */
+bool ktime_aux_before_mono_and_convert(const struct tk_aux_mono_conv *c, ktime_t aux,
+				       ktime_t mono_ref, ktime_t *mono_converted)
+{
+	ktime_t aux_delta, mono_delta;
+
+	aux_delta = ktime_sub(aux, c->aux_base);
+
+	if (unlikely(aux_delta < -TK_AUX_MONO_CONV_MAX_DELTA_NS)) {
+		/* Will never happen in the fast-path, just use the slow path. */
+		mono_delta = -mul_u64_u32_shr(-aux_delta, c->aux_to_mono_conv_mult,
+					      TK_AUX_MONO_CONV_SHIFT);
+
+		/* See the comment in tk_aux_mono_conv_mul_shr_ktime(). */
+		mono_delta -= 1;
+
+	} else if (likely(aux_delta <= TK_AUX_MONO_CONV_MAX_DELTA_NS)) {
+		/* Common case, fast path. */
+		mono_delta = tk_aux_mono_conv_mul_shr_ktime(aux_delta, c->aux_to_mono_conv_mult);
+
+	} else {
+		/*
+		 * Due to timekeeping invariants the smallest possible conversion factor is
+		 * 0.89 / 1.11 ≈ 0.80. 0.75 is close to that and easy to represent in scaled
+		 * math through (delta_aux_ns * 3) >> 2. If the value, converted with this
+		 * low estimate is already larger than the reference, the actual conversion is
+		 * guaranteed to be larger, too.
+		 */
+		if (aux_delta <= (U64_MAX / 3)) {
+			ktime_t mono_delta_lower;
+
+			mono_delta_lower = (aux_delta * 3) >> 2;
+
+			if (!ktime_before(ktime_add(c->mono_base, mono_delta_lower), mono_ref))
+				return false;
+		}
+
+		/* Slow-path fallback. */
+		mono_delta = mul_u64_u32_shr(aux_delta, c->aux_to_mono_conv_mult,
+					     TK_AUX_MONO_CONV_SHIFT);
+	}
+
+	*mono_converted = ktime_add(c->mono_base, mono_delta);
+	return ktime_before(*mono_converted, mono_ref);
+}
+
 #else
 static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)
 {
