@@ -25,6 +25,7 @@
  * @running:		pointer to the currently running hrtimer
  * @active:		red black tree root node for the active timers
  * @offset:		Pointer to the offset of this clock to the monotonic base.
+ * @aux_mono_conv:	Conversion parameters between CLOCK_AUX and CLOCK_MONOTONIC.
  */
 struct hrtimer_clock_base {
 	struct hrtimer_cpu_base		*cpu_base;
@@ -35,7 +36,10 @@ struct hrtimer_clock_base {
 	ktime_t				expires_next;
 	struct hrtimer			*running;
 	struct timerqueue_linked_head	active;
-	const ktime_t			*offset;
+	union {
+		const ktime_t			*offset;
+		const struct tk_aux_mono_conv	*aux_mono_conv;
+	};
 } __hrtimer_clock_base_align;
 
 enum hrtimer_base_type {
@@ -43,12 +47,37 @@ enum hrtimer_base_type {
 	HRTIMER_BASE_REALTIME,
 	HRTIMER_BASE_BOOTTIME,
 	HRTIMER_BASE_TAI,
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+	HRTIMER_BASE_AUX0,
+	HRTIMER_BASE_AUX1,
+	HRTIMER_BASE_AUX2,
+	HRTIMER_BASE_AUX3,
+	HRTIMER_BASE_AUX4,
+	HRTIMER_BASE_AUX5,
+	HRTIMER_BASE_AUX6,
+	HRTIMER_BASE_AUX7,
+#endif
 	HRTIMER_BASE_MONOTONIC_SOFT,
 	HRTIMER_BASE_REALTIME_SOFT,
 	HRTIMER_BASE_BOOTTIME_SOFT,
 	HRTIMER_BASE_TAI_SOFT,
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+	HRTIMER_BASE_AUX0_SOFT,
+	HRTIMER_BASE_AUX1_SOFT,
+	HRTIMER_BASE_AUX2_SOFT,
+	HRTIMER_BASE_AUX3_SOFT,
+	HRTIMER_BASE_AUX4_SOFT,
+	HRTIMER_BASE_AUX5_SOFT,
+	HRTIMER_BASE_AUX6_SOFT,
+	HRTIMER_BASE_AUX7_SOFT,
+#endif
 	HRTIMER_MAX_CLOCK_BASES
 };
+
+#ifndef CONFIG_POSIX_AUX_CLOCKS
+/* Unresolvable dummy symbols */
+extern int HRTIMER_BASE_AUX0, HRTIMER_BASE_AUX0_SOFT;
+#endif
 
 /**
  * struct hrtimer_cpu_base - the per cpu clock bases

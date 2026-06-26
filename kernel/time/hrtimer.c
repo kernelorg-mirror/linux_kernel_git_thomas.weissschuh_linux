@@ -90,6 +90,18 @@
 #define HRTIMER_ACTIVE_SOFT	(HRTIMER_ACTIVE_HARD << MASK_SHIFT)
 #define HRTIMER_ACTIVE_ALL	(HRTIMER_ACTIVE_SOFT | HRTIMER_ACTIVE_HARD)
 
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+#define HRTIMER_ACTIVE_SYSTEM	(BIT(HRTIMER_BASE_MONOTONIC) | BIT(HRTIMER_BASE_MONOTONIC_SOFT) | \
+				 BIT(HRTIMER_BASE_REALTIME) | BIT(HRTIMER_BASE_REALTIME_SOFT) |   \
+				 BIT(HRTIMER_BASE_BOOTTIME) | BIT(HRTIMER_BASE_BOOTTIME_SOFT) |   \
+				 BIT(HRTIMER_BASE_TAI) | BIT(HRTIMER_BASE_TAI_SOFT))
+#define HRTIMER_ACTIVE_AUX	(GENMASK(HRTIMER_BASE_AUX7, HRTIMER_BASE_AUX0) | \
+				 GENMASK(HRTIMER_BASE_AUX7_SOFT, HRTIMER_BASE_AUX0_SOFT))
+#else
+#define HRTIMER_ACTIVE_SYSTEM	(~0)
+#define HRTIMER_ACTIVE_AUX	0
+#endif
+
 static void retrigger_next_event(void *arg);
 static ktime_t __hrtimer_cb_get_time(clockid_t clock_id);
 
@@ -113,14 +125,38 @@ DEFINE_PER_CPU(struct hrtimer_cpu_base, hrtimer_bases) =
 		BASE_INIT(HRTIMER_BASE_REALTIME,	CLOCK_REALTIME),
 		BASE_INIT(HRTIMER_BASE_BOOTTIME,	CLOCK_BOOTTIME),
 		BASE_INIT(HRTIMER_BASE_TAI,		CLOCK_TAI),
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+		BASE_INIT(HRTIMER_BASE_AUX0,		CLOCK_AUX + 0),
+		BASE_INIT(HRTIMER_BASE_AUX1,		CLOCK_AUX + 1),
+		BASE_INIT(HRTIMER_BASE_AUX2,		CLOCK_AUX + 2),
+		BASE_INIT(HRTIMER_BASE_AUX3,		CLOCK_AUX + 3),
+		BASE_INIT(HRTIMER_BASE_AUX4,		CLOCK_AUX + 4),
+		BASE_INIT(HRTIMER_BASE_AUX5,		CLOCK_AUX + 5),
+		BASE_INIT(HRTIMER_BASE_AUX6,		CLOCK_AUX + 6),
+		BASE_INIT(HRTIMER_BASE_AUX7,		CLOCK_AUX + 7),
+#endif /* CONFIG_POSIX_AUX_CLOCKS */
 		BASE_INIT(HRTIMER_BASE_MONOTONIC_SOFT,	CLOCK_MONOTONIC),
 		BASE_INIT(HRTIMER_BASE_REALTIME_SOFT,	CLOCK_REALTIME),
 		BASE_INIT(HRTIMER_BASE_BOOTTIME_SOFT,	CLOCK_BOOTTIME),
 		BASE_INIT(HRTIMER_BASE_TAI_SOFT,	CLOCK_TAI),
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+		BASE_INIT(HRTIMER_BASE_AUX0_SOFT,	CLOCK_AUX + 0),
+		BASE_INIT(HRTIMER_BASE_AUX1_SOFT,	CLOCK_AUX + 1),
+		BASE_INIT(HRTIMER_BASE_AUX2_SOFT,	CLOCK_AUX + 2),
+		BASE_INIT(HRTIMER_BASE_AUX3_SOFT,	CLOCK_AUX + 3),
+		BASE_INIT(HRTIMER_BASE_AUX4_SOFT,	CLOCK_AUX + 4),
+		BASE_INIT(HRTIMER_BASE_AUX5_SOFT,	CLOCK_AUX + 5),
+		BASE_INIT(HRTIMER_BASE_AUX6_SOFT,	CLOCK_AUX + 6),
+		BASE_INIT(HRTIMER_BASE_AUX7_SOFT,	CLOCK_AUX + 7),
+#endif /* CONFIG_POSIX_AUX_CLOCKS */
 	},
 	.csd = CSD_INIT(retrigger_next_event, NULL),
 	.enabled_core = true,
 };
+
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+static_assert(HRTIMER_BASE_MONOTONIC_SOFT - HRTIMER_BASE_AUX0 == MAX_AUX_CLOCKS);
+#endif
 
 static inline bool hrtimer_base_is_online(struct hrtimer_cpu_base *base)
 {
@@ -140,6 +176,11 @@ static __always_inline bool hrtimer_base_is_enabled(const struct hrtimer_clock_b
 	return *base->enabled;
 }
 
+static __always_inline bool hrtimer_base_is_aux_clock(const struct hrtimer_clock_base *base)
+{
+	return clockid_is_aux_clock(base->clockid);
+}
+
 /*
  * Shared implementation to compare a clockbase's timestamp against a monotonic clock timestamp
  * and/or convert it to a monotonic timestamp.
@@ -153,9 +194,23 @@ bool __hrtimer_expires_before_mono_and_convert(const struct hrtimer_clock_base *
 	ktime_t expires_mono;
 	bool is_before;
 
-	expires_mono = ktime_sub(expires_base, *base->offset);
-	is_before = ktime_before(expires_mono, expires_ref_mono);
+	if (!hrtimer_base_is_aux_clock(base)) {
+		expires_mono = ktime_sub(expires_base, *base->offset);
+		is_before = ktime_before(expires_mono, expires_ref_mono);
+		goto out;
+	}
 
+	if (!hrtimer_base_is_enabled(base)) {
+		/* Expire the timer instantly. */
+		expires_mono = 0;
+		is_before = true;
+		goto out;
+	}
+
+	is_before = ktime_aux_before_mono_and_convert(base->aux_mono_conv, expires_base,
+						      expires_ref_mono, &expires_mono);
+
+out:
 	if (converted_mono) {
 		if (is_before)
 			*converted_mono = expires_mono;
@@ -1932,6 +1987,11 @@ static inline int hrtimer_clockid_to_base(clockid_t clock_id)
 		return HRTIMER_BASE_BOOTTIME;
 	case CLOCK_TAI:
 		return HRTIMER_BASE_TAI;
+	case CLOCK_AUX ... CLOCK_AUX_LAST:
+		if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
+			break;
+
+		return HRTIMER_BASE_AUX0 + clock_id - CLOCK_AUX;
 	}
 
 	WARN(1, "Invalid clockid %d. Using MONOTONIC\n", clock_id);
@@ -1949,6 +2009,20 @@ static ktime_t __hrtimer_cb_get_time(clockid_t clock_id)
 		return ktime_get_boottime();
 	case CLOCK_TAI:
 		return ktime_get_clocktai();
+	case CLOCK_AUX ... CLOCK_AUX_LAST:
+		if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
+			break;
+
+		ktime_t kt;
+
+		if (ktime_get_aux(clock_id, &kt))
+			return kt;
+
+		/*
+		 * Timers for disabled clocks expire instantly.
+		 * Make sure that their expiration is in the past.
+		 */
+		return KTIME_MAX;
 	}
 
 	WARN(1, "Invalid clockid %d. Using MONOTONIC\n", clock_id);
@@ -2191,12 +2265,31 @@ static void hrtimer_run_base(struct hrtimer_cpu_base *cpu_base, struct hrtimer_c
 static void __hrtimer_run_queues(struct hrtimer_cpu_base *cpu_base, ktime_t now,
 				 unsigned long flags, unsigned int active_mask)
 {
-	unsigned int active = cpu_base->active_bases & active_mask;
 	struct hrtimer_clock_base *base;
+	unsigned int active;
 
+	active = cpu_base->active_bases & active_mask & HRTIMER_ACTIVE_SYSTEM;
 	for_each_active_base(base, cpu_base, active)
 		hrtimer_run_base(cpu_base, base, ktime_add(now, *base->offset), flags, active_mask,
 				 /* is_aborted= */ false);
+
+	if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
+		return;
+
+	active = cpu_base->active_bases & active_mask & HRTIMER_ACTIVE_AUX;
+	for_each_active_base(base, cpu_base, active) {
+		bool base_enabled = hrtimer_base_is_enabled(base);
+		ktime_t basenow;
+
+		if (base_enabled) {
+			basenow = ktime_mono_to_aux(now, base->aux_mono_conv);
+		} else {
+			/* Force all timers to expire */
+			basenow = KTIME_MAX;
+		}
+
+		hrtimer_run_base(cpu_base, base, basenow, flags, active_mask, !base_enabled);
+	}
 }
 
 static __latent_entropy void hrtimer_run_softirq(void)
@@ -2617,6 +2710,9 @@ static void hrtimer_clock_base_setup_offset(const struct hrtimer_cpu_base *cpu_b
 	else if (base->clockid == CLOCK_TAI)
 		base->offset = &cpu_base->tk_offsets.offs_tai;
 
+	else if (hrtimer_base_is_aux_clock(base))
+		base->aux_mono_conv = &cpu_base->tk_offsets.conv_aux[base->clockid - CLOCK_AUX];
+
 	else
 		WARN_ON(1);
 }
@@ -2627,7 +2723,10 @@ static void hrtimer_clock_base_setup_enabled(const struct hrtimer_cpu_base *cpu_
 	if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
 		return;
 
-	base->enabled = &cpu_base->enabled_core;
+	if (hrtimer_base_is_aux_clock(base))
+		base->enabled = &cpu_base->tk_offsets.conv_aux_valid[base->clockid - CLOCK_AUX];
+	else
+		base->enabled = &cpu_base->enabled_core;
 }
 
 /*
