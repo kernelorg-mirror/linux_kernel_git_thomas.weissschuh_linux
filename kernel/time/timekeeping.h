@@ -11,6 +11,9 @@ extern ktime_t ktime_get_update_offsets_now(struct tk_clock_offsets *tko);
 
 bool ktime_expiry_to_cycles(enum clocksource_ids id, ktime_t expires_ns, u64 *cycles);
 
+ktime_t ktime_mono_to_aux(const struct tk_aux_mono_conv *c, ktime_t mono);
+ktime_t ktime_aux_to_mono(const struct tk_aux_mono_conv *c, ktime_t aux);
+
 extern int timekeeping_valid_for_hres(void);
 extern u64 timekeeping_max_deferment(void);
 extern void timekeeping_warp_clock(void);
