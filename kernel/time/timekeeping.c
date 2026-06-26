@@ -63,6 +63,9 @@ static struct tk_data timekeeper_data[TIMEKEEPERS_MAX];
 #define tk_core_seq	(tk_core.__seq)
 static ____cacheline_aligned DEFINE_RAW_SPINLOCK(tk_core_lock);
 
+/* The timekeeper offsets for hrtimer consumption, protected by tk_core_seq */
+static __cacheline_aligned struct tk_clock_offsets tk_offsets;
+
 #ifdef CONFIG_POSIX_AUX_CLOCKS
 static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)
 {
@@ -850,6 +853,10 @@ static void timekeeping_update_from_shadow(struct tk_data *tkd, unsigned int act
 
 		update_fast_timekeeper(&tk->tkr_mono, &tk_fast_mono);
 		update_fast_timekeeper(&tk->tkr_raw,  &tk_fast_raw);
+
+		tk_offsets.offs_real = tk->offs_real;
+		tk_offsets.offs_boot = tk->offs_boot;
+		tk_offsets.offs_tai = tk->offs_tai;
 	} else if (tk_is_aux(tk)) {
 		vdso_time_update_aux(tk);
 	}
@@ -2868,9 +2875,7 @@ ktime_t ktime_get_update_offsets_now(u32 *cwsseq, struct tk_clock_offsets *tko)
 
 		if (*cwsseq != tk->clock_was_set_seq) {
 			*cwsseq = tk->clock_was_set_seq;
-			tko->offs_real = tk->offs_real;
-			tko->offs_boot = tk->offs_boot;
-			tko->offs_tai = tk->offs_tai;
+			*tko = tk_offsets;
 		}
 
 		/* Handle leapsecond insertion adjustments */
