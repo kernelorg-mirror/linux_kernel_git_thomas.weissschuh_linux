@@ -27534,6 +27534,7 @@ F:	include/linux/timekeeper_internal.h
 F:	include/linux/timekeeping.h
 F:	include/linux/timekeeping_types.h
 F:	include/linux/timex.h
+F:	include/trace/events/timekeeping.h
 F:	include/trace/misc/timekeeping.h
 F:	include/uapi/linux/time.h
 F:	include/uapi/linux/timex.h
