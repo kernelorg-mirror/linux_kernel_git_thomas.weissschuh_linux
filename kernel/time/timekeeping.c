@@ -811,7 +811,7 @@ static inline void tk_update_ns_to_cyc(struct timekeeper *tks, struct timekeeper
  */
 static void timekeeping_restore_shadow(struct tk_data *tkd)
 {
-	lockdep_assert_held(&tkd->lock);
+	lockdep_assert_held(&tk_core_lock);
 	memcpy(&tkd->shadow_timekeeper, &tkd->timekeeper, sizeof(tkd->timekeeper));
 }
 
@@ -819,7 +819,7 @@ static void timekeeping_update_from_shadow(struct tk_data *tkd, unsigned int act
 {
 	struct timekeeper *tk = &tkd->shadow_timekeeper;
 
-	lockdep_assert_held(&tkd->lock);
+	lockdep_assert_held(&tk_core_lock);
 
 	/*
 	 * Block out readers before running the updates below because that
@@ -1874,9 +1874,9 @@ static int change_clocksource(void *data)
 		old = tks->tkr_mono.clock;
 		tk_setup_internals(tks, new);
 		timekeeping_update_from_shadow(&tk_core, TK_UPDATE_ALL);
-	}
 
-	tk_aux_update_clocksource();
+		tk_aux_update_clocksource();
+	}
 
 	if (old) {
 		if (old->disable)
@@ -2019,7 +2019,7 @@ read_persistent_wall_and_boot_offset(struct timespec64 *wall_time,
 static __init void tkd_basic_setup(struct tk_data *tkd, enum timekeeper_ids tk_id, bool valid)
 {
 	raw_spin_lock_init(&tkd->lock);
-	seqcount_raw_spinlock_init(&tkd->seq, &tkd->lock);
+	seqcount_raw_spinlock_init(&tkd->seq, &tk_core_lock);
 	tkd->timekeeper.id = tkd->shadow_timekeeper.id = tk_id;
 	tkd->timekeeper.clock_valid = tkd->shadow_timekeeper.clock_valid = valid;
 }
@@ -2664,9 +2664,8 @@ static bool __timekeeping_advance(struct tk_data *tkd, enum timekeeping_adv_mode
 	return !!clock_set;
 }
 
-static bool timekeeping_advance(enum timekeeping_adv_mode mode)
+static inline bool timekeeping_advance(enum timekeeping_adv_mode mode)
 {
-	guard(raw_spinlock_irqsave)(&tk_core_lock);
 	return __timekeeping_advance(&tk_core, mode);
 }
 
@@ -2677,9 +2676,15 @@ static bool timekeeping_advance(enum timekeeping_adv_mode mode)
  */
 void update_wall_time(void)
 {
-	if (timekeeping_advance(TK_ADV_TICK))
+	bool cws;
+
+	scoped_guard(raw_spinlock_irqsave, &tk_core_lock) {
+		cws = timekeeping_advance(TK_ADV_TICK);
+		tk_aux_advance();
+	}
+
+	if (cws)
 		clock_was_set_delayed();
-	tk_aux_advance();
 }
 
 /**
@@ -3001,7 +3006,7 @@ static int __do_adjtimex(struct tk_data *tkd, struct __kernel_timex *txc,
 
 	add_device_randomness(&ts, sizeof(ts));
 
-	guard(raw_spinlock_irqsave)(&tkd->lock);
+	guard(raw_spinlock_irqsave)(&tk_core_lock);
 
 	if (!timekeeper_is_clock_valid(tks))
 		return -ENODEV;
@@ -3091,7 +3096,7 @@ EXPORT_SYMBOL(hardpps);
  * Bitmap for the activated auxiliary timekeepers to allow lockless quick
  * checks in the hot paths without touching extra cache lines. If set, then
  * the state of the corresponding timekeeper has to be re-checked under
- * timekeeper::lock.
+ * tk_core_lock.
  */
 static unsigned long aux_timekeepers;
 
@@ -3113,11 +3118,12 @@ static void tk_aux_update_clocksource(void)
 	unsigned long active = READ_ONCE(aux_timekeepers);
 	unsigned int id;
 
+	lockdep_assert_held(&tk_core_lock);
+
 	for_each_set_bit(id, &active, BITS_PER_LONG) {
 		struct tk_data *tkd = &timekeeper_data[id + TIMEKEEPER_AUX_FIRST];
 		struct timekeeper *tks = &tkd->shadow_timekeeper;
 
-		guard(raw_spinlock_irqsave)(&tkd->lock);
 		if (!timekeeper_is_clock_valid(tks))
 			continue;
 
@@ -3132,11 +3138,12 @@ static void tk_aux_advance(void)
 	unsigned long active = READ_ONCE(aux_timekeepers);
 	unsigned int id;
 
+	lockdep_assert_held(&tk_core_lock);
+
 	/* Lockless quick check to avoid extra cache lines */
 	for_each_set_bit(id, &active, BITS_PER_LONG) {
 		struct tk_data *aux_tkd = &timekeeper_data[id + TIMEKEEPER_AUX_FIRST];
 
-		guard(raw_spinlock)(&aux_tkd->lock);
 		if (timekeeper_is_clock_valid(&aux_tkd->shadow_timekeeper))
 			__timekeeping_advance(aux_tkd, TK_ADV_TICK);
 	}
@@ -3227,7 +3234,7 @@ static int aux_clock_set(const clockid_t id, const struct timespec64 *tnew)
 
 	aux_tks = &aux_tkd->shadow_timekeeper;
 
-	guard(raw_spinlock_irq)(&aux_tkd->lock);
+	guard(raw_spinlock_irq)(&tk_core_lock);
 	if (!timekeeper_is_clock_valid(aux_tks))
 		return -ENODEV;
 
@@ -3279,6 +3286,11 @@ const struct k_clock clock_aux = {
 	.clock_adj		= aux_clock_adj,
 };
 
+/*
+ * Setup the auxiliary clock assuming that the raw core timekeeper clock
+ * frequency conversion is close enough. Userspace has to adjust for the
+ * deviation via clock_adjtime(2).
+ */
 static void aux_clock_enable(clockid_t id)
 {
 	struct tk_read_base *tkr_raw = &tk_core.timekeeper.tkr_raw;
@@ -3287,13 +3299,6 @@ static void aux_clock_enable(clockid_t id)
 
 	/* Prevent the core timekeeper from changing. */
 	guard(raw_spinlock_irq)(&tk_core_lock);
-
-	/*
-	 * Setup the auxiliary clock assuming that the raw core timekeeper
-	 * clock frequency conversion is close enough. Userspace has to
-	 * adjust for the deviation via clock_adjtime(2).
-	 */
-	guard(raw_spinlock_nested)(&aux_tkd->lock);
 
 	/* Remove leftovers of a previous registration */
 	memset(aux_tks, 0, sizeof(*aux_tks));
@@ -3311,7 +3316,7 @@ static void aux_clock_disable(clockid_t id)
 {
 	struct tk_data *aux_tkd = aux_get_tk_data(id);
 
-	guard(raw_spinlock_irq)(&aux_tkd->lock);
+	guard(raw_spinlock_irq)(&tk_core_lock);
 	aux_tkd->shadow_timekeeper.clock_valid = false;
 	timekeeping_update_from_shadow(aux_tkd, TK_UPDATE_ALL);
 }
