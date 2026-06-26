@@ -57,7 +57,7 @@ def print_base(base):
 
     text += " .resolution: {} nsecs\n".format(constants.LX_hrtimer_resolution)
     if constants.LX_CONFIG_HIGH_RES_TIMERS:
-        text += "  .offset:     {} nsecs\n".format(base['offset'])
+        text += "  .offset:     {} nsecs\n".format(base['offset'].dereference())
     text += "active timers:\n"
     text += "".join([x for x in print_active_timers(base)])
     return text

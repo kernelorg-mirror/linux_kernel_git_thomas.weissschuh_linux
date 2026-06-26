@@ -23,7 +23,8 @@
  * @expires_next:	Absolute time of the next event in this clock base
  * @running:		pointer to the currently running hrtimer
  * @active:		red black tree root node for the active timers
- * @offset:		offset of this clock to the monotonic base
+ * @offset:		Pointer to the offset of this clock to the monotonic base.
+ * @_offset:		offset of this clock to the monotonic base.
  */
 struct hrtimer_clock_base {
 	struct hrtimer_cpu_base		*cpu_base;
@@ -33,7 +34,8 @@ struct hrtimer_clock_base {
 	ktime_t				expires_next;
 	struct hrtimer			*running;
 	struct timerqueue_linked_head	active;
-	ktime_t				offset;
+	const ktime_t			*offset;
+	ktime_t				_offset;
 } __hrtimer_clock_base_align;
 
 enum hrtimer_base_type {
