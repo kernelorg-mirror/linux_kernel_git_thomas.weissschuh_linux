@@ -101,8 +101,11 @@ static int nanosleep_test_remaining(int clockid)
 		return KSFT_FAIL;
 
 	ret = timer_create(clockid, NULL, &timer);
-	if (ret)
+	if (ret) {
+		if (errno == EOPNOTSUPP)
+			return KSFT_SKIP;
 		return KSFT_FAIL;
+	}
 
 	itimer.it_value.tv_nsec = NSEC_PER_SEC / 4;
 	ret = timer_settime(timer, 0, &itimer, NULL);
@@ -167,6 +170,14 @@ int main(int argc, char **argv)
 		CLOCK_BOOTTIME_ALARM,
 		CLOCK_REALTIME_ALARM,
 		CLOCK_TAI,
+		CLOCK_AUX + 0,
+		CLOCK_AUX + 1,
+		CLOCK_AUX + 2,
+		CLOCK_AUX + 3,
+		CLOCK_AUX + 4,
+		CLOCK_AUX + 5,
+		CLOCK_AUX + 6,
+		CLOCK_AUX + 7,
 	};
 
 	ksft_print_header();
