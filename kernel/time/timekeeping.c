@@ -148,6 +148,7 @@ static inline struct tk_data *aux_get_tk_data(clockid_t id);
 
 #define TK_AUX_MONO_CONV_SHIFT			26
 #define TK_AUX_MONO_CONV_MAX_DELTA_NS		(180LL * NSEC_PER_SEC)
+#define TK_AUX_UPDATE_DEVIATION_THRESHOLD_NS	25
 
 static inline u32 tk_aux_calc_conv_mult(u32 this_mult, u32 other_mult)
 {
@@ -259,6 +260,84 @@ ktime_t ktime_aux_to_mono(const struct tk_aux_mono_conv *c, ktime_t aux)
 }
 EXPORT_SYMBOL_FOR_TIME_TEST(ktime_aux_to_mono);
 
+static __always_inline u64 tk_clock_read(const struct tk_read_base *tkr);
+static __always_inline u64 timekeeping_cycles_to_ns(const struct tk_read_base *tkr, u64 cycles);
+
+static void tk_aux_update_core_mono_conv(struct timekeeper *aux_tk, bool clock_was_set)
+{
+	struct tk_aux_mono_conv *mono_conv, updated_mono_conv;
+	const struct timekeeper *core_tk;
+	bool clock_valid, do_update;
+	ktime_t mono_base, aux_base;
+	ktime_t mono_now, aux_now;
+	u64 mono_nsecs, aux_nsecs;
+	u32 mono_mult, aux_mult;
+	ktime_t deviation;
+	u64 cycles;
+
+	lockdep_assert_held(&tk_core_lock);
+
+	core_tk = &tk_core.shadow_timekeeper;
+	mono_conv = &tk_offsets.conv_aux[aux_tk->id - TIMEKEEPER_AUX_FIRST];
+
+	/* Both timekeepers are guaranteed to use the same clocksource. */
+	cycles = tk_clock_read(&core_tk->tkr_mono);
+
+	/* Take synchronized current monotonic and auxiliary timestamps. */
+	mono_base = core_tk->tkr_mono.base;
+	mono_nsecs = timekeeping_cycles_to_ns(&core_tk->tkr_mono, cycles);
+	mono_now = ktime_add_ns(mono_base, mono_nsecs);
+	mono_mult = core_tk->tkr_mono.mult;
+
+	aux_base = ktime_add(aux_tk->tkr_mono.base, aux_tk->offs_aux);
+	aux_nsecs = timekeeping_cycles_to_ns(&aux_tk->tkr_mono, cycles);
+	aux_now = ktime_add_ns(aux_base, aux_nsecs);
+	aux_mult = aux_tk->tkr_mono.mult;
+
+	if (clock_was_set) {
+		/* When the clock was set or enabled, the existing parameters are wrong. */
+		do_update = true;
+
+	} else if (ktime_sub(mono_now, mono_conv->mono_base) > TK_AUX_MONO_CONV_MAX_DELTA_NS / 2) {
+		/*
+		 * The conversions are only accurate in a limited range around mono_base.
+		 * Make sure the base time is not too old for this to become an issue.
+		 * Checking this for the monotonic clock delta is sufficient,
+		 * as the auxiliary clock delta can not be much larger.
+		 */
+		do_update = true;
+
+	} else {
+		/*
+		 * The scaled math used in the conversion of the timestamp deltas is imprecise.
+		 * For larger deltas the error also becomes larger. To avoid the errors becoming
+		 * observable for the user, update the conversion parameters when the deviation
+		 * becomes too big.
+		 */
+		deviation = ktime_sub(ktime_mono_to_aux(mono_conv, mono_now), aux_now);
+		do_update = abs(deviation) >= TK_AUX_UPDATE_DEVIATION_THRESHOLD_NS;
+	}
+
+	if (!do_update)
+		return;
+
+	clock_valid = aux_tk->clock_valid;
+
+	if (clock_valid) {
+		updated_mono_conv = *mono_conv;
+		/* Perform the divisions outside of the tk_core.seq critical section. */
+		tk_aux_capture_mono_conv(&updated_mono_conv,
+					 mono_now, mono_mult, aux_now, aux_mult);
+	}
+
+	write_seqcount_begin(&tk_core.seq);
+	tk_offsets.clock_aux_conv_seq++;
+	__assign_bit(aux_tk->id - TIMEKEEPER_AUX_FIRST, tk_offsets.conv_aux_valid, clock_valid);
+	if (clock_valid)
+		*mono_conv = updated_mono_conv;
+	write_seqcount_end(&tk_core.seq);
+}
+
 #else
 static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)
 {
@@ -267,6 +346,10 @@ static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)
 static inline struct tk_data *aux_get_tk_data(clockid_t id)
 {
 	return NULL;
+}
+
+static inline void tk_aux_update_core_mono_conv(const struct timekeeper *tk, bool clock_was_set)
+{
 }
 #endif
 
@@ -1046,6 +1129,7 @@ static void timekeeping_update_from_shadow(struct tk_data *tkd, unsigned int act
 		tk_offsets.offs_tai = tk->offs_tai;
 	} else {
 		vdso_time_update_aux(tk);
+		tk_aux_update_core_mono_conv(tk, action & TK_CLOCK_WAS_SET);
 	}
 
 	if (action & TK_CLOCK_WAS_SET)
@@ -3039,7 +3123,7 @@ void do_timer(unsigned long ticks)
  *
  * Returns current monotonic time and updates the offsets if the sequence
  * numbers in @tko and tk_offsets differ. The latter are updated when the clock
- * was set.
+ * was set or when the AUX clock conversion parameters have changed.
  *
  * Called from hrtimer_interrupt() or retrigger_next_event()
  */
