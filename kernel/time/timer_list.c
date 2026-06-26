@@ -93,6 +93,18 @@ next_one:
 	raw_spin_unlock_irqrestore(&base->cpu_base->lock, flags);
 }
 
+static ktime_t base_now(const struct hrtimer_clock_base *base, ktime_t mono_now)
+{
+	if (clockid_is_aux_clock(base->clockid)) {
+		if (hrtimer_base_is_disabled(base))
+			return KTIME_MAX;
+
+		return ktime_mono_to_aux(base->aux_mono_conv, mono_now);
+	}
+
+	return ktime_add(mono_now, *base->offset);
+}
+
 static void
 print_base(struct seq_file *m, struct hrtimer_clock_base *base, ktime_t now)
 {
@@ -101,11 +113,23 @@ print_base(struct seq_file *m, struct hrtimer_clock_base *base, ktime_t now)
 
 	SEQ_printf(m, "  .resolution: %u nsecs\n", hrtimer_resolution);
 #ifdef CONFIG_HIGH_RES_TIMERS
-	SEQ_printf(m, "  .offset:     %lld nsecs\n",
-		   (long long) *base->offset);
+	if (clockid_is_aux_clock(base->clockid)) {
+		bool enabled = !hrtimer_base_is_disabled(base);
+		const struct tk_aux_mono_conv *conv = base->aux_mono_conv;
+
+		SEQ_printf(m, ".enabled:      %d\n", enabled);
+		if (enabled) {
+			SEQ_printf(m, "  .mono_base:  %lld nsecs\n", (long long)conv->mono_base);
+			SEQ_printf(m, "  .aux_base:   %lld nsecs\n", (long long)conv->aux_base);
+			SEQ_printf(m, "  .mono_mult:  %u\n", conv->mono_mult);
+			SEQ_printf(m, "  .aux_mult:   %u\n", conv->aux_mult);
+		}
+	} else {
+		SEQ_printf(m, "  .offset:     %lld nsecs\n", (long long)*base->offset);
+	}
 #endif
 	SEQ_printf(m,   "active timers:\n");
-	print_active_timers(m, base, ktime_add(now, *base->offset));
+	print_active_timers(m, base, base_now(base, now));
 }
 
 static void print_cpu(struct seq_file *m, int cpu, ktime_t now)
