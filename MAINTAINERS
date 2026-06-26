@@ -27532,6 +27532,7 @@ F:	include/linux/clocksource.h
 F:	include/linux/time.h
 F:	include/linux/timekeeper_internal.h
 F:	include/linux/timekeeping.h
+F:	include/linux/timekeeping_types.h
 F:	include/linux/timex.h
 F:	include/uapi/linux/time.h
 F:	include/uapi/linux/timex.h
