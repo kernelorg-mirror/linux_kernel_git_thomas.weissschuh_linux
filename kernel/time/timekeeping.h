@@ -7,7 +7,7 @@
 /*
  * Internal interfaces for kernel/time/
  */
-extern ktime_t ktime_get_update_offsets_now(u32 *cwsseq, struct tk_clock_offsets *tko);
+extern ktime_t ktime_get_update_offsets_now(struct tk_clock_offsets *tko);
 
 bool ktime_expiry_to_cycles(enum clocksource_ids id, ktime_t expires_ns, u64 *cycles);
 
