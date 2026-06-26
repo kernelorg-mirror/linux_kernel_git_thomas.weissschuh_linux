@@ -130,7 +130,7 @@ static inline bool hrtimer_base_is_online(struct hrtimer_cpu_base *base)
 
 static ktime_t hrtimer_expires_to_monotonic(const struct hrtimer_clock_base *base, ktime_t t)
 {
-	return ktime_sub(t, base->offset);
+	return ktime_sub(t, *base->offset);
 }
 
 #ifdef CONFIG_HIGH_RES_TIMERS
@@ -684,16 +684,16 @@ static inline ktime_t hrtimer_update_base(struct hrtimer_cpu_base *base)
 {
 	lockdep_assert_held(&base->lock);
 
-	ktime_t *offs_real = &base->clock_base[HRTIMER_BASE_REALTIME].offset;
-	ktime_t *offs_boot = &base->clock_base[HRTIMER_BASE_BOOTTIME].offset;
-	ktime_t *offs_tai = &base->clock_base[HRTIMER_BASE_TAI].offset;
+	ktime_t *offs_real = &base->clock_base[HRTIMER_BASE_REALTIME]._offset;
+	ktime_t *offs_boot = &base->clock_base[HRTIMER_BASE_BOOTTIME]._offset;
+	ktime_t *offs_tai = &base->clock_base[HRTIMER_BASE_TAI]._offset;
 
 	ktime_t now = ktime_get_update_offsets_now(&base->clock_was_set_seq, offs_real,
 						   offs_boot, offs_tai);
 
-	base->clock_base[HRTIMER_BASE_REALTIME_SOFT].offset = *offs_real;
-	base->clock_base[HRTIMER_BASE_BOOTTIME_SOFT].offset = *offs_boot;
-	base->clock_base[HRTIMER_BASE_TAI_SOFT].offset = *offs_tai;
+	base->clock_base[HRTIMER_BASE_REALTIME_SOFT]._offset = *offs_real;
+	base->clock_base[HRTIMER_BASE_BOOTTIME_SOFT]._offset = *offs_boot;
+	base->clock_base[HRTIMER_BASE_TAI_SOFT]._offset = *offs_tai;
 
 	return now;
 }
@@ -2108,7 +2108,7 @@ static void __hrtimer_run_queues(struct hrtimer_cpu_base *cpu_base, ktime_t now,
 	struct hrtimer_clock_base *base;
 
 	for_each_active_base(base, cpu_base, active) {
-		ktime_t basenow = ktime_add(now, base->offset);
+		ktime_t basenow = ktime_add(now, *base->offset);
 		struct hrtimer *timer;
 
 		while ((timer = clock_base_next_timer(base))) {
@@ -2548,6 +2548,7 @@ int hrtimers_prepare_cpu(unsigned int cpu)
 		struct hrtimer_clock_base *clock_b = &cpu_base->clock_base[i];
 
 		clock_b->cpu_base = cpu_base;
+		clock_b->offset = &clock_b->_offset;
 		seqcount_raw_spinlock_init(&clock_b->seq, &cpu_base->lock);
 		timerqueue_linked_init_head(&clock_b->active);
 	}
