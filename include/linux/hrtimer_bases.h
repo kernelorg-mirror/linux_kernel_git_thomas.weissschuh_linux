@@ -4,6 +4,7 @@
 
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
+#include <linux/timekeeping_types.h>
 #include <linux/timerqueue.h>
 #include <linux/seqlock.h>
 
@@ -24,7 +25,6 @@
  * @running:		pointer to the currently running hrtimer
  * @active:		red black tree root node for the active timers
  * @offset:		Pointer to the offset of this clock to the monotonic base.
- * @_offset:		offset of this clock to the monotonic base.
  */
 struct hrtimer_clock_base {
 	struct hrtimer_cpu_base		*cpu_base;
@@ -35,7 +35,6 @@ struct hrtimer_clock_base {
 	struct hrtimer			*running;
 	struct timerqueue_linked_head	active;
 	const ktime_t			*offset;
-	ktime_t				_offset;
 } __hrtimer_clock_base_align;
 
 enum hrtimer_base_type {
@@ -56,6 +55,8 @@ enum hrtimer_base_type {
  * @cpu:			cpu number
  * @active_bases:		Bitfield to mark bases with active timers
  * @clock_was_set_seq:		Sequence counter of clock was set events
+ * @tk_offsets:			Timekeeping clock offsets to CLOCK_MONOTONIC
+ * @offs_none:			Always zero for CLOCK_MONOTONIC hrtimer_clock_base::offset.
  * @hres_active:		State of high resolution mode
  * @deferred_rearm:		A deferred rearm is pending
  * @deferred_needs_update:	The deferred rearm must re-evaluate the first timer
@@ -87,6 +88,8 @@ struct hrtimer_cpu_base {
 	unsigned int			cpu;
 	unsigned int			active_bases;
 	u32				clock_was_set_seq;
+	struct tk_clock_offsets		tk_offsets;
+	const ktime_t			offs_none;
 	bool				hres_active;
 	bool				deferred_rearm;
 	bool				deferred_needs_update;
