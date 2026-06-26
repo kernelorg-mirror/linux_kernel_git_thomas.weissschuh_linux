@@ -54,7 +54,6 @@ enum hrtimer_base_type {
  * @lock:			lock protecting the base and associated clock bases and timers
  * @cpu:			cpu number
  * @active_bases:		Bitfield to mark bases with active timers
- * @clock_was_set_seq:		Sequence counter of clock was set events
  * @tk_offsets:			Timekeeping clock offsets to CLOCK_MONOTONIC
  * @offs_none:			Always zero for CLOCK_MONOTONIC hrtimer_clock_base::offset.
  * @hres_active:		State of high resolution mode
@@ -87,7 +86,6 @@ struct hrtimer_cpu_base {
 	raw_spinlock_t			lock;
 	unsigned int			cpu;
 	unsigned int			active_bases;
-	u32				clock_was_set_seq;
 	struct tk_clock_offsets		tk_offsets;
 	const ktime_t			offs_none;
 	bool				hres_active;
