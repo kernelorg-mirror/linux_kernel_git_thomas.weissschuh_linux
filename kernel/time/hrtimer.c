@@ -128,6 +128,11 @@ static inline bool hrtimer_base_is_online(struct hrtimer_cpu_base *base)
 		return likely(base->online);
 }
 
+static ktime_t hrtimer_expires_to_monotonic(const struct hrtimer_clock_base *base, ktime_t t)
+{
+	return ktime_sub(t, base->offset);
+}
+
 #ifdef CONFIG_HIGH_RES_TIMERS
 DEFINE_STATIC_KEY_FALSE(hrtimer_highres_enabled_key);
 
@@ -235,7 +240,7 @@ static bool hrtimer_suitable_target(struct hrtimer *timer, struct hrtimer_clock_
 	if (!hrtimer_base_is_online(this_cpu_base))
 		return true;
 
-	expires = ktime_sub(hrtimer_get_expires(timer), new_base->offset);
+	expires = hrtimer_expires_to_monotonic(new_base, hrtimer_get_expires(timer));
 
 	return expires >= new_base->cpu_base->expires_next;
 }
@@ -552,7 +557,7 @@ static ktime_t hrtimer_bases_next_event_without(struct hrtimer_cpu_base *cpu_bas
 	lockdep_assert_held(&cpu_base->lock);
 
 	for_each_active_base(base, cpu_base, active) {
-		expires = ktime_sub(base->expires_next, base->offset);
+		expires = hrtimer_expires_to_monotonic(base, base->expires_next);
 		if (expires >= expires_next)
 			continue;
 
@@ -566,7 +571,7 @@ static ktime_t hrtimer_bases_next_event_without(struct hrtimer_cpu_base *cpu_bas
 			node = timerqueue_linked_next(node);
 			if (!node)
 				continue;
-			expires = ktime_sub(node->expires, base->offset);
+			expires = hrtimer_expires_to_monotonic(base, node->expires);
 			if (expires >= expires_next)
 				continue;
 		}
@@ -592,7 +597,7 @@ static void hrtimer_bases_first(struct hrtimer_cpu_base *cpu_base,unsigned int a
 	ktime_t expires;
 
 	for_each_active_base(base, cpu_base, active) {
-		expires = ktime_sub(base->expires_next, base->offset);
+		expires = hrtimer_expires_to_monotonic(base, base->expires_next);
 		if (expires < *expires_next) {
 			*expires_next = expires;
 			*next_timer = clock_base_next_timer(base);
@@ -852,7 +857,7 @@ static void hrtimer_reprogram(struct hrtimer *timer, bool reprogram)
 
 	WARN_ON_ONCE(expires < 0);
 
-	expires = ktime_sub(expires, base->offset);
+	expires = hrtimer_expires_to_monotonic(base, expires);
 
 	if (timer->is_soft) {
 		/*
@@ -947,7 +952,7 @@ static bool update_needs_ipi(struct hrtimer_cpu_base *cpu_base, unsigned int act
 		struct timerqueue_linked_node *next;
 
 		next = timerqueue_linked_first(&base->active);
-		expires = ktime_sub(next->expires, base->offset);
+		expires = hrtimer_expires_to_monotonic(base, next->expires);
 		if (expires < cpu_base->expires_next)
 			return true;
 
@@ -1556,7 +1561,7 @@ static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 	expires = hrtimer_get_softexpires(timer);
 
 	/* Convert to monotonic */
-	expires = ktime_sub(expires, timer->base->offset);
+	expires = hrtimer_expires_to_monotonic(timer->base, expires);
 
 	/*
 	 * Check whether this timer will end up as the first expiring timer in
