@@ -46,18 +46,22 @@ enum timekeeping_adv_mode {
  * cache line.
  */
 struct tk_data {
-	seqcount_raw_spinlock_t	seq;
+	/*
+	 * Only valid for the core timekeeper.
+	 * Kept here to share a cacheline with the remaining fields.
+	 */
+	seqcount_raw_spinlock_t	__seq;
+
 	struct timekeeper	timekeeper;
 	struct timekeeper	shadow_timekeeper;
-	raw_spinlock_t		lock;
 } ____cacheline_aligned;
 
 static struct tk_data timekeeper_data[TIMEKEEPERS_MAX];
 
 /* The core timekeeper */
 #define tk_core		(timekeeper_data[TIMEKEEPER_CORE])
-#define tk_core_lock	(tk_core.lock)
-#define tk_core_seq	(tk_core.seq)
+#define tk_core_seq	(tk_core.__seq)
+static ____cacheline_aligned DEFINE_RAW_SPINLOCK(tk_core_lock);
 
 #ifdef CONFIG_POSIX_AUX_CLOCKS
 static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)
@@ -2021,8 +2025,6 @@ read_persistent_wall_and_boot_offset(struct timespec64 *wall_time,
 
 static __init void tkd_basic_setup(struct tk_data *tkd, enum timekeeper_ids tk_id, bool valid)
 {
-	raw_spin_lock_init(&tkd->lock);
-	seqcount_raw_spinlock_init(&tkd->seq, &tkd->lock);
 	tkd->timekeeper.id = tkd->shadow_timekeeper.id = tk_id;
 	tkd->timekeeper.clock_valid = tkd->shadow_timekeeper.clock_valid = valid;
 }
@@ -2054,6 +2056,7 @@ void __init timekeeping_init(void)
 	struct timekeeper *tks = &tk_core.shadow_timekeeper;
 	struct clocksource *clock;
 
+	seqcount_raw_spinlock_init(&tk_core_seq, &tk_core_lock);
 	tkd_basic_setup(&tk_core, TIMEKEEPER_CORE, true);
 	tk_aux_setup();
 
