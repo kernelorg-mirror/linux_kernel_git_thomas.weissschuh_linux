@@ -71,6 +71,7 @@ static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)
 	return ktime_get_aux_ts64(CLOCK_AUX + tkid - TIMEKEEPER_AUX_FIRST, ts);
 }
 static inline struct tk_data *aux_get_tk_data(clockid_t id);
+static inline clockid_t tkid_to_clockid(enum timekeeper_ids tk_id);
 
 /*
  * We need to convert between auxiliary and monotonic clock timestamps.
@@ -324,6 +325,7 @@ static void tk_aux_update_core_mono_conv(struct timekeeper *aux_tk, bool clock_w
 		 */
 		deviation = ktime_sub(ktime_mono_to_aux(mono_conv, mono_now), aux_now);
 		do_update = abs(deviation) >= TK_AUX_UPDATE_DEVIATION_THRESHOLD_NS;
+		trace_timekeeping_auxclock_deviation(tkid_to_clockid(aux_tk->id), deviation);
 	}
 
 	if (!do_update)
@@ -3388,6 +3390,11 @@ static unsigned long aux_timekeepers;
 static inline unsigned int clockid_to_tkid(unsigned int id)
 {
 	return TIMEKEEPER_AUX_FIRST + id - CLOCK_AUX;
+}
+
+static inline clockid_t tkid_to_clockid(enum timekeeper_ids tk_id)
+{
+	return CLOCK_AUX + tk_id - TIMEKEEPER_AUX_FIRST;
 }
 
 static inline struct tk_data *aux_get_tk_data(clockid_t id)
