@@ -4,6 +4,7 @@
 
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
+#include <linux/timekeeping_types.h>
 #include <linux/timerqueue.h>
 #include <linux/seqlock.h>
 
@@ -24,7 +25,6 @@
  * @running:		pointer to the currently running hrtimer
  * @active:		red black tree root node for the active timers
  * @offset:		Pointer to the offset of this clock to the monotonic base.
- * @_offset:		offset of this clock to the monotonic base.
  */
 struct hrtimer_clock_base {
 	struct hrtimer_cpu_base		*cpu_base;
@@ -35,7 +35,6 @@ struct hrtimer_clock_base {
 	struct hrtimer			*running;
 	struct timerqueue_linked_head	active;
 	const ktime_t			*offset;
-	ktime_t				_offset;
 } __hrtimer_clock_base_align;
 
 enum hrtimer_base_type {
@@ -76,6 +75,8 @@ enum hrtimer_base_type {
  * @softirq_expires_next:	Time to check, if soft queues needs also to be expired
  * @softirq_next_timer:		Pointer to the first expiring softirq based timer
  * @deferred_expires_next:	Cached expires next value for deferred rearm
+ * @offs_none:			Always zero for CLOCK_MONOTONIC hrtimer_clock_base::offset.
+ * @tk_offsets:			Timekeeping clock offsets to CLOCK_MONOTONIC
  * @clock_base:			Array of clock bases for this cpu
  *
  * Note: next_timer is just an optimization for __remove_hrtimer().
@@ -108,6 +109,8 @@ struct hrtimer_cpu_base {
 	ktime_t				softirq_expires_next;
 	struct hrtimer			*softirq_next_timer;
 	ktime_t				deferred_expires_next;
+	const ktime_t			offs_none;
+	struct tk_clock_offsets		tk_offsets;
 	struct hrtimer_clock_base	clock_base[HRTIMER_MAX_CLOCK_BASES];
 	call_single_data_t		csd;
 } ____cacheline_aligned;

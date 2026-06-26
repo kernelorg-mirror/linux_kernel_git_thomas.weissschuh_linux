@@ -684,24 +684,7 @@ static inline ktime_t hrtimer_update_base(struct hrtimer_cpu_base *base)
 {
 	lockdep_assert_held(&base->lock);
 
-	struct tk_clock_offsets offsets = {
-		.offs_real = base->clock_base[HRTIMER_BASE_REALTIME]._offset,
-		.offs_boot = base->clock_base[HRTIMER_BASE_BOOTTIME]._offset,
-		.offs_tai = base->clock_base[HRTIMER_BASE_TAI]._offset,
-	};
-
-	ktime_t now = ktime_get_update_offsets_now(&base->clock_was_set_seq, &offsets);
-
-	base->clock_base[HRTIMER_BASE_REALTIME]._offset = offsets.offs_real;
-	base->clock_base[HRTIMER_BASE_REALTIME_SOFT]._offset = offsets.offs_real;
-
-	base->clock_base[HRTIMER_BASE_BOOTTIME]._offset = offsets.offs_boot;
-	base->clock_base[HRTIMER_BASE_BOOTTIME_SOFT]._offset = offsets.offs_boot;
-
-	base->clock_base[HRTIMER_BASE_TAI]._offset = offsets.offs_tai;
-	base->clock_base[HRTIMER_BASE_TAI_SOFT]._offset = offsets.offs_tai;
-
-	return now;
+	return ktime_get_update_offsets_now(&base->clock_was_set_seq, &base->tk_offsets);
 }
 
 /*
@@ -2552,6 +2535,25 @@ SYSCALL_DEFINE2(nanosleep_time32, struct old_timespec32 __user *, rqtp,
 }
 #endif
 
+static void hrtimer_clock_base_setup_offset(const struct hrtimer_cpu_base *cpu_base,
+					    struct hrtimer_clock_base *base)
+{
+	if (base->clockid == CLOCK_MONOTONIC)
+		base->offset = &cpu_base->offs_none;
+
+	else if (base->clockid == CLOCK_REALTIME)
+		base->offset = &cpu_base->tk_offsets.offs_real;
+
+	else if (base->clockid == CLOCK_BOOTTIME)
+		base->offset = &cpu_base->tk_offsets.offs_boot;
+
+	else if (base->clockid == CLOCK_TAI)
+		base->offset = &cpu_base->tk_offsets.offs_tai;
+
+	else
+		WARN_ON(1);
+}
+
 /*
  * Functions related to boot-time initialization:
  */
@@ -2563,7 +2565,7 @@ int hrtimers_prepare_cpu(unsigned int cpu)
 		struct hrtimer_clock_base *clock_b = &cpu_base->clock_base[i];
 
 		clock_b->cpu_base = cpu_base;
-		clock_b->offset = &clock_b->_offset;
+		hrtimer_clock_base_setup_offset(cpu_base, clock_b);
 		seqcount_raw_spinlock_init(&clock_b->seq, &cpu_base->lock);
 		timerqueue_linked_init_head(&clock_b->active);
 	}
