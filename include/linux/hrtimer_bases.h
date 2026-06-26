@@ -54,7 +54,6 @@ enum hrtimer_base_type {
  * @lock:			lock protecting the base and associated clock bases and timers
  * @cpu:			cpu number
  * @active_bases:		Bitfield to mark bases with active timers
- * @clock_was_set_seq:		Sequence counter of clock was set events
  * @hres_active:		State of high resolution mode
  * @deferred_rearm:		A deferred rearm is pending
  * @deferred_needs_update:	The deferred rearm must re-evaluate the first timer
@@ -87,7 +86,6 @@ struct hrtimer_cpu_base {
 	raw_spinlock_t			lock;
 	unsigned int			cpu;
 	unsigned int			active_bases;
-	u32				clock_was_set_seq;
 	bool				hres_active;
 	bool				deferred_rearm;
 	bool				deferred_needs_update;
