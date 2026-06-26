@@ -8,6 +8,7 @@
 #include <linux/tracepoint.h>
 #include <linux/hrtimer.h>
 #include <linux/timer.h>
+#include <trace/misc/timekeeping.h>
 
 DECLARE_EVENT_CLASS(timer_class,
 
@@ -161,13 +162,6 @@ TRACE_EVENT(timer_base_idle,
 	TP_printk("is_idle=%d cpu=%d",
 		  __entry->is_idle, __entry->cpu)
 );
-
-#define decode_clockid(type)						\
-	__print_symbolic(type,						\
-		{ CLOCK_REALTIME,	"CLOCK_REALTIME"	},	\
-		{ CLOCK_MONOTONIC,	"CLOCK_MONOTONIC"	},	\
-		{ CLOCK_BOOTTIME,	"CLOCK_BOOTTIME"	},	\
-		{ CLOCK_TAI,		"CLOCK_TAI"		})
 
 #define decode_hrtimer_mode(mode)					\
 	__print_symbolic(mode,						\
