@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _KERNEL_TIME_TIMEKEEPING_H
 #define _KERNEL_TIME_TIMEKEEPING_H
+
+#include <linux/timekeeping_types.h>
+
 /*
  * Internal interfaces for kernel/time/
  */
-extern ktime_t ktime_get_update_offsets_now(u32 *cwsseq,
-					    ktime_t *offs_real,
-					    ktime_t *offs_boot,
-					    ktime_t *offs_tai);
+extern ktime_t ktime_get_update_offsets_now(u32 *cwsseq, struct tk_clock_offsets *tko);
 
 bool ktime_expiry_to_cycles(enum clocksource_ids id, ktime_t expires_ns, u64 *cycles);
 
