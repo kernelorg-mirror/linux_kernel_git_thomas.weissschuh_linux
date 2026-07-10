@@ -568,3 +568,7 @@ pistachio_defconfig-y		:= 32r2el_defconfig BOARDS=marduk
 .PHONY: $(legacy_defconfigs)
 $(legacy_defconfigs):
 	$(Q)$(MAKE) -f $(srctree)/Makefile $($@-y)
+
+vdso-install-y				+= arch/mips/vdso/vdso.so.dbg
+vdso-install-$(CONFIG_MIPS32_N32)	+= arch/mips/vdso/vdso-n32.so.dbg
+vdso-install-$(CONFIG_MIPS32_O32)	+= arch/mips/vdso/vdso-o32.so.dbg
