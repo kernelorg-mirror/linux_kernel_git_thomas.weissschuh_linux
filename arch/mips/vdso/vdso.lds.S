@@ -34,6 +34,7 @@ SECTIONS
 	.mips_abiflags	: { *(.mips_abiflags) } 	:text :abiflags
 
 	.reginfo	: { *(.reginfo) }		:text :reginfo
+	.MIPS.options	: { *(.MIPS.options) }		:text :options
 
 	.hash		: { *(.hash) }			:text
 	.gnu.hash	: { *(.gnu.hash) }
@@ -85,6 +86,9 @@ PHDRS
 	 * stop the linker putting one in at the start.
 	 */
 	reginfo		0x70000000;
+
+	/* n64 variant of reginfo */
+	options		0x70000002;
 
 	text		PT_LOAD		FLAGS(5) FILEHDR PHDRS; /* PF_R|PF_X */
 	dynamic		PT_DYNAMIC	FLAGS(4);		/* PF_R */
