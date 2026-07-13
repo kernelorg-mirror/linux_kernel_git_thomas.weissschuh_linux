@@ -68,6 +68,7 @@
 	({										\
 		static const struct trace_print_flags __flags[] =			\
 			{ flag_array };							\
+		static_assert(ARRAY_SIZE(__flags));					\
 		trace_print_flags_seq(p, delim, flag, __flags, ARRAY_SIZE(__flags));	\
 	})
 
@@ -76,6 +77,7 @@
 	({										\
 		static const struct trace_print_flags symbols[] =			\
 			{ symbol_array };						\
+		static_assert(ARRAY_SIZE(symbols));					\
 		trace_print_symbols_seq(p, value, symbols, ARRAY_SIZE(symbols));	\
 	})
 
@@ -86,6 +88,7 @@
 	({											\
 		static const struct trace_print_flags_u64 __flags[] =				\
 			{ flag_array };								\
+		static_assert(ARRAY_SIZE(__flags));						\
 		trace_print_flags_seq_u64(p, delim, flag, __flags, ARRAY_SIZE(__flags));	\
 	})
 
@@ -93,6 +96,7 @@
 	({										\
 		static const struct trace_print_flags_u64 symbols[] =			\
 			{ symbol_array };						\
+		static_assert(ARRAY_SIZE(symbols));					\
 		trace_print_symbols_seq_u64(p, value, symbols, ARRAY_SIZE(symbols));	\
 	})
 #else
