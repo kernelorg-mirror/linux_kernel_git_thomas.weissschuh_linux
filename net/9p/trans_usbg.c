@@ -843,14 +843,14 @@ static ssize_t f_usb9pfs_opts_buflen_store(struct config_item *item,
 
 CONFIGFS_ATTR(f_usb9pfs_opts_, buflen);
 
-static struct configfs_attribute *usb9pfs_attrs[] = {
+static const struct configfs_attribute *const usb9pfs_attrs[] = {
 	&f_usb9pfs_opts_attr_buflen,
 	NULL,
 };
 
 static const struct config_item_type usb9pfs_func_type = {
 	.ct_item_ops	= &usb9pfs_item_ops,
-	.ct_attrs	= usb9pfs_attrs,
+	.ct_attrs_const	= usb9pfs_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
