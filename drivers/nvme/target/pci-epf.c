@@ -2575,7 +2575,7 @@ static ssize_t nvmet_pci_epf_mdts_kb_store(struct config_item *item,
 
 CONFIGFS_ATTR(nvmet_pci_epf_, mdts_kb);
 
-static struct configfs_attribute *nvmet_pci_epf_attrs[] = {
+static const struct configfs_attribute *const nvmet_pci_epf_attrs[] = {
 	&nvmet_pci_epf_attr_portid,
 	&nvmet_pci_epf_attr_subsysnqn,
 	&nvmet_pci_epf_attr_mdts_kb,
@@ -2583,7 +2583,7 @@ static struct configfs_attribute *nvmet_pci_epf_attrs[] = {
 };
 
 static const struct config_item_type nvmet_pci_epf_group_type = {
-	.ct_attrs	= nvmet_pci_epf_attrs,
+	.ct_attrs_const	= nvmet_pci_epf_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
