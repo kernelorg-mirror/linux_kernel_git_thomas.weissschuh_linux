@@ -388,7 +388,7 @@ CONFIGFS_ATTR(o2nm_node_, ipv4_port);
 CONFIGFS_ATTR(o2nm_node_, ipv4_address);
 CONFIGFS_ATTR(o2nm_node_, local);
 
-static struct configfs_attribute *o2nm_node_attrs[] = {
+static const struct configfs_attribute *const o2nm_node_attrs[] = {
 	&o2nm_node_attr_num,
 	&o2nm_node_attr_ipv4_port,
 	&o2nm_node_attr_ipv4_address,
@@ -402,7 +402,7 @@ static const struct configfs_item_operations o2nm_node_item_ops = {
 
 static const struct config_item_type o2nm_node_type = {
 	.ct_item_ops	= &o2nm_node_item_ops,
-	.ct_attrs	= o2nm_node_attrs,
+	.ct_attrs_const	= o2nm_node_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -571,7 +571,7 @@ CONFIGFS_ATTR(o2nm_cluster_, keepalive_delay_ms);
 CONFIGFS_ATTR(o2nm_cluster_, reconnect_delay_ms);
 CONFIGFS_ATTR(o2nm_cluster_, fence_method);
 
-static struct configfs_attribute *o2nm_cluster_attrs[] = {
+static const struct configfs_attribute *const o2nm_cluster_attrs[] = {
 	&o2nm_cluster_attr_idle_timeout_ms,
 	&o2nm_cluster_attr_keepalive_delay_ms,
 	&o2nm_cluster_attr_reconnect_delay_ms,
@@ -663,7 +663,7 @@ static const struct configfs_item_operations o2nm_cluster_item_ops = {
 
 static const struct config_item_type o2nm_cluster_type = {
 	.ct_item_ops	= &o2nm_cluster_item_ops,
-	.ct_attrs	= o2nm_cluster_attrs,
+	.ct_attrs_const	= o2nm_cluster_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
