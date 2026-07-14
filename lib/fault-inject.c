@@ -344,13 +344,13 @@ static ssize_t fault_atomic_t_attr_store(atomic_t *val, const char *page, size_t
 	return count;
 }
 
-#define CONFIGFS_ATTR_NAMED(_pfx, _name, _attr_name)	\
-static struct configfs_attribute _pfx##attr_##_name = {	\
-	.ca_name	= _attr_name,			\
-	.ca_mode	= 0644,				\
-	.ca_owner	= THIS_MODULE,			\
-	.show		= _pfx##_name##_show,		\
-	.store		= _pfx##_name##_store,		\
+#define CONFIGFS_ATTR_NAMED(_pfx, _name, _attr_name)		\
+static const struct configfs_attribute _pfx##attr_##_name = {	\
+	.ca_name	= _attr_name,				\
+	.ca_mode	= 0644,					\
+	.ca_owner	= THIS_MODULE,				\
+	.show		= _pfx##_name##_show,			\
+	.store		= _pfx##_name##_store,			\
 }
 
 static struct fault_config *to_fault_config(struct config_item *item)
@@ -427,7 +427,7 @@ FAULT_CONFIGFS_ATTR_NAMED(reject_end, "reject-end", reject_end, xul);
 
 #endif /* CONFIG_FAULT_INJECTION_STACKTRACE_FILTER */
 
-static struct configfs_attribute *fault_config_attrs[] = {
+static const struct configfs_attribute *const fault_config_attrs[] = {
 	&fault_attr_probability,
 	&fault_attr_interval,
 	&fault_attr_times,
@@ -447,7 +447,7 @@ static struct configfs_attribute *fault_config_attrs[] = {
 };
 
 static const struct config_item_type fault_config_type = {
-	.ct_attrs	= fault_config_attrs,
+	.ct_attrs_const	= fault_config_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
