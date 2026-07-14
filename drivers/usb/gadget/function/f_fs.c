@@ -4002,7 +4002,7 @@ static ssize_t f_fs_opts_ready_show(struct config_item *item, char *page)
 
 CONFIGFS_ATTR_RO(f_fs_opts_, ready);
 
-static struct configfs_attribute *ffs_attrs[] = {
+static const struct configfs_attribute *const ffs_attrs[] = {
 	&f_fs_opts_attr_ready,
 	NULL,
 };
@@ -4020,7 +4020,7 @@ static const struct configfs_item_operations ffs_item_ops = {
 
 static const struct config_item_type ffs_func_type = {
 	.ct_item_ops	= &ffs_item_ops,
-	.ct_attrs	= ffs_attrs,
+	.ct_attrs_const	= ffs_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
