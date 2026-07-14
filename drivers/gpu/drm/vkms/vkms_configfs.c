@@ -170,7 +170,7 @@ static ssize_t crtc_writeback_store(struct config_item *item, const char *page,
 
 CONFIGFS_ATTR(crtc_, writeback);
 
-static struct configfs_attribute *crtc_item_attrs[] = {
+static const struct configfs_attribute *const crtc_item_attrs[] = {
 	&crtc_attr_writeback,
 	NULL,
 };
@@ -194,7 +194,7 @@ static struct configfs_item_operations crtc_item_operations = {
 };
 
 static const struct config_item_type crtc_item_type = {
-	.ct_attrs	= crtc_item_attrs,
+	.ct_attrs_const	= crtc_item_attrs,
 	.ct_item_ops	= &crtc_item_operations,
 	.ct_owner	= THIS_MODULE,
 };
@@ -326,7 +326,7 @@ static ssize_t plane_type_store(struct config_item *item, const char *page,
 
 CONFIGFS_ATTR(plane_, type);
 
-static struct configfs_attribute *plane_item_attrs[] = {
+static const struct configfs_attribute *const plane_item_attrs[] = {
 	&plane_attr_type,
 	NULL,
 };
@@ -350,7 +350,7 @@ static struct configfs_item_operations plane_item_operations = {
 };
 
 static const struct config_item_type plane_item_type = {
-	.ct_attrs	= plane_item_attrs,
+	.ct_attrs_const	= plane_item_attrs,
 	.ct_item_ops	= &plane_item_operations,
 	.ct_owner	= THIS_MODULE,
 };
@@ -560,7 +560,7 @@ static ssize_t connector_status_store(struct config_item *item,
 
 CONFIGFS_ATTR(connector_, status);
 
-static struct configfs_attribute *connector_item_attrs[] = {
+static const struct configfs_attribute *const connector_item_attrs[] = {
 	&connector_attr_status,
 	NULL,
 };
@@ -584,7 +584,7 @@ static struct configfs_item_operations connector_item_operations = {
 };
 
 static const struct config_item_type connector_item_type = {
-	.ct_attrs	= connector_item_attrs,
+	.ct_attrs_const	= connector_item_attrs,
 	.ct_item_ops	= &connector_item_operations,
 	.ct_owner	= THIS_MODULE,
 };
@@ -731,7 +731,7 @@ static ssize_t device_enabled_store(struct config_item *item, const char *page,
 
 CONFIGFS_ATTR(device_, enabled);
 
-static struct configfs_attribute *device_item_attrs[] = {
+static const struct configfs_attribute *const device_item_attrs[] = {
 	&device_attr_enabled,
 	NULL,
 };
@@ -755,7 +755,7 @@ static struct configfs_item_operations device_item_operations = {
 };
 
 static const struct config_item_type device_item_type = {
-	.ct_attrs	= device_item_attrs,
+	.ct_attrs_const	= device_item_attrs,
 	.ct_item_ops	= &device_item_operations,
 	.ct_owner	= THIS_MODULE,
 };
