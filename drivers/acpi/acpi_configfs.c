@@ -202,7 +202,7 @@ static const struct configfs_attribute *const acpi_table_attrs[] = {
 static const struct config_item_type acpi_table_type = {
 	.ct_owner = THIS_MODULE,
 	.ct_bin_attrs = acpi_table_bin_attrs,
-	.ct_attrs_const = acpi_table_attrs,
+	.ct_attrs = acpi_table_attrs,
 };
 
 static struct config_item *acpi_table_make_item(struct config_group *group,

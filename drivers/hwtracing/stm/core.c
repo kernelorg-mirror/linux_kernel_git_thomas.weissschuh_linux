@@ -441,7 +441,7 @@ void stm_unregister_protocol(const struct stm_protocol_driver *pdrv)
 			list_del(&pe->entry);
 
 			if (pe->node_type) {
-				kfree(pe->node_type->ct_attrs_const);
+				kfree(pe->node_type->ct_attrs);
 				kfree(pe->node_type);
 			}
 			kfree(pe);

@@ -92,7 +92,7 @@ static const struct configfs_attribute *const childless_attrs[] = {
 };
 
 static const struct config_item_type childless_type = {
-	.ct_attrs_const	= childless_attrs,
+	.ct_attrs	= childless_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -164,7 +164,7 @@ static const struct configfs_item_operations simple_child_item_ops = {
 
 static const struct config_item_type simple_child_type = {
 	.ct_item_ops	= &simple_child_item_ops,
-	.ct_attrs_const	= simple_child_attrs,
+	.ct_attrs	= simple_child_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -230,7 +230,7 @@ static const struct configfs_group_operations simple_children_group_ops = {
 static const struct config_item_type simple_children_type = {
 	.ct_item_ops	= &simple_children_item_ops,
 	.ct_group_ops	= &simple_children_group_ops,
-	.ct_attrs_const	= simple_children_attrs,
+	.ct_attrs	= simple_children_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -298,7 +298,7 @@ static const struct configfs_group_operations group_children_group_ops = {
 
 static const struct config_item_type group_children_type = {
 	.ct_group_ops	= &group_children_group_ops,
-	.ct_attrs_const	= group_children_attrs,
+	.ct_attrs	= group_children_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -375,7 +375,7 @@ static const struct configfs_item_operations symlink_child_item_ops = {
 
 static const struct config_item_type symlink_child_type = {
 	.ct_item_ops	= &symlink_child_item_ops,
-	.ct_attrs_const	= symlink_child_attrs,
+	.ct_attrs	= symlink_child_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -418,7 +418,7 @@ static const struct configfs_group_operations symlink_children_group_ops = {
 
 static const struct config_item_type symlink_children_type = {
 	.ct_group_ops	= &symlink_children_group_ops,
-	.ct_attrs_const	= symlink_children_attrs,
+	.ct_attrs	= symlink_children_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

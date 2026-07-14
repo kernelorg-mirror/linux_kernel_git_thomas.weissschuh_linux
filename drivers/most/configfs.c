@@ -405,7 +405,7 @@ static struct configfs_item_operations mdev_link_item_ops = {
 
 static const struct config_item_type mdev_link_type = {
 	.ct_item_ops	= &mdev_link_item_ops,
-	.ct_attrs_const	= mdev_link_attrs,
+	.ct_attrs	= mdev_link_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -582,7 +582,7 @@ static struct configfs_group_operations most_snd_grp_group_ops = {
 static const struct config_item_type most_snd_grp_type = {
 	.ct_item_ops	= &most_snd_grp_item_ops,
 	.ct_group_ops	= &most_snd_grp_group_ops,
-	.ct_attrs_const	= most_snd_grp_attrs,
+	.ct_attrs	= most_snd_grp_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

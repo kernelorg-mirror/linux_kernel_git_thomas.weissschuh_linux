@@ -414,7 +414,7 @@ static struct configfs_group_operations tsm_report_attr_group_ops = {
 static const struct config_item_type tsm_report_type = {
 	.ct_owner = THIS_MODULE,
 	.ct_bin_attrs = tsm_report_bin_attrs,
-	.ct_attrs_const = tsm_report_attrs,
+	.ct_attrs = tsm_report_attrs,
 	.ct_item_ops = &tsm_report_item_ops,
 	.ct_group_ops = &tsm_report_attr_group_ops,
 };

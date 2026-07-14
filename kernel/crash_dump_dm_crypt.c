@@ -244,7 +244,7 @@ static const struct configfs_item_operations config_key_item_ops = {
 
 static const struct config_item_type config_key_type = {
 	.ct_item_ops = &config_key_item_ops,
-	.ct_attrs_const = config_key_attrs,
+	.ct_attrs = config_key_attrs,
 	.ct_owner = THIS_MODULE,
 };
 
@@ -319,7 +319,7 @@ static const struct configfs_group_operations config_keys_group_ops = {
 
 static const struct config_item_type config_keys_type = {
 	.ct_group_ops = &config_keys_group_ops,
-	.ct_attrs_const = config_keys_attrs,
+	.ct_attrs = config_keys_attrs,
 	.ct_owner = THIS_MODULE,
 };
 
@@ -350,7 +350,7 @@ static const struct configfs_attribute *const kdump_config_keys_attrs[] = {
 };
 
 static const struct config_item_type kdump_config_keys_type = {
-	.ct_attrs_const = kdump_config_keys_attrs,
+	.ct_attrs = kdump_config_keys_attrs,
 	.ct_owner = THIS_MODULE,
 };
 
