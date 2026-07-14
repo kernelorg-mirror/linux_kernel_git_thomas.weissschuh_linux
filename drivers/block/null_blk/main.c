@@ -593,7 +593,7 @@ static ssize_t nullb_device_zone_offline_store(struct config_item *item,
 }
 CONFIGFS_ATTR_WO(nullb_device_, zone_offline);
 
-static struct configfs_attribute *nullb_device_attrs[] = {
+static const struct configfs_attribute *const nullb_device_attrs[] = {
 	&nullb_device_attr_badblocks,
 	&nullb_device_attr_badblocks_once,
 	&nullb_device_attr_badblocks_partial_io,
@@ -648,7 +648,7 @@ static const struct configfs_item_operations nullb_device_ops = {
 
 static const struct config_item_type nullb_device_type = {
 	.ct_item_ops	= &nullb_device_ops,
-	.ct_attrs	= nullb_device_attrs,
+	.ct_attrs_const	= nullb_device_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -719,7 +719,7 @@ nullb_group_drop_item(struct config_group *group, struct config_item *item)
 static ssize_t memb_group_features_show(struct config_item *item, char *page)
 {
 
-	struct configfs_attribute **entry;
+	const struct configfs_attribute *const *entry;
 	char delimiter = ',';
 	size_t left = PAGE_SIZE;
 	size_t written = 0;
@@ -744,7 +744,7 @@ static ssize_t memb_group_features_show(struct config_item *item, char *page)
 
 CONFIGFS_ATTR_RO(memb_group_, features);
 
-static struct configfs_attribute *nullb_group_attrs[] = {
+static const struct configfs_attribute *const nullb_group_attrs[] = {
 	&memb_group_attr_features,
 	NULL,
 };
@@ -756,7 +756,7 @@ static const struct configfs_group_operations nullb_group_ops = {
 
 static const struct config_item_type nullb_group_type = {
 	.ct_group_ops	= &nullb_group_ops,
-	.ct_attrs	= nullb_group_attrs,
+	.ct_attrs_const	= nullb_group_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
