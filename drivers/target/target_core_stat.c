@@ -72,7 +72,7 @@ CONFIGFS_ATTR_RO(target_stat_, indx);
 CONFIGFS_ATTR_RO(target_stat_, role);
 CONFIGFS_ATTR_RO(target_stat_, ports);
 
-static struct configfs_attribute *target_stat_scsi_dev_attrs[] = {
+static const struct configfs_attribute *const target_stat_scsi_dev_attrs[] = {
 	&target_stat_attr_inst,
 	&target_stat_attr_indx,
 	&target_stat_attr_role,
@@ -81,7 +81,7 @@ static struct configfs_attribute *target_stat_scsi_dev_attrs[] = {
 };
 
 static const struct config_item_type target_stat_scsi_dev_cit = {
-	.ct_attrs		= target_stat_scsi_dev_attrs,
+	.ct_attrs_const		= target_stat_scsi_dev_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -165,7 +165,7 @@ CONFIGFS_ATTR_RO(target_stat_tgt_, resets);
 CONFIGFS_ATTR_RO(target_stat_tgt_, aborts_complete);
 CONFIGFS_ATTR_RO(target_stat_tgt_, aborts_no_task);
 
-static struct configfs_attribute *target_stat_scsi_tgt_dev_attrs[] = {
+static const struct configfs_attribute *const target_stat_scsi_tgt_dev_attrs[] = {
 	&target_stat_tgt_attr_inst,
 	&target_stat_tgt_attr_indx,
 	&target_stat_tgt_attr_num_lus,
@@ -178,7 +178,7 @@ static struct configfs_attribute *target_stat_scsi_tgt_dev_attrs[] = {
 };
 
 static const struct config_item_type target_stat_scsi_tgt_dev_cit = {
-	.ct_attrs		= target_stat_scsi_tgt_dev_attrs,
+	.ct_attrs_const		= target_stat_scsi_tgt_dev_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -362,7 +362,7 @@ CONFIGFS_ATTR_RO(target_stat_lu_, full_stat);
 CONFIGFS_ATTR_RO(target_stat_lu_, hs_num_cmds);
 CONFIGFS_ATTR_RO(target_stat_lu_, creation_time);
 
-static struct configfs_attribute *target_stat_scsi_lu_attrs[] = {
+static const struct configfs_attribute *const target_stat_scsi_lu_attrs[] = {
 	&target_stat_lu_attr_inst,
 	&target_stat_lu_attr_dev,
 	&target_stat_lu_attr_indx,
@@ -385,7 +385,7 @@ static struct configfs_attribute *target_stat_scsi_lu_attrs[] = {
 };
 
 static const struct config_item_type target_stat_scsi_lu_cit = {
-	.ct_attrs		= target_stat_scsi_lu_attrs,
+	.ct_attrs_const		= target_stat_scsi_lu_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -501,7 +501,7 @@ CONFIGFS_ATTR_RO(target_stat_port_, indx);
 CONFIGFS_ATTR_RO(target_stat_port_, role);
 CONFIGFS_ATTR_RO(target_stat_port_, busy_count);
 
-static struct configfs_attribute *target_stat_scsi_port_attrs[] = {
+static const struct configfs_attribute *const target_stat_scsi_port_attrs[] = {
 	&target_stat_port_attr_inst,
 	&target_stat_port_attr_dev,
 	&target_stat_port_attr_indx,
@@ -511,7 +511,7 @@ static struct configfs_attribute *target_stat_scsi_port_attrs[] = {
 };
 
 static const struct config_item_type target_stat_scsi_port_cit = {
-	.ct_attrs		= target_stat_scsi_port_attrs,
+	.ct_attrs_const		= target_stat_scsi_port_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -658,7 +658,7 @@ CONFIGFS_ATTR_RO(target_stat_tgt_port_, write_mbytes);
 CONFIGFS_ATTR_RO(target_stat_tgt_port_, read_mbytes);
 CONFIGFS_ATTR_RO(target_stat_tgt_port_, hs_in_cmds);
 
-static struct configfs_attribute *target_stat_scsi_tgt_port_attrs[] = {
+static const struct configfs_attribute *const target_stat_scsi_tgt_port_attrs[] = {
 	&target_stat_tgt_port_attr_inst,
 	&target_stat_tgt_port_attr_dev,
 	&target_stat_tgt_port_attr_indx,
@@ -672,7 +672,7 @@ static struct configfs_attribute *target_stat_scsi_tgt_port_attrs[] = {
 };
 
 static const struct config_item_type target_stat_scsi_tgt_port_cit = {
-	.ct_attrs		= target_stat_scsi_tgt_port_attrs,
+	.ct_attrs_const		= target_stat_scsi_tgt_port_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -782,7 +782,7 @@ CONFIGFS_ATTR_RO(target_stat_transport_, indx);
 CONFIGFS_ATTR_RO(target_stat_transport_, dev_name);
 CONFIGFS_ATTR_RO(target_stat_transport_, proto_id);
 
-static struct configfs_attribute *target_stat_scsi_transport_attrs[] = {
+static const struct configfs_attribute *const target_stat_scsi_transport_attrs[] = {
 	&target_stat_transport_attr_inst,
 	&target_stat_transport_attr_device,
 	&target_stat_transport_attr_indx,
@@ -792,7 +792,7 @@ static struct configfs_attribute *target_stat_scsi_transport_attrs[] = {
 };
 
 static const struct config_item_type target_stat_scsi_transport_cit = {
-	.ct_attrs		= target_stat_scsi_transport_attrs,
+	.ct_attrs_const		= target_stat_scsi_transport_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -1100,7 +1100,7 @@ CONFIGFS_ATTR_RO(target_stat_auth_, hs_num_cmds);
 CONFIGFS_ATTR_RO(target_stat_auth_, creation_time);
 CONFIGFS_ATTR_RO(target_stat_auth_, row_status);
 
-static struct configfs_attribute *target_stat_scsi_auth_intr_attrs[] = {
+static const struct configfs_attribute *const target_stat_scsi_auth_intr_attrs[] = {
 	&target_stat_auth_attr_inst,
 	&target_stat_auth_attr_dev,
 	&target_stat_auth_attr_port,
@@ -1119,7 +1119,7 @@ static struct configfs_attribute *target_stat_scsi_auth_intr_attrs[] = {
 };
 
 static const struct config_item_type target_stat_scsi_auth_intr_cit = {
-	.ct_attrs		= target_stat_scsi_auth_intr_attrs,
+	.ct_attrs_const		= target_stat_scsi_auth_intr_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -1279,7 +1279,7 @@ CONFIGFS_ATTR_RO(target_stat_iport_, indx);
 CONFIGFS_ATTR_RO(target_stat_iport_, port_auth_indx);
 CONFIGFS_ATTR_RO(target_stat_iport_, port_ident);
 
-static struct configfs_attribute *target_stat_scsi_ath_intr_port_attrs[] = {
+static const struct configfs_attribute *const target_stat_scsi_ath_intr_port_attrs[] = {
 	&target_stat_iport_attr_inst,
 	&target_stat_iport_attr_dev,
 	&target_stat_iport_attr_port,
@@ -1290,7 +1290,7 @@ static struct configfs_attribute *target_stat_scsi_ath_intr_port_attrs[] = {
 };
 
 static const struct config_item_type target_stat_scsi_att_intr_port_cit = {
-	.ct_attrs		= target_stat_scsi_ath_intr_port_attrs,
+	.ct_attrs_const		= target_stat_scsi_ath_intr_port_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
