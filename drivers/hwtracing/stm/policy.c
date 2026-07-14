@@ -317,7 +317,7 @@ static ssize_t stp_policy_protocol_show(struct config_item *item,
 
 CONFIGFS_ATTR_RO(stp_policy_, protocol);
 
-static struct configfs_attribute *stp_policy_attrs[] = {
+static const struct configfs_attribute *const stp_policy_attrs[] = {
 	&stp_policy_attr_device,
 	&stp_policy_attr_protocol,
 	NULL,
@@ -375,7 +375,7 @@ static struct configfs_group_operations stp_policy_group_ops = {
 static const struct config_item_type stp_policy_type = {
 	.ct_item_ops	= &stp_policy_item_ops,
 	.ct_group_ops	= &stp_policy_group_ops,
-	.ct_attrs	= stp_policy_attrs,
+	.ct_attrs_const	= stp_policy_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
