@@ -647,7 +647,7 @@ static ssize_t tcm_loop_tpg_attrib_fabric_prot_type_store(
 
 CONFIGFS_ATTR(tcm_loop_tpg_attrib_, fabric_prot_type);
 
-static struct configfs_attribute *tcm_loop_tpg_attrib_attrs[] = {
+static const struct configfs_attribute *const tcm_loop_tpg_attrib_attrs[] = {
 	&tcm_loop_tpg_attrib_attr_fabric_prot_type,
 	NULL,
 };
@@ -890,7 +890,7 @@ CONFIGFS_ATTR(tcm_loop_tpg_, nexus);
 CONFIGFS_ATTR(tcm_loop_tpg_, transport_status);
 CONFIGFS_ATTR_RO(tcm_loop_tpg_, address);
 
-static struct configfs_attribute *tcm_loop_tpg_attrs[] = {
+static const struct configfs_attribute *const tcm_loop_tpg_attrs[] = {
 	&tcm_loop_tpg_attr_nexus,
 	&tcm_loop_tpg_attr_transport_status,
 	&tcm_loop_tpg_attr_address,
@@ -1059,7 +1059,7 @@ static ssize_t tcm_loop_wwn_version_show(struct config_item *item, char *page)
 
 CONFIGFS_ATTR_RO(tcm_loop_wwn_, version);
 
-static struct configfs_attribute *tcm_loop_wwn_attrs[] = {
+static const struct configfs_attribute *const tcm_loop_wwn_attrs[] = {
 	&tcm_loop_wwn_attr_version,
 	NULL,
 };

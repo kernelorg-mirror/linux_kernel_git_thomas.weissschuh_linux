@@ -185,7 +185,7 @@ static ssize_t ft_nacl_tag_store(struct config_item *item,
 
 CONFIGFS_ATTR(ft_nacl_, tag);
 
-static struct configfs_attribute *ft_nacl_base_attrs[] = {
+static const struct configfs_attribute *const ft_nacl_base_attrs[] = {
 	&ft_nacl_attr_port_name,
 	&ft_nacl_attr_node_name,
 	&ft_nacl_attr_tag,
@@ -375,7 +375,7 @@ static ssize_t ft_wwn_version_show(struct config_item *item, char *page)
 
 CONFIGFS_ATTR_RO(ft_wwn_, version);
 
-static struct configfs_attribute *ft_wwn_attrs[] = {
+static const struct configfs_attribute *const ft_wwn_attrs[] = {
 	&ft_wwn_attr_version,
 	NULL,
 };

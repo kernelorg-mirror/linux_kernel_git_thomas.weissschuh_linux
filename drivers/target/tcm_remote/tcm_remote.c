@@ -225,7 +225,7 @@ static ssize_t tcm_remote_wwn_version_show(struct config_item *item, char *page)
 
 CONFIGFS_ATTR_RO(tcm_remote_wwn_, version);
 
-static struct configfs_attribute *tcm_remote_wwn_attrs[] = {
+static const struct configfs_attribute *const tcm_remote_wwn_attrs[] = {
 	&tcm_remote_wwn_attr_version,
 	NULL,
 };
