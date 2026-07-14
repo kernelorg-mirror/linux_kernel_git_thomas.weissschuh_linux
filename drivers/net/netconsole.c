@@ -1280,7 +1280,7 @@ CONFIGFS_ATTR(sysdata_, taskname_enabled);
 CONFIGFS_ATTR(sysdata_, release_enabled);
 CONFIGFS_ATTR(sysdata_, msgid_enabled);
 
-static struct configfs_attribute *userdatum_attrs[] = {
+static const struct configfs_attribute *const userdatum_attrs[] = {
 	&userdatum_attr_value,
 	NULL,
 };
@@ -1296,7 +1296,7 @@ static const struct configfs_item_operations userdatum_ops = {
 
 static const struct config_item_type userdatum_type = {
 	.ct_item_ops	= &userdatum_ops,
-	.ct_attrs	= userdatum_attrs,
+	.ct_attrs_const	= userdatum_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1337,7 +1337,7 @@ static void userdatum_drop(struct config_group *group, struct config_item *item)
 	dynamic_netconsole_mutex_unlock();
 }
 
-static struct configfs_attribute *userdata_attrs[] = {
+static const struct configfs_attribute *const userdata_attrs[] = {
 	&sysdata_attr_cpu_nr_enabled,
 	&sysdata_attr_taskname_enabled,
 	&sysdata_attr_release_enabled,
@@ -1353,7 +1353,7 @@ static const struct configfs_group_operations userdata_ops = {
 static const struct config_item_type userdata_type = {
 	.ct_item_ops	= &userdatum_ops,
 	.ct_group_ops	= &userdata_ops,
-	.ct_attrs	= userdata_attrs,
+	.ct_attrs_const	= userdata_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1369,7 +1369,7 @@ CONFIGFS_ATTR(, remote_mac);
 CONFIGFS_ATTR(, release);
 CONFIGFS_ATTR_RO(, transmit_errors);
 
-static struct configfs_attribute *netconsole_target_attrs[] = {
+static const struct configfs_attribute *const netconsole_target_attrs[] = {
 	&attr_enabled,
 	&attr_extended,
 	&attr_release,
@@ -1401,7 +1401,7 @@ static const struct configfs_item_operations netconsole_target_item_ops = {
 };
 
 static const struct config_item_type netconsole_target_type = {
-	.ct_attrs		= netconsole_target_attrs,
+	.ct_attrs_const		= netconsole_target_attrs,
 	.ct_item_ops		= &netconsole_target_item_ops,
 	.ct_owner		= THIS_MODULE,
 };
