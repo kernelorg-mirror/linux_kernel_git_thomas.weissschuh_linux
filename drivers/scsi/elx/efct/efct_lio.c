@@ -1509,7 +1509,7 @@ DEF_EFCT_TPG_ATTRIB(prod_mode_write_protect);
 DEF_EFCT_TPG_ATTRIB(demo_mode_login_only);
 DEF_EFCT_TPG_ATTRIB(session_deletion_wait);
 
-static struct configfs_attribute *efct_lio_tpg_attrib_attrs[] = {
+static const struct configfs_attribute *const efct_lio_tpg_attrib_attrs[] = {
 	&efct_lio_tpg_attrib_attr_generate_node_acls,
 	&efct_lio_tpg_attrib_attr_cache_dynamic_acls,
 	&efct_lio_tpg_attrib_attr_demo_mode_write_protect,
@@ -1565,7 +1565,7 @@ DEF_EFCT_NPIV_TPG_ATTRIB(prod_mode_write_protect);
 DEF_EFCT_NPIV_TPG_ATTRIB(demo_mode_login_only);
 DEF_EFCT_NPIV_TPG_ATTRIB(session_deletion_wait);
 
-static struct configfs_attribute *efct_lio_npiv_tpg_attrib_attrs[] = {
+static const struct configfs_attribute *const efct_lio_npiv_tpg_attrib_attrs[] = {
 	&efct_lio_npiv_tpg_attrib_attr_generate_node_acls,
 	&efct_lio_npiv_tpg_attrib_attr_cache_dynamic_acls,
 	&efct_lio_npiv_tpg_attrib_attr_demo_mode_write_protect,
@@ -1576,10 +1576,10 @@ static struct configfs_attribute *efct_lio_npiv_tpg_attrib_attrs[] = {
 };
 
 CONFIGFS_ATTR(efct_lio_tpg_, enable);
-static struct configfs_attribute *efct_lio_tpg_attrs[] = {
+static const struct configfs_attribute *const efct_lio_tpg_attrs[] = {
 				&efct_lio_tpg_attr_enable, NULL };
 CONFIGFS_ATTR(efct_lio_npiv_tpg_, enable);
-static struct configfs_attribute *efct_lio_npiv_tpg_attrs[] = {
+static const struct configfs_attribute *const efct_lio_npiv_tpg_attrs[] = {
 				&efct_lio_npiv_tpg_attr_enable, NULL };
 
 static const struct target_core_fabric_ops efct_lio_ops = {

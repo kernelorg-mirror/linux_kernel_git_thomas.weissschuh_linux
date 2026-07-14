@@ -2055,7 +2055,7 @@ static ssize_t sbp_wwn_version_show(struct config_item *item, char *page)
 
 CONFIGFS_ATTR_RO(sbp_wwn_, version);
 
-static struct configfs_attribute *sbp_wwn_attrs[] = {
+static const struct configfs_attribute *const sbp_wwn_attrs[] = {
 	&sbp_wwn_attr_version,
 	NULL,
 };
@@ -2133,7 +2133,7 @@ static int sbp_enable_tpg(struct se_portal_group *se_tpg, bool enable)
 
 CONFIGFS_ATTR(sbp_tpg_, directory_id);
 
-static struct configfs_attribute *sbp_tpg_base_attrs[] = {
+static const struct configfs_attribute *const sbp_tpg_base_attrs[] = {
 	&sbp_tpg_attr_directory_id,
 	NULL,
 };
@@ -2241,7 +2241,7 @@ CONFIGFS_ATTR(sbp_tpg_attrib_, mgt_orb_timeout);
 CONFIGFS_ATTR(sbp_tpg_attrib_, max_reconnect_timeout);
 CONFIGFS_ATTR(sbp_tpg_attrib_, max_logins_per_lun);
 
-static struct configfs_attribute *sbp_tpg_attrib_attrs[] = {
+static const struct configfs_attribute *const sbp_tpg_attrib_attrs[] = {
 	&sbp_tpg_attrib_attr_mgt_orb_timeout,
 	&sbp_tpg_attrib_attr_max_reconnect_timeout,
 	&sbp_tpg_attrib_attr_max_logins_per_lun,

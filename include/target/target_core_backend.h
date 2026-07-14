@@ -58,8 +58,8 @@ struct target_backend_ops {
 	int (*format_prot)(struct se_device *);
 	void (*free_prot)(struct se_device *);
 
-	struct configfs_attribute **tb_dev_attrib_attrs;
-	struct configfs_attribute **tb_dev_action_attrs;
+	const struct configfs_attribute *const *tb_dev_attrib_attrs;
+	const struct configfs_attribute *const *tb_dev_action_attrs;
 };
 
 struct exec_cmd_ops {
@@ -104,9 +104,9 @@ int	transport_set_vpd_assoc(struct t10_vpd *, unsigned char *);
 int	transport_set_vpd_ident_type(struct t10_vpd *, unsigned char *);
 int	transport_set_vpd_ident(struct t10_vpd *, unsigned char *);
 
-extern struct configfs_attribute *sbc_attrib_attrs[];
-extern struct configfs_attribute *passthrough_attrib_attrs[];
-extern struct configfs_attribute *passthrough_pr_attrib_attrs[];
+extern const struct configfs_attribute *const sbc_attrib_attrs[];
+extern const struct configfs_attribute *const passthrough_attrib_attrs[];
+extern const struct configfs_attribute *const passthrough_pr_attrib_attrs[];
 
 /* core helpers also used by command snooping in pscsi */
 void	*transport_kmap_data_sg(struct se_cmd *);

@@ -139,7 +139,7 @@ static ssize_t lio_target_np_cxgbit_store(struct config_item *item,
 }
 CONFIGFS_ATTR(lio_target_np_, cxgbit);
 
-static struct configfs_attribute *lio_target_portal_attrs[] = {
+static const struct configfs_attribute *const lio_target_portal_attrs[] = {
 	&lio_target_np_attr_iser,
 	&lio_target_np_attr_cxgbit,
 	NULL,
@@ -344,7 +344,7 @@ static ssize_t iscsi_nacl_attrib_authentication_store(struct config_item *item,
 
 CONFIGFS_ATTR(iscsi_nacl_attrib_, authentication);
 
-static struct configfs_attribute *lio_target_nacl_attrib_attrs[] = {
+static const struct configfs_attribute *const lio_target_nacl_attrib_attrs[] = {
 	&iscsi_nacl_attrib_attr_dataout_timeout,
 	&iscsi_nacl_attrib_attr_dataout_timeout_retries,
 	&iscsi_nacl_attrib_attr_default_erl,
@@ -451,7 +451,7 @@ CONFIGFS_ATTR_RO(iscsi_nacl_auth_, name)
 
 DEF_NACL_AUTH_INT(authenticate_target);
 
-static struct configfs_attribute *lio_target_nacl_auth_attrs[] = {
+static const struct configfs_attribute *const lio_target_nacl_auth_attrs[] = {
 	&iscsi_nacl_auth_attr_userid,
 	&iscsi_nacl_auth_attr_password,
 	&iscsi_nacl_auth_attr_authenticate_target,
@@ -502,7 +502,7 @@ ISCSI_NACL_PARAM(DataPDUInOrder);
 ISCSI_NACL_PARAM(DataSequenceInOrder);
 ISCSI_NACL_PARAM(ErrorRecoveryLevel);
 
-static struct configfs_attribute *lio_target_nacl_param_attrs[] = {
+static const struct configfs_attribute *const lio_target_nacl_param_attrs[] = {
 	&iscsi_nacl_param_attr_MaxConnections,
 	&iscsi_nacl_param_attr_InitialR2T,
 	&iscsi_nacl_param_attr_ImmediateData,
@@ -715,7 +715,7 @@ CONFIGFS_ATTR_RO(lio_target_nacl_, info);
 CONFIGFS_ATTR(lio_target_nacl_, cmdsn_depth);
 CONFIGFS_ATTR(lio_target_nacl_, tag);
 
-static struct configfs_attribute *lio_target_initiator_attrs[] = {
+static const struct configfs_attribute *const lio_target_initiator_attrs[] = {
 	&lio_target_nacl_attr_info,
 	&lio_target_nacl_attr_cmdsn_depth,
 	&lio_target_nacl_attr_tag,
@@ -795,7 +795,7 @@ DEF_TPG_ATTRIB(fabric_prot_type);
 DEF_TPG_ATTRIB(tpg_enabled_sendtargets);
 DEF_TPG_ATTRIB(login_keys_workaround);
 
-static struct configfs_attribute *lio_target_tpg_attrib_attrs[] = {
+static const struct configfs_attribute *const lio_target_tpg_attrib_attrs[] = {
 	&iscsi_tpg_attrib_attr_authentication,
 	&iscsi_tpg_attrib_attr_login_timeout,
 	&iscsi_tpg_attrib_attr_generate_node_acls,
@@ -899,7 +899,7 @@ CONFIGFS_ATTR_RO(iscsi_tpg_auth_, name);
 
 DEF_TPG_AUTH_INT(authenticate_target);
 
-static struct configfs_attribute *lio_target_tpg_auth_attrs[] = {
+static const struct configfs_attribute *const lio_target_tpg_auth_attrs[] = {
 	&iscsi_tpg_auth_attr_userid,
 	&iscsi_tpg_auth_attr_password,
 	&iscsi_tpg_auth_attr_authenticate_target,
@@ -991,7 +991,7 @@ DEF_TPG_PARAM(OFMarker);
 DEF_TPG_PARAM(IFMarkInt);
 DEF_TPG_PARAM(OFMarkInt);
 
-static struct configfs_attribute *lio_target_tpg_param_attrs[] = {
+static const struct configfs_attribute *const lio_target_tpg_param_attrs[] = {
 	&iscsi_tpg_param_attr_AuthMethod,
 	&iscsi_tpg_param_attr_HeaderDigest,
 	&iscsi_tpg_param_attr_DataDigest,
@@ -1028,7 +1028,7 @@ static ssize_t lio_target_tpg_dynamic_sessions_show(struct config_item *item,
 
 CONFIGFS_ATTR_RO(lio_target_tpg_, dynamic_sessions);
 
-static struct configfs_attribute *lio_target_tpg_attrs[] = {
+static const struct configfs_attribute *const lio_target_tpg_attrs[] = {
 	&lio_target_tpg_attr_dynamic_sessions,
 	NULL,
 };
@@ -1176,7 +1176,7 @@ out:
 
 CONFIGFS_ATTR(lio_target_wwn_, cpus_allowed_list);
 
-static struct configfs_attribute *lio_target_wwn_attrs[] = {
+static const struct configfs_attribute *const lio_target_wwn_attrs[] = {
 	&lio_target_wwn_attr_lio_version,
 	&lio_target_wwn_attr_cpus_allowed_list,
 	NULL,
@@ -1342,7 +1342,7 @@ static ssize_t iscsi_disc_enforce_discovery_auth_store(struct config_item *item,
 
 CONFIGFS_ATTR(iscsi_disc_, enforce_discovery_auth);
 
-static struct configfs_attribute *lio_target_discovery_auth_attrs[] = {
+static const struct configfs_attribute *const lio_target_discovery_auth_attrs[] = {
 	&iscsi_disc_attr_userid,
 	&iscsi_disc_attr_password,
 	&iscsi_disc_attr_authenticate_target,
