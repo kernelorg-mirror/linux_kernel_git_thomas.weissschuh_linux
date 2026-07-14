@@ -161,7 +161,7 @@ CONFIGFS_ATTR_RO(iscsi_stat_instance_, description);
 CONFIGFS_ATTR_RO(iscsi_stat_instance_, vendor);
 CONFIGFS_ATTR_RO(iscsi_stat_instance_, version);
 
-static struct configfs_attribute *iscsi_stat_instance_attrs[] = {
+static const struct configfs_attribute *const iscsi_stat_instance_attrs[] = {
 	&iscsi_stat_instance_attr_inst,
 	&iscsi_stat_instance_attr_min_ver,
 	&iscsi_stat_instance_attr_max_ver,
@@ -179,7 +179,7 @@ static struct configfs_attribute *iscsi_stat_instance_attrs[] = {
 };
 
 const struct config_item_type iscsi_stat_instance_cit = {
-	.ct_attrs		= iscsi_stat_instance_attrs,
+	.ct_attrs_const		= iscsi_stat_instance_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -232,7 +232,7 @@ CONFIGFS_ATTR_RO(iscsi_stat_sess_err_, digest_errors);
 CONFIGFS_ATTR_RO(iscsi_stat_sess_err_, cxn_errors);
 CONFIGFS_ATTR_RO(iscsi_stat_sess_err_, format_errors);
 
-static struct configfs_attribute *iscsi_stat_sess_err_attrs[] = {
+static const struct configfs_attribute *const iscsi_stat_sess_err_attrs[] = {
 	&iscsi_stat_sess_err_attr_inst,
 	&iscsi_stat_sess_err_attr_digest_errors,
 	&iscsi_stat_sess_err_attr_cxn_errors,
@@ -241,7 +241,7 @@ static struct configfs_attribute *iscsi_stat_sess_err_attrs[] = {
 };
 
 const struct config_item_type iscsi_stat_sess_err_cit = {
-	.ct_attrs		= iscsi_stat_sess_err_attrs,
+	.ct_attrs_const		= iscsi_stat_sess_err_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -369,7 +369,7 @@ CONFIGFS_ATTR_RO(iscsi_stat_tgt_attr_, fail_intr_name);
 CONFIGFS_ATTR_RO(iscsi_stat_tgt_attr_, fail_intr_addr_type);
 CONFIGFS_ATTR_RO(iscsi_stat_tgt_attr_, fail_intr_addr);
 
-static struct configfs_attribute *iscsi_stat_tgt_attr_attrs[] = {
+static const struct configfs_attribute *const iscsi_stat_tgt_attr_attrs[] = {
 	&iscsi_stat_tgt_attr_attr_inst,
 	&iscsi_stat_tgt_attr_attr_indx,
 	&iscsi_stat_tgt_attr_attr_login_fails,
@@ -382,7 +382,7 @@ static struct configfs_attribute *iscsi_stat_tgt_attr_attrs[] = {
 };
 
 const struct config_item_type iscsi_stat_tgt_attr_cit = {
-	.ct_attrs		= iscsi_stat_tgt_attr_attrs,
+	.ct_attrs_const		= iscsi_stat_tgt_attr_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -501,7 +501,7 @@ CONFIGFS_ATTR_RO(iscsi_stat_login_, authorize_fails);
 CONFIGFS_ATTR_RO(iscsi_stat_login_, authenticate_fails);
 CONFIGFS_ATTR_RO(iscsi_stat_login_, negotiate_fails);
 
-static struct configfs_attribute *iscsi_stat_login_stats_attrs[] = {
+static const struct configfs_attribute *const iscsi_stat_login_stats_attrs[] = {
 	&iscsi_stat_login_attr_inst,
 	&iscsi_stat_login_attr_indx,
 	&iscsi_stat_login_attr_accepts,
@@ -514,7 +514,7 @@ static struct configfs_attribute *iscsi_stat_login_stats_attrs[] = {
 };
 
 const struct config_item_type iscsi_stat_login_cit = {
-	.ct_attrs		= iscsi_stat_login_stats_attrs,
+	.ct_attrs_const		= iscsi_stat_login_stats_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -562,7 +562,7 @@ CONFIGFS_ATTR_RO(iscsi_stat_logout_, indx);
 CONFIGFS_ATTR_RO(iscsi_stat_logout_, normal_logouts);
 CONFIGFS_ATTR_RO(iscsi_stat_logout_, abnormal_logouts);
 
-static struct configfs_attribute *iscsi_stat_logout_stats_attrs[] = {
+static const struct configfs_attribute *const iscsi_stat_logout_stats_attrs[] = {
 	&iscsi_stat_logout_attr_inst,
 	&iscsi_stat_logout_attr_indx,
 	&iscsi_stat_logout_attr_normal_logouts,
@@ -571,7 +571,7 @@ static struct configfs_attribute *iscsi_stat_logout_stats_attrs[] = {
 };
 
 const struct config_item_type iscsi_stat_logout_cit = {
-	.ct_attrs		= iscsi_stat_logout_stats_attrs,
+	.ct_attrs_const		= iscsi_stat_logout_stats_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -779,7 +779,7 @@ CONFIGFS_ATTR_RO(iscsi_stat_sess_, rxdata_octs);
 CONFIGFS_ATTR_RO(iscsi_stat_sess_, conn_digest_errors);
 CONFIGFS_ATTR_RO(iscsi_stat_sess_, conn_timeout_errors);
 
-static struct configfs_attribute *iscsi_stat_sess_stats_attrs[] = {
+static const struct configfs_attribute *const iscsi_stat_sess_stats_attrs[] = {
 	&iscsi_stat_sess_attr_inst,
 	&iscsi_stat_sess_attr_node,
 	&iscsi_stat_sess_attr_indx,
@@ -793,6 +793,6 @@ static struct configfs_attribute *iscsi_stat_sess_stats_attrs[] = {
 };
 
 const struct config_item_type iscsi_stat_sess_cit = {
-	.ct_attrs		= iscsi_stat_sess_stats_attrs,
+	.ct_attrs_const		= iscsi_stat_sess_stats_attrs,
 	.ct_owner		= THIS_MODULE,
 };
