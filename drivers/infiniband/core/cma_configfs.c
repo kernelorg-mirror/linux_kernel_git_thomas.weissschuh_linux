@@ -185,14 +185,14 @@ static ssize_t default_roce_tos_store(struct config_item *item,
 
 CONFIGFS_ATTR(, default_roce_tos);
 
-static struct configfs_attribute *cma_configfs_attributes[] = {
+static const struct configfs_attribute *const cma_configfs_attributes[] = {
 	&attr_default_roce_mode,
 	&attr_default_roce_tos,
 	NULL,
 };
 
 static const struct config_item_type cma_port_group_type = {
-	.ct_attrs	= cma_configfs_attributes,
+	.ct_attrs_const	= cma_configfs_attributes,
 	.ct_owner	= THIS_MODULE
 };
 
