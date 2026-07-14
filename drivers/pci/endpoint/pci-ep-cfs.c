@@ -210,7 +210,7 @@ static ssize_t pci_epc_start_show(struct config_item *item, char *page)
 
 CONFIGFS_ATTR(pci_epc_, start);
 
-static struct configfs_attribute *pci_epc_attrs[] = {
+static const struct configfs_attribute *const pci_epc_attrs[] = {
 	&pci_epc_attr_start,
 	NULL,
 };
@@ -263,7 +263,7 @@ static const struct configfs_item_operations pci_epc_item_ops = {
 
 static const struct config_item_type pci_epc_type = {
 	.ct_item_ops	= &pci_epc_item_ops,
-	.ct_attrs	= pci_epc_attrs,
+	.ct_attrs_const	= pci_epc_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -458,7 +458,7 @@ CONFIGFS_ATTR(pci_epf_, interrupt_pin);
 CONFIGFS_ATTR(pci_epf_, msi_interrupts);
 CONFIGFS_ATTR(pci_epf_, msix_interrupts);
 
-static struct configfs_attribute *pci_epf_attrs[] = {
+static const struct configfs_attribute *const pci_epf_attrs[] = {
 	&pci_epf_attr_vendorid,
 	&pci_epf_attr_deviceid,
 	&pci_epf_attr_revid,
@@ -515,7 +515,7 @@ static const struct configfs_item_operations pci_epf_ops = {
 
 static const struct config_item_type pci_epf_type = {
 	.ct_item_ops	= &pci_epf_ops,
-	.ct_attrs	= pci_epf_attrs,
+	.ct_attrs_const	= pci_epf_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
