@@ -179,7 +179,7 @@ static const struct configfs_attribute *const iscsi_stat_instance_attrs[] = {
 };
 
 const struct config_item_type iscsi_stat_instance_cit = {
-	.ct_attrs_const		= iscsi_stat_instance_attrs,
+	.ct_attrs		= iscsi_stat_instance_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -241,7 +241,7 @@ static const struct configfs_attribute *const iscsi_stat_sess_err_attrs[] = {
 };
 
 const struct config_item_type iscsi_stat_sess_err_cit = {
-	.ct_attrs_const		= iscsi_stat_sess_err_attrs,
+	.ct_attrs		= iscsi_stat_sess_err_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -382,7 +382,7 @@ static const struct configfs_attribute *const iscsi_stat_tgt_attr_attrs[] = {
 };
 
 const struct config_item_type iscsi_stat_tgt_attr_cit = {
-	.ct_attrs_const		= iscsi_stat_tgt_attr_attrs,
+	.ct_attrs		= iscsi_stat_tgt_attr_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -514,7 +514,7 @@ static const struct configfs_attribute *const iscsi_stat_login_stats_attrs[] = {
 };
 
 const struct config_item_type iscsi_stat_login_cit = {
-	.ct_attrs_const		= iscsi_stat_login_stats_attrs,
+	.ct_attrs		= iscsi_stat_login_stats_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -571,7 +571,7 @@ static const struct configfs_attribute *const iscsi_stat_logout_stats_attrs[] = 
 };
 
 const struct config_item_type iscsi_stat_logout_cit = {
-	.ct_attrs_const		= iscsi_stat_logout_stats_attrs,
+	.ct_attrs		= iscsi_stat_logout_stats_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -793,6 +793,6 @@ static const struct configfs_attribute *const iscsi_stat_sess_stats_attrs[] = {
 };
 
 const struct config_item_type iscsi_stat_sess_cit = {
-	.ct_attrs_const		= iscsi_stat_sess_stats_attrs,
+	.ct_attrs		= iscsi_stat_sess_stats_attrs,
 	.ct_owner		= THIS_MODULE,
 };

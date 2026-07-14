@@ -214,7 +214,7 @@ get_policy_node_type(const struct configfs_attribute *const *attrs)
 		return NULL;
 	}
 
-	type->ct_attrs_const = merged;
+	type->ct_attrs = merged;
 
 	return type;
 }
@@ -278,7 +278,7 @@ static struct configfs_group_operations stp_policy_node_group_ops = {
 static const struct config_item_type stp_policy_node_type = {
 	.ct_item_ops	= &stp_policy_node_item_ops,
 	.ct_group_ops	= &stp_policy_node_group_ops,
-	.ct_attrs_const	= stp_policy_node_attrs,
+	.ct_attrs	= stp_policy_node_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -375,7 +375,7 @@ static struct configfs_group_operations stp_policy_group_ops = {
 static const struct config_item_type stp_policy_type = {
 	.ct_item_ops	= &stp_policy_item_ops,
 	.ct_group_ops	= &stp_policy_group_ops,
-	.ct_attrs_const	= stp_policy_attrs,
+	.ct_attrs	= stp_policy_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

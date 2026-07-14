@@ -47,7 +47,7 @@ static void target_core_setup_##_name##_cit(struct target_backend *tb)	\
 									\
 	cit->ct_item_ops = _item_ops;					\
 	cit->ct_group_ops = _group_ops;					\
-	cit->ct_attrs_const = _attrs;					\
+	cit->ct_attrs = _attrs;					\
 	cit->ct_owner = tb->ops->owner;					\
 	pr_debug("Setup generic %s\n", __stringify(_name));		\
 }
@@ -59,7 +59,7 @@ static void target_core_setup_##_name##_cit(struct target_backend *tb)	\
 									\
 	cit->ct_item_ops = _item_ops;					\
 	cit->ct_group_ops = _group_ops;					\
-	cit->ct_attrs_const = tb->ops->tb_##_name##_attrs;		\
+	cit->ct_attrs = tb->ops->tb_##_name##_attrs;		\
 	cit->ct_owner = tb->ops->owner;					\
 	pr_debug("Setup generic %s\n", __stringify(_name));		\
 }
@@ -304,7 +304,7 @@ static const struct configfs_attribute *const target_core_fabric_item_attrs[] = 
  */
 static const struct config_item_type target_core_fabrics_item = {
 	.ct_group_ops	= &target_core_fabric_group_ops,
-	.ct_attrs_const	= target_core_fabric_item_attrs,
+	.ct_attrs	= target_core_fabric_item_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -2885,7 +2885,7 @@ static const struct configfs_item_operations target_core_alua_lu_gp_ops = {
 
 static const struct config_item_type target_core_alua_lu_gp_cit = {
 	.ct_item_ops		= &target_core_alua_lu_gp_ops,
-	.ct_attrs_const		= target_core_alua_lu_gp_attrs,
+	.ct_attrs		= target_core_alua_lu_gp_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -3315,7 +3315,7 @@ static const struct configfs_item_operations target_core_alua_tg_pt_gp_ops = {
 
 static const struct config_item_type target_core_alua_tg_pt_gp_cit = {
 	.ct_item_ops		= &target_core_alua_tg_pt_gp_ops,
-	.ct_attrs_const		= target_core_alua_tg_pt_gp_attrs,
+	.ct_attrs		= target_core_alua_tg_pt_gp_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -3386,7 +3386,7 @@ TB_CIT_SETUP(dev_alua_tg_pt_gps, NULL, &target_core_alua_tg_pt_gps_group_ops, NU
  */
 static const struct config_item_type target_core_alua_cit = {
 	.ct_item_ops		= NULL,
-	.ct_attrs_const		= NULL,
+	.ct_attrs		= NULL,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -3621,7 +3621,7 @@ static const struct configfs_item_operations target_core_hba_item_ops = {
 static const struct config_item_type target_core_hba_cit = {
 	.ct_item_ops		= &target_core_hba_item_ops,
 	.ct_group_ops		= &target_core_hba_group_ops,
-	.ct_attrs_const		= target_core_hba_attrs,
+	.ct_attrs		= target_core_hba_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -3703,7 +3703,7 @@ static const struct configfs_group_operations target_core_group_ops = {
 static const struct config_item_type target_core_cit = {
 	.ct_item_ops	= NULL,
 	.ct_group_ops	= &target_core_group_ops,
-	.ct_attrs_const	= NULL,
+	.ct_attrs	= NULL,
 	.ct_owner	= THIS_MODULE,
 };
 

@@ -552,7 +552,7 @@ static const struct configfs_attribute *const lb_attrs[] = {
 
 static const struct config_item_type lb_func_type = {
 	.ct_item_ops    = &lb_item_ops,
-	.ct_attrs_const	= lb_attrs,
+	.ct_attrs	= lb_attrs,
 	.ct_owner       = THIS_MODULE,
 };
 

@@ -447,7 +447,7 @@ static const struct configfs_attribute *const fault_config_attrs[] = {
 };
 
 static const struct config_item_type fault_config_type = {
-	.ct_attrs_const	= fault_config_attrs,
+	.ct_attrs	= fault_config_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

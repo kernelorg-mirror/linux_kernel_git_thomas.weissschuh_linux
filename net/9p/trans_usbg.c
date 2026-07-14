@@ -850,7 +850,7 @@ static const struct configfs_attribute *const usb9pfs_attrs[] = {
 
 static const struct config_item_type usb9pfs_func_type = {
 	.ct_item_ops	= &usb9pfs_item_ops,
-	.ct_attrs_const	= usb9pfs_attrs,
+	.ct_attrs	= usb9pfs_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

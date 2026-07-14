@@ -1996,7 +1996,7 @@ static const struct configfs_attribute *const epf_ntb_attrs[] = {
 };
 
 static const struct config_item_type ntb_group_type = {
-	.ct_attrs_const	= epf_ntb_attrs,
+	.ct_attrs	= epf_ntb_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

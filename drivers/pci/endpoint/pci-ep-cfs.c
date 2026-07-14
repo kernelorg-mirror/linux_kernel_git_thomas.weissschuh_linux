@@ -263,7 +263,7 @@ static const struct configfs_item_operations pci_epc_item_ops = {
 
 static const struct config_item_type pci_epc_type = {
 	.ct_item_ops	= &pci_epc_item_ops,
-	.ct_attrs_const	= pci_epc_attrs,
+	.ct_attrs	= pci_epc_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -515,7 +515,7 @@ static const struct configfs_item_operations pci_epf_ops = {
 
 static const struct config_item_type pci_epf_type = {
 	.ct_item_ops	= &pci_epf_ops,
-	.ct_attrs_const	= pci_epf_attrs,
+	.ct_attrs	= pci_epf_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

@@ -852,7 +852,7 @@ static struct configfs_item_operations nvmet_ns_item_ops = {
 
 static const struct config_item_type nvmet_ns_type = {
 	.ct_item_ops		= &nvmet_ns_item_ops,
-	.ct_attrs_const		= nvmet_ns_attrs,
+	.ct_attrs		= nvmet_ns_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -1033,7 +1033,7 @@ static const struct configfs_attribute *const nvmet_passthru_attrs[] = {
 };
 
 static const struct config_item_type nvmet_passthru_type = {
-	.ct_attrs_const		= nvmet_passthru_attrs,
+	.ct_attrs		= nvmet_passthru_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -1729,7 +1729,7 @@ static struct configfs_item_operations nvmet_subsys_item_ops = {
 
 static const struct config_item_type nvmet_subsys_type = {
 	.ct_item_ops		= &nvmet_subsys_item_ops,
-	.ct_attrs_const		= nvmet_subsys_attrs,
+	.ct_attrs		= nvmet_subsys_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -1842,7 +1842,7 @@ static struct configfs_item_operations nvmet_referral_item_ops = {
 
 static const struct config_item_type nvmet_referral_type = {
 	.ct_owner	= THIS_MODULE,
-	.ct_attrs_const	= nvmet_referral_attrs,
+	.ct_attrs	= nvmet_referral_attrs,
 	.ct_item_ops	= &nvmet_referral_item_ops,
 };
 
@@ -1948,7 +1948,7 @@ static struct configfs_item_operations nvmet_ana_group_item_ops = {
 
 static const struct config_item_type nvmet_ana_group_type = {
 	.ct_item_ops		= &nvmet_ana_group_item_ops,
-	.ct_attrs_const		= nvmet_ana_group_attrs,
+	.ct_attrs		= nvmet_ana_group_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -2033,7 +2033,7 @@ static struct configfs_item_operations nvmet_port_item_ops = {
 };
 
 static const struct config_item_type nvmet_port_type = {
-	.ct_attrs_const		= nvmet_port_attrs,
+	.ct_attrs		= nvmet_port_attrs,
 	.ct_item_ops		= &nvmet_port_item_ops,
 	.ct_owner		= THIS_MODULE,
 };
@@ -2265,7 +2265,7 @@ static struct configfs_item_operations nvmet_host_item_ops = {
 static const struct config_item_type nvmet_host_type = {
 	.ct_item_ops		= &nvmet_host_item_ops,
 #ifdef CONFIG_NVME_TARGET_AUTH
-	.ct_attrs_const		= nvmet_host_attrs,
+	.ct_attrs		= nvmet_host_attrs,
 #endif
 	.ct_owner		= THIS_MODULE,
 };
@@ -2349,7 +2349,7 @@ static const struct configfs_attribute *const nvmet_root_attrs[] = {
 };
 
 static const struct config_item_type nvmet_root_type = {
-	.ct_attrs_const		= nvmet_root_attrs,
+	.ct_attrs		= nvmet_root_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 

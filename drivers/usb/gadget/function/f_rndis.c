@@ -865,7 +865,7 @@ static const struct configfs_attribute *const rndis_attrs[] = {
 
 static const struct config_item_type rndis_func_type = {
 	.ct_item_ops	= &rndis_item_ops,
-	.ct_attrs_const	= rndis_attrs,
+	.ct_attrs	= rndis_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

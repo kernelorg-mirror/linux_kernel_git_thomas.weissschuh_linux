@@ -81,7 +81,7 @@ static const struct configfs_attribute *const target_stat_scsi_dev_attrs[] = {
 };
 
 static const struct config_item_type target_stat_scsi_dev_cit = {
-	.ct_attrs_const		= target_stat_scsi_dev_attrs,
+	.ct_attrs		= target_stat_scsi_dev_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -178,7 +178,7 @@ static const struct configfs_attribute *const target_stat_scsi_tgt_dev_attrs[] =
 };
 
 static const struct config_item_type target_stat_scsi_tgt_dev_cit = {
-	.ct_attrs_const		= target_stat_scsi_tgt_dev_attrs,
+	.ct_attrs		= target_stat_scsi_tgt_dev_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -385,7 +385,7 @@ static const struct configfs_attribute *const target_stat_scsi_lu_attrs[] = {
 };
 
 static const struct config_item_type target_stat_scsi_lu_cit = {
-	.ct_attrs_const		= target_stat_scsi_lu_attrs,
+	.ct_attrs		= target_stat_scsi_lu_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -511,7 +511,7 @@ static const struct configfs_attribute *const target_stat_scsi_port_attrs[] = {
 };
 
 static const struct config_item_type target_stat_scsi_port_cit = {
-	.ct_attrs_const		= target_stat_scsi_port_attrs,
+	.ct_attrs		= target_stat_scsi_port_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -672,7 +672,7 @@ static const struct configfs_attribute *const target_stat_scsi_tgt_port_attrs[] 
 };
 
 static const struct config_item_type target_stat_scsi_tgt_port_cit = {
-	.ct_attrs_const		= target_stat_scsi_tgt_port_attrs,
+	.ct_attrs		= target_stat_scsi_tgt_port_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -792,7 +792,7 @@ static const struct configfs_attribute *const target_stat_scsi_transport_attrs[]
 };
 
 static const struct config_item_type target_stat_scsi_transport_cit = {
-	.ct_attrs_const		= target_stat_scsi_transport_attrs,
+	.ct_attrs		= target_stat_scsi_transport_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -1119,7 +1119,7 @@ static const struct configfs_attribute *const target_stat_scsi_auth_intr_attrs[]
 };
 
 static const struct config_item_type target_stat_scsi_auth_intr_cit = {
-	.ct_attrs_const		= target_stat_scsi_auth_intr_attrs,
+	.ct_attrs		= target_stat_scsi_auth_intr_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -1290,7 +1290,7 @@ static const struct configfs_attribute *const target_stat_scsi_ath_intr_port_att
 };
 
 static const struct config_item_type target_stat_scsi_att_intr_port_cit = {
-	.ct_attrs_const		= target_stat_scsi_ath_intr_port_attrs,
+	.ct_attrs		= target_stat_scsi_ath_intr_port_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 

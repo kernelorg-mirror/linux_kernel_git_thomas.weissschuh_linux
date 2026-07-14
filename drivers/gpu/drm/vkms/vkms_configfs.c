@@ -194,7 +194,7 @@ static struct configfs_item_operations crtc_item_operations = {
 };
 
 static const struct config_item_type crtc_item_type = {
-	.ct_attrs_const	= crtc_item_attrs,
+	.ct_attrs	= crtc_item_attrs,
 	.ct_item_ops	= &crtc_item_operations,
 	.ct_owner	= THIS_MODULE,
 };
@@ -350,7 +350,7 @@ static struct configfs_item_operations plane_item_operations = {
 };
 
 static const struct config_item_type plane_item_type = {
-	.ct_attrs_const	= plane_item_attrs,
+	.ct_attrs	= plane_item_attrs,
 	.ct_item_ops	= &plane_item_operations,
 	.ct_owner	= THIS_MODULE,
 };
@@ -584,7 +584,7 @@ static struct configfs_item_operations connector_item_operations = {
 };
 
 static const struct config_item_type connector_item_type = {
-	.ct_attrs_const	= connector_item_attrs,
+	.ct_attrs	= connector_item_attrs,
 	.ct_item_ops	= &connector_item_operations,
 	.ct_owner	= THIS_MODULE,
 };
@@ -755,7 +755,7 @@ static struct configfs_item_operations device_item_operations = {
 };
 
 static const struct config_item_type device_item_type = {
-	.ct_attrs_const	= device_item_attrs,
+	.ct_attrs	= device_item_attrs,
 	.ct_item_ops	= &device_item_operations,
 	.ct_owner	= THIS_MODULE,
 };
