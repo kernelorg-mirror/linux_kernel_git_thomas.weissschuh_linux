@@ -345,7 +345,7 @@ static ssize_t tsm_report_manifestblob_read(struct config_item *cfg, void *buf,
 }
 CONFIGFS_BIN_ATTR_RO(tsm_report_, manifestblob, NULL, TSM_REPORT_OUTBLOB_MAX);
 
-static struct configfs_attribute *tsm_report_attrs[] = {
+static const struct configfs_attribute *const tsm_report_attrs[] = {
 	[TSM_REPORT_GENERATION] = &tsm_report_attr_generation,
 	[TSM_REPORT_PROVIDER] = &tsm_report_attr_provider,
 	[TSM_REPORT_PRIVLEVEL] = &tsm_report_attr_privlevel,
@@ -414,7 +414,7 @@ static struct configfs_group_operations tsm_report_attr_group_ops = {
 static const struct config_item_type tsm_report_type = {
 	.ct_owner = THIS_MODULE,
 	.ct_bin_attrs = tsm_report_bin_attrs,
-	.ct_attrs = tsm_report_attrs,
+	.ct_attrs_const = tsm_report_attrs,
 	.ct_item_ops = &tsm_report_item_ops,
 	.ct_group_ops = &tsm_report_attr_group_ops,
 };
