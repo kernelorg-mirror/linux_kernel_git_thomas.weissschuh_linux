@@ -1148,7 +1148,7 @@ gpio_aggregator_line_offset_store(struct config_item *item, const char *page,
 }
 CONFIGFS_ATTR(gpio_aggregator_line_, offset);
 
-static struct configfs_attribute *gpio_aggregator_line_attrs[] = {
+static const struct configfs_attribute *const gpio_aggregator_line_attrs[] = {
 	&gpio_aggregator_line_attr_key,
 	&gpio_aggregator_line_attr_name,
 	&gpio_aggregator_line_attr_offset,
@@ -1223,7 +1223,7 @@ gpio_aggregator_device_live_store(struct config_item *item, const char *page,
 }
 CONFIGFS_ATTR(gpio_aggregator_device_, live);
 
-static struct configfs_attribute *gpio_aggregator_device_attrs[] = {
+static const struct configfs_attribute *const gpio_aggregator_device_attrs[] = {
 	&gpio_aggregator_device_attr_dev_name,
 	&gpio_aggregator_device_attr_live,
 	NULL
@@ -1249,7 +1249,7 @@ static const struct configfs_item_operations gpio_aggregator_line_item_ops = {
 
 static const struct config_item_type gpio_aggregator_line_type = {
 	.ct_item_ops	= &gpio_aggregator_line_item_ops,
-	.ct_attrs	= gpio_aggregator_line_attrs,
+	.ct_attrs_const	= gpio_aggregator_line_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1316,7 +1316,7 @@ static const struct configfs_group_operations gpio_aggregator_device_group_ops =
 static const struct config_item_type gpio_aggregator_device_type = {
 	.ct_group_ops	= &gpio_aggregator_device_group_ops,
 	.ct_item_ops	= &gpio_aggregator_device_item_ops,
-	.ct_attrs	= gpio_aggregator_device_attrs,
+	.ct_attrs_const	= gpio_aggregator_device_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
