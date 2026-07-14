@@ -58,7 +58,7 @@ void stp_policy_node_get_ranges(struct stp_policy_node *policy_node,
 				unsigned int *cstart, unsigned int *cend);
 
 const struct config_item_type *
-get_policy_node_type(struct configfs_attribute **attrs);
+get_policy_node_type(const struct configfs_attribute *const *attrs);
 
 struct stm_output {
 	spinlock_t		lock;
@@ -101,7 +101,7 @@ struct stm_protocol_driver {
 	int		(*output_open)(void *priv, struct stm_output *output);
 	void		(*output_close)(struct stm_output *output);
 	ssize_t		priv_sz;
-	struct configfs_attribute	**policy_attr;
+	const struct configfs_attribute	*const *policy_attr;
 };
 
 int stm_register_protocol(const struct stm_protocol_driver *pdrv);

@@ -255,7 +255,7 @@ sys_t_policy_clocksync_interval_store(struct config_item *item,
 
 CONFIGFS_ATTR(sys_t_policy_, clocksync_interval);
 
-static struct configfs_attribute *sys_t_policy_attrs[] = {
+static const struct configfs_attribute *const sys_t_policy_attrs[] = {
 	&sys_t_policy_attr_uuid,
 	&sys_t_policy_attr_do_len,
 	&sys_t_policy_attr_ts_interval,
