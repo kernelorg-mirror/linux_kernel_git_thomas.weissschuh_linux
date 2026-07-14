@@ -1445,7 +1445,7 @@ CONFIGFS_ATTR(pci_epf_test_, bar3_size);
 CONFIGFS_ATTR(pci_epf_test_, bar4_size);
 CONFIGFS_ATTR(pci_epf_test_, bar5_size);
 
-static struct configfs_attribute *pci_epf_test_attrs[] = {
+static const struct configfs_attribute *const pci_epf_test_attrs[] = {
 	&pci_epf_test_attr_bar0_size,
 	&pci_epf_test_attr_bar1_size,
 	&pci_epf_test_attr_bar2_size,
@@ -1456,7 +1456,7 @@ static struct configfs_attribute *pci_epf_test_attrs[] = {
 };
 
 static const struct config_item_type pci_epf_test_group_type = {
-	.ct_attrs	= pci_epf_test_attrs,
+	.ct_attrs_const	= pci_epf_test_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
