@@ -152,7 +152,7 @@ static ssize_t cscfg_cfg_preset_store(struct config_item *item,
 }
 CONFIGFS_ATTR(cscfg_cfg_, preset);
 
-static struct configfs_attribute *cscfg_config_view_attrs[] = {
+static const struct configfs_attribute *const cscfg_config_view_attrs[] = {
 	&cscfg_cfg_attr_description,
 	&cscfg_cfg_attr_feature_refs,
 	&cscfg_cfg_attr_enable,
@@ -162,17 +162,17 @@ static struct configfs_attribute *cscfg_config_view_attrs[] = {
 
 static const struct config_item_type cscfg_config_view_type = {
 	.ct_owner = THIS_MODULE,
-	.ct_attrs = cscfg_config_view_attrs,
+	.ct_attrs_const = cscfg_config_view_attrs,
 };
 
-static struct configfs_attribute *cscfg_config_preset_attrs[] = {
+static const struct configfs_attribute *const cscfg_config_preset_attrs[] = {
 	&cscfg_cfg_attr_values,
 	NULL,
 };
 
 static const struct config_item_type cscfg_config_preset_type = {
 	.ct_owner = THIS_MODULE,
-	.ct_attrs = cscfg_config_preset_attrs,
+	.ct_attrs_const = cscfg_config_preset_attrs,
 };
 
 static int cscfg_add_preset_groups(struct cscfg_fs_config *cfg_view)
@@ -265,7 +265,7 @@ static ssize_t cscfg_feat_nr_params_show(struct config_item *item, char *page)
 CONFIGFS_ATTR_RO(cscfg_feat_, nr_params);
 
 /* base feature desc attrib structures */
-static struct configfs_attribute *cscfg_feature_view_attrs[] = {
+static const struct configfs_attribute *const cscfg_feature_view_attrs[] = {
 	&cscfg_feat_attr_description,
 	&cscfg_feat_attr_matches,
 	&cscfg_feat_attr_nr_params,
@@ -274,7 +274,7 @@ static struct configfs_attribute *cscfg_feature_view_attrs[] = {
 
 static const struct config_item_type cscfg_feature_view_type = {
 	.ct_owner = THIS_MODULE,
-	.ct_attrs = cscfg_feature_view_attrs,
+	.ct_attrs_const = cscfg_feature_view_attrs,
 };
 
 static ssize_t cscfg_param_value_show(struct config_item *item, char *page)
@@ -304,14 +304,14 @@ static ssize_t cscfg_param_value_store(struct config_item *item,
 }
 CONFIGFS_ATTR(cscfg_param_, value);
 
-static struct configfs_attribute *cscfg_param_view_attrs[] = {
+static const struct configfs_attribute *const cscfg_param_view_attrs[] = {
 	&cscfg_param_attr_value,
 	NULL,
 };
 
 static const struct config_item_type cscfg_param_view_type = {
 	.ct_owner = THIS_MODULE,
-	.ct_attrs = cscfg_param_view_attrs,
+	.ct_attrs_const = cscfg_param_view_attrs,
 };
 
 /*
