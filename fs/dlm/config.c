@@ -61,8 +61,8 @@ static struct config_item *make_node(struct config_group *, const char *);
 static void drop_node(struct config_group *, struct config_item *);
 static void release_node(struct config_item *);
 
-static struct configfs_attribute *comm_attrs[];
-static struct configfs_attribute *node_attrs[];
+static const struct configfs_attribute *const comm_attrs[];
+static const struct configfs_attribute *const node_attrs[];
 
 const struct rhashtable_params dlm_rhash_rsb_params = {
 	.nelem_hint = 3, /* start small */
@@ -240,7 +240,7 @@ CLUSTER_ATTR(mark, NULL);
 CLUSTER_ATTR(new_rsb_count, NULL);
 CLUSTER_ATTR(recover_callbacks, NULL);
 
-static struct configfs_attribute *cluster_attrs[] = {
+static const struct configfs_attribute *const cluster_attrs[] = {
 	[CLUSTER_ATTR_TCP_PORT] = &cluster_attr_tcp_port,
 	[CLUSTER_ATTR_BUFFER_SIZE] = &cluster_attr_buffer_size,
 	[CLUSTER_ATTR_RSBTBL_SIZE] = &cluster_attr_rsbtbl_size,
@@ -367,7 +367,7 @@ static const struct config_item_type clusters_type = {
 
 static const struct config_item_type cluster_type = {
 	.ct_item_ops = &cluster_ops,
-	.ct_attrs = cluster_attrs,
+	.ct_attrs_const = cluster_attrs,
 	.ct_owner = THIS_MODULE,
 };
 
@@ -388,7 +388,7 @@ static const struct config_item_type comms_type = {
 
 static const struct config_item_type comm_type = {
 	.ct_item_ops = &comm_ops,
-	.ct_attrs = comm_attrs,
+	.ct_attrs_const = comm_attrs,
 	.ct_owner = THIS_MODULE,
 };
 
@@ -399,7 +399,7 @@ static const struct config_item_type nodes_type = {
 
 static const struct config_item_type node_type = {
 	.ct_item_ops = &node_ops,
-	.ct_attrs = node_attrs,
+	.ct_attrs_const = node_attrs,
 	.ct_owner = THIS_MODULE,
 };
 
@@ -796,7 +796,7 @@ CONFIGFS_ATTR(comm_, mark);
 CONFIGFS_ATTR_WO(comm_, addr);
 CONFIGFS_ATTR_RO(comm_, addr_list);
 
-static struct configfs_attribute *comm_attrs[] = {
+static const struct configfs_attribute *const comm_attrs[] = {
 	[COMM_ATTR_NODEID] = &comm_attr_nodeid,
 	[COMM_ATTR_LOCAL] = &comm_attr_local,
 	[COMM_ATTR_ADDR] = &comm_attr_addr,
@@ -862,7 +862,7 @@ CONFIGFS_ATTR(node_, nodeid);
 CONFIGFS_ATTR(node_, weight);
 CONFIGFS_ATTR(node_, release_recover);
 
-static struct configfs_attribute *node_attrs[] = {
+static const struct configfs_attribute *const node_attrs[] = {
 	[NODE_ATTR_NODEID] = &node_attr_nodeid,
 	[NODE_ATTR_WEIGHT] = &node_attr_weight,
 	[NODE_ATTR_RELEASE_RECOVER] = &node_attr_release_recover,
