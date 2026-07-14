@@ -188,7 +188,7 @@ static struct configfs_item_operations stp_policy_node_item_ops = {
 CONFIGFS_ATTR(stp_policy_node_, masters);
 CONFIGFS_ATTR(stp_policy_node_, channels);
 
-static struct configfs_attribute *stp_policy_node_attrs[] = {
+static const struct configfs_attribute *const stp_policy_node_attrs[] = {
 	&stp_policy_node_attr_masters,
 	&stp_policy_node_attr_channels,
 	NULL,
@@ -198,10 +198,10 @@ static const struct config_item_type stp_policy_type;
 static const struct config_item_type stp_policy_node_type;
 
 const struct config_item_type *
-get_policy_node_type(struct configfs_attribute **attrs)
+get_policy_node_type(const struct configfs_attribute *const *attrs)
 {
 	struct config_item_type *type;
-	struct configfs_attribute **merged;
+	const struct configfs_attribute *const *merged;
 
 	type = kmemdup(&stp_policy_node_type, sizeof(stp_policy_node_type),
 		       GFP_KERNEL);
@@ -214,7 +214,7 @@ get_policy_node_type(struct configfs_attribute **attrs)
 		return NULL;
 	}
 
-	type->ct_attrs = merged;
+	type->ct_attrs_const = merged;
 
 	return type;
 }
@@ -278,7 +278,7 @@ static struct configfs_group_operations stp_policy_node_group_ops = {
 static const struct config_item_type stp_policy_node_type = {
 	.ct_item_ops	= &stp_policy_node_item_ops,
 	.ct_group_ops	= &stp_policy_node_group_ops,
-	.ct_attrs	= stp_policy_node_attrs,
+	.ct_attrs_const	= stp_policy_node_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
