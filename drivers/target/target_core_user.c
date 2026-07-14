@@ -3147,7 +3147,7 @@ out_unlock:
 }
 CONFIGFS_ATTR_WO(tcmu_, free_kept_buf);
 
-static struct configfs_attribute *tcmu_attrib_attrs[] = {
+static const struct configfs_attribute *const tcmu_attrib_attrs[] = {
 	&tcmu_attr_cmd_time_out,
 	&tcmu_attr_qfull_time_out,
 	&tcmu_attr_max_data_area_mb,
@@ -3161,9 +3161,9 @@ static struct configfs_attribute *tcmu_attrib_attrs[] = {
 	NULL,
 };
 
-static struct configfs_attribute **tcmu_attrs;
+static const struct configfs_attribute **tcmu_attrs;
 
-static struct configfs_attribute *tcmu_action_attrs[] = {
+static const struct configfs_attribute *const tcmu_action_attrs[] = {
 	&tcmu_attr_block_dev,
 	&tcmu_attr_reset_ring,
 	&tcmu_attr_free_kept_buf,

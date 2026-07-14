@@ -3670,7 +3670,7 @@ CONFIGFS_ATTR(srpt_tpg_attrib_,  srp_max_rsp_size);
 CONFIGFS_ATTR(srpt_tpg_attrib_,  srp_sq_size);
 CONFIGFS_ATTR(srpt_tpg_attrib_,  use_srq);
 
-static struct configfs_attribute *srpt_tpg_attrib_attrs[] = {
+static const struct configfs_attribute *const srpt_tpg_attrib_attrs[] = {
 	&srpt_tpg_attrib_attr_srp_max_rdma_size,
 	&srpt_tpg_attrib_attr_srp_max_rsp_size,
 	&srpt_tpg_attrib_attr_srp_sq_size,
@@ -3761,7 +3761,7 @@ out:
 
 CONFIGFS_ATTR(srpt_, rdma_cm_port);
 
-static struct configfs_attribute *srpt_da_attrs[] = {
+static const struct configfs_attribute *const srpt_da_attrs[] = {
 	&srpt_attr_rdma_cm_port,
 	NULL,
 };
@@ -3889,7 +3889,7 @@ static ssize_t srpt_wwn_version_show(struct config_item *item, char *buf)
 
 CONFIGFS_ATTR_RO(srpt_wwn_, version);
 
-static struct configfs_attribute *srpt_wwn_attrs[] = {
+static const struct configfs_attribute *const srpt_wwn_attrs[] = {
 	&srpt_wwn_attr_version,
 	NULL,
 };

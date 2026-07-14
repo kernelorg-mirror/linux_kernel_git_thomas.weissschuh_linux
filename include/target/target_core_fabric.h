@@ -100,17 +100,17 @@ struct target_core_fabric_ops {
 	void (*fabric_drop_np)(struct se_tpg_np *);
 	int (*fabric_init_nodeacl)(struct se_node_acl *, const char *);
 
-	struct configfs_attribute **tfc_discovery_attrs;
-	struct configfs_attribute **tfc_wwn_attrs;
-	struct configfs_attribute **tfc_tpg_base_attrs;
-	struct configfs_attribute **tfc_tpg_np_base_attrs;
-	struct configfs_attribute **tfc_tpg_attrib_attrs;
-	struct configfs_attribute **tfc_tpg_auth_attrs;
-	struct configfs_attribute **tfc_tpg_param_attrs;
-	struct configfs_attribute **tfc_tpg_nacl_base_attrs;
-	struct configfs_attribute **tfc_tpg_nacl_attrib_attrs;
-	struct configfs_attribute **tfc_tpg_nacl_auth_attrs;
-	struct configfs_attribute **tfc_tpg_nacl_param_attrs;
+	const struct configfs_attribute *const *tfc_discovery_attrs;
+	const struct configfs_attribute *const *tfc_wwn_attrs;
+	const struct configfs_attribute *const *tfc_tpg_base_attrs;
+	const struct configfs_attribute *const *tfc_tpg_np_base_attrs;
+	const struct configfs_attribute *const *tfc_tpg_attrib_attrs;
+	const struct configfs_attribute *const *tfc_tpg_auth_attrs;
+	const struct configfs_attribute *const *tfc_tpg_param_attrs;
+	const struct configfs_attribute *const *tfc_tpg_nacl_base_attrs;
+	const struct configfs_attribute *const *tfc_tpg_nacl_attrib_attrs;
+	const struct configfs_attribute *const *tfc_tpg_nacl_auth_attrs;
+	const struct configfs_attribute *const *tfc_tpg_nacl_param_attrs;
 
 	/*
 	 * Set this member variable if the SCSI transport protocol

@@ -3908,7 +3908,7 @@ static ssize_t ibmvscsis_wwn_version_show(struct config_item *item,
 }
 CONFIGFS_ATTR_RO(ibmvscsis_wwn_, version);
 
-static struct configfs_attribute *ibmvscsis_wwn_attrs[] = {
+static const struct configfs_attribute *const ibmvscsis_wwn_attrs[] = {
 	&ibmvscsis_wwn_attr_version,
 	NULL,
 };

@@ -2578,7 +2578,7 @@ static ssize_t vhost_scsi_tpg_attrib_fabric_prot_type_show(
 
 CONFIGFS_ATTR(vhost_scsi_tpg_attrib_, fabric_prot_type);
 
-static struct configfs_attribute *vhost_scsi_tpg_attrib_attrs[] = {
+static const struct configfs_attribute *const vhost_scsi_tpg_attrib_attrs[] = {
 	&vhost_scsi_tpg_attrib_attr_fabric_prot_type,
 	NULL,
 };
@@ -2770,7 +2770,7 @@ check_newline:
 
 CONFIGFS_ATTR(vhost_scsi_tpg_, nexus);
 
-static struct configfs_attribute *vhost_scsi_tpg_attrs[] = {
+static const struct configfs_attribute *const vhost_scsi_tpg_attrs[] = {
 	&vhost_scsi_tpg_attr_nexus,
 	NULL,
 };
@@ -2914,7 +2914,7 @@ vhost_scsi_wwn_version_show(struct config_item *item, char *page)
 
 CONFIGFS_ATTR_RO(vhost_scsi_wwn_, version);
 
-static struct configfs_attribute *vhost_scsi_wwn_attrs[] = {
+static const struct configfs_attribute *const vhost_scsi_wwn_attrs[] = {
 	&vhost_scsi_wwn_attr_version,
 	NULL,
 };

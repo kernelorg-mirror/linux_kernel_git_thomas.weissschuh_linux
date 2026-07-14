@@ -1502,7 +1502,7 @@ static ssize_t scsiback_tpg_param_alias_store(struct config_item *item,
 
 CONFIGFS_ATTR(scsiback_tpg_param_, alias);
 
-static struct configfs_attribute *scsiback_param_attrs[] = {
+static const struct configfs_attribute *const scsiback_param_attrs[] = {
 	&scsiback_tpg_param_attr_alias,
 	NULL,
 };
@@ -1697,7 +1697,7 @@ check_newline:
 
 CONFIGFS_ATTR(scsiback_tpg_, nexus);
 
-static struct configfs_attribute *scsiback_tpg_attrs[] = {
+static const struct configfs_attribute *const scsiback_tpg_attrs[] = {
 	&scsiback_tpg_attr_nexus,
 	NULL,
 };
@@ -1712,7 +1712,7 @@ scsiback_wwn_version_show(struct config_item *item, char *page)
 
 CONFIGFS_ATTR_RO(scsiback_wwn_, version);
 
-static struct configfs_attribute *scsiback_wwn_attrs[] = {
+static const struct configfs_attribute *const scsiback_wwn_attrs[] = {
 	&scsiback_wwn_attr_version,
 	NULL,
 };

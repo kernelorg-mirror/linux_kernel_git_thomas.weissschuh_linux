@@ -1808,7 +1808,7 @@ static ssize_t usbg_wwn_version_show(struct config_item *item,  char *page)
 
 CONFIGFS_ATTR_RO(usbg_wwn_, version);
 
-static struct configfs_attribute *usbg_wwn_attrs[] = {
+static const struct configfs_attribute *const usbg_wwn_attrs[] = {
 	&usbg_wwn_attr_version,
 	NULL,
 };
@@ -1975,7 +1975,7 @@ static ssize_t tcm_usbg_tpg_nexus_store(struct config_item *item,
 
 CONFIGFS_ATTR(tcm_usbg_tpg_, nexus);
 
-static struct configfs_attribute *usbg_base_attrs[] = {
+static const struct configfs_attribute *const usbg_base_attrs[] = {
 	&tcm_usbg_tpg_attr_nexus,
 	NULL,
 };

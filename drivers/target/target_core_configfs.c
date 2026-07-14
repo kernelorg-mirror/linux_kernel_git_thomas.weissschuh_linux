@@ -47,7 +47,7 @@ static void target_core_setup_##_name##_cit(struct target_backend *tb)	\
 									\
 	cit->ct_item_ops = _item_ops;					\
 	cit->ct_group_ops = _group_ops;					\
-	cit->ct_attrs = _attrs;						\
+	cit->ct_attrs_const = _attrs;					\
 	cit->ct_owner = tb->ops->owner;					\
 	pr_debug("Setup generic %s\n", __stringify(_name));		\
 }
@@ -59,7 +59,7 @@ static void target_core_setup_##_name##_cit(struct target_backend *tb)	\
 									\
 	cit->ct_item_ops = _item_ops;					\
 	cit->ct_group_ops = _group_ops;					\
-	cit->ct_attrs = tb->ops->tb_##_name##_attrs;			\
+	cit->ct_attrs_const = tb->ops->tb_##_name##_attrs;		\
 	cit->ct_owner = tb->ops->owner;					\
 	pr_debug("Setup generic %s\n", __stringify(_name));		\
 }
@@ -293,7 +293,7 @@ static const struct configfs_group_operations target_core_fabric_group_ops = {
 /*
  * All item attributes appearing in /sys/kernel/target/ appear here.
  */
-static struct configfs_attribute *target_core_fabric_item_attrs[] = {
+static const struct configfs_attribute *const target_core_fabric_item_attrs[] = {
 	&target_core_item_attr_version,
 	&target_core_item_attr_dbroot,
 	NULL,
@@ -304,7 +304,7 @@ static struct configfs_attribute *target_core_fabric_item_attrs[] = {
  */
 static const struct config_item_type target_core_fabrics_item = {
 	.ct_group_ops	= &target_core_fabric_group_ops,
-	.ct_attrs	= target_core_fabric_item_attrs,
+	.ct_attrs_const	= target_core_fabric_item_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1333,7 +1333,7 @@ CONFIGFS_ATTR_RO(, atomic_max_boundary);
  * interpreter.  Any backend using spc_parse_cdb should be using
  * these.
  */
-struct configfs_attribute *sbc_attrib_attrs[] = {
+const struct configfs_attribute *const sbc_attrib_attrs[] = {
 	&attr_emulate_model_alias,
 	&attr_emulate_dpo,
 	&attr_emulate_fua_write,
@@ -1385,7 +1385,7 @@ EXPORT_SYMBOL(sbc_attrib_attrs);
  * In this case we only provide a few read-only attributes for
  * backwards compatibility.
  */
-struct configfs_attribute *passthrough_attrib_attrs[] = {
+const struct configfs_attribute *const passthrough_attrib_attrs[] = {
 	&attr_hw_pi_prot_type,
 	&attr_hw_block_size,
 	&attr_hw_max_sectors,
@@ -1403,7 +1403,7 @@ EXPORT_SYMBOL(passthrough_attrib_attrs);
  * pr related dev_attrib attributes for devices passing through CDBs,
  * but allowing in core pr emulation.
  */
-struct configfs_attribute *passthrough_pr_attrib_attrs[] = {
+const struct configfs_attribute *const passthrough_pr_attrib_attrs[] = {
 	&attr_enforce_pr_isids,
 	&attr_force_pr_aptpl,
 	NULL,
@@ -1866,7 +1866,7 @@ CONFIGFS_ATTR_RO(target_wwn_, vpd_assoc_target_port);
 CONFIGFS_ATTR_RO(target_wwn_, vpd_assoc_scsi_target_device);
 CONFIGFS_ATTR(target_wwn_, pd_text_id_info);
 
-static struct configfs_attribute *target_core_dev_wwn_attrs[] = {
+static const struct configfs_attribute *const target_core_dev_wwn_attrs[] = {
 	&target_wwn_attr_vendor_id,
 	&target_wwn_attr_product_id,
 	&target_wwn_attr_revision,
@@ -2334,7 +2334,7 @@ CONFIGFS_ATTR_RO(target_pr_, res_type);
 CONFIGFS_ATTR_RO(target_pr_, res_aptpl_active);
 CONFIGFS_ATTR(target_pr_, res_aptpl_metadata);
 
-static struct configfs_attribute *target_core_dev_pr_attrs[] = {
+static const struct configfs_attribute *const target_core_dev_pr_attrs[] = {
 	&target_pr_attr_res_holder,
 	&target_pr_attr_res_pr_all_tgt_pts,
 	&target_pr_attr_res_pr_generation,
@@ -2758,7 +2758,7 @@ CONFIGFS_ATTR(target_dev_, enable);
 CONFIGFS_ATTR(target_dev_, alua_lu_gp);
 CONFIGFS_ATTR(target_dev_, lba_map);
 
-static struct configfs_attribute *target_core_dev_attrs[] = {
+static const struct configfs_attribute *const target_core_dev_attrs[] = {
 	&target_dev_attr_info,
 	&target_dev_attr_control,
 	&target_dev_attr_alias,
@@ -2865,7 +2865,7 @@ static ssize_t target_lu_gp_members_show(struct config_item *item, char *page)
 CONFIGFS_ATTR(target_lu_gp_, lu_gp_id);
 CONFIGFS_ATTR_RO(target_lu_gp_, members);
 
-static struct configfs_attribute *target_core_alua_lu_gp_attrs[] = {
+static const struct configfs_attribute *const target_core_alua_lu_gp_attrs[] = {
 	&target_lu_gp_attr_lu_gp_id,
 	&target_lu_gp_attr_members,
 	NULL,
@@ -2885,7 +2885,7 @@ static const struct configfs_item_operations target_core_alua_lu_gp_ops = {
 
 static const struct config_item_type target_core_alua_lu_gp_cit = {
 	.ct_item_ops		= &target_core_alua_lu_gp_ops,
-	.ct_attrs		= target_core_alua_lu_gp_attrs,
+	.ct_attrs_const		= target_core_alua_lu_gp_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -3280,7 +3280,7 @@ CONFIGFS_ATTR(target_tg_pt_gp_, preferred);
 CONFIGFS_ATTR(target_tg_pt_gp_, tg_pt_gp_id);
 CONFIGFS_ATTR_RO(target_tg_pt_gp_, members);
 
-static struct configfs_attribute *target_core_alua_tg_pt_gp_attrs[] = {
+static const struct configfs_attribute *const target_core_alua_tg_pt_gp_attrs[] = {
 	&target_tg_pt_gp_attr_alua_access_state,
 	&target_tg_pt_gp_attr_alua_access_status,
 	&target_tg_pt_gp_attr_alua_access_type,
@@ -3315,7 +3315,7 @@ static const struct configfs_item_operations target_core_alua_tg_pt_gp_ops = {
 
 static const struct config_item_type target_core_alua_tg_pt_gp_cit = {
 	.ct_item_ops		= &target_core_alua_tg_pt_gp_ops,
-	.ct_attrs		= target_core_alua_tg_pt_gp_attrs,
+	.ct_attrs_const		= target_core_alua_tg_pt_gp_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -3386,7 +3386,7 @@ TB_CIT_SETUP(dev_alua_tg_pt_gps, NULL, &target_core_alua_tg_pt_gps_group_ops, NU
  */
 static const struct config_item_type target_core_alua_cit = {
 	.ct_item_ops		= NULL,
-	.ct_attrs		= NULL,
+	.ct_attrs_const		= NULL,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -3608,7 +3608,7 @@ static void target_core_hba_release(struct config_item *item)
 	core_delete_hba(hba);
 }
 
-static struct configfs_attribute *target_core_hba_attrs[] = {
+static const struct configfs_attribute *const target_core_hba_attrs[] = {
 	&target_attr_hba_info,
 	&target_attr_hba_mode,
 	NULL,
@@ -3621,7 +3621,7 @@ static const struct configfs_item_operations target_core_hba_item_ops = {
 static const struct config_item_type target_core_hba_cit = {
 	.ct_item_ops		= &target_core_hba_item_ops,
 	.ct_group_ops		= &target_core_hba_group_ops,
-	.ct_attrs		= target_core_hba_attrs,
+	.ct_attrs_const		= target_core_hba_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -3703,7 +3703,7 @@ static const struct configfs_group_operations target_core_group_ops = {
 static const struct config_item_type target_core_cit = {
 	.ct_item_ops	= NULL,
 	.ct_group_ops	= &target_core_group_ops,
-	.ct_attrs	= NULL,
+	.ct_attrs_const	= NULL,
 	.ct_owner	= THIS_MODULE,
 };
 

@@ -907,7 +907,7 @@ DEF_QLA_TPG_ATTRIB(demo_mode_login_only);
 DEF_QLA_TPG_ATTRIB(jam_host);
 #endif
 
-static struct configfs_attribute *tcm_qla2xxx_tpg_attrib_attrs[] = {
+static const struct configfs_attribute *const tcm_qla2xxx_tpg_attrib_attrs[] = {
 	&tcm_qla2xxx_tpg_attrib_attr_generate_node_acls,
 	&tcm_qla2xxx_tpg_attrib_attr_cache_dynamic_acls,
 	&tcm_qla2xxx_tpg_attrib_attr_demo_mode_write_protect,
@@ -990,7 +990,7 @@ static ssize_t tcm_qla2xxx_tpg_fabric_prot_type_show(struct config_item *item,
 CONFIGFS_ATTR_RO(tcm_qla2xxx_tpg_, dynamic_sessions);
 CONFIGFS_ATTR(tcm_qla2xxx_tpg_, fabric_prot_type);
 
-static struct configfs_attribute *tcm_qla2xxx_tpg_attrs[] = {
+static const struct configfs_attribute *const tcm_qla2xxx_tpg_attrs[] = {
 	&tcm_qla2xxx_tpg_attr_dynamic_sessions,
 	&tcm_qla2xxx_tpg_attr_fabric_prot_type,
 	NULL,
@@ -1791,7 +1791,7 @@ static ssize_t tcm_qla2xxx_wwn_version_show(struct config_item *item,
 
 CONFIGFS_ATTR_RO(tcm_qla2xxx_wwn_, version);
 
-static struct configfs_attribute *tcm_qla2xxx_wwn_attrs[] = {
+static const struct configfs_attribute *const tcm_qla2xxx_wwn_attrs[] = {
 	&tcm_qla2xxx_wwn_attr_version,
 	NULL,
 };

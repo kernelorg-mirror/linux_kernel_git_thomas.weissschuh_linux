@@ -41,7 +41,7 @@ static void target_fabric_setup_##_name##_cit(struct target_fabric_configfs *tf)
 									\
 	cit->ct_item_ops = _item_ops;					\
 	cit->ct_group_ops = _group_ops;					\
-	cit->ct_attrs = _attrs;						\
+	cit->ct_attrs_const = _attrs;					\
 	cit->ct_owner = tf->tf_ops->module;				\
 	pr_debug("Setup generic %s\n", __stringify(_name));		\
 }
@@ -50,11 +50,11 @@ static void target_fabric_setup_##_name##_cit(struct target_fabric_configfs *tf)
 static void target_fabric_setup_##_name##_cit(struct target_fabric_configfs *tf) \
 {									\
 	struct config_item_type *cit = &tf->tf_##_name##_cit;		\
-	struct configfs_attribute **attrs = tf->tf_ops->tfc_##_name##_attrs; \
+	const struct configfs_attribute *const *attrs = tf->tf_ops->tfc_##_name##_attrs; \
 									\
 	cit->ct_item_ops = _item_ops;					\
 	cit->ct_group_ops = _group_ops;					\
-	cit->ct_attrs = attrs;						\
+	cit->ct_attrs_const = attrs;					\
 	cit->ct_owner = tf->tf_ops->module;				\
 	pr_debug("Setup generic %s\n", __stringify(_name));		\
 }
@@ -205,7 +205,7 @@ static ssize_t target_fabric_mappedlun_write_protect_store(
 
 CONFIGFS_ATTR(target_fabric_mappedlun_, write_protect);
 
-static struct configfs_attribute *target_fabric_mappedlun_attrs[] = {
+static const struct configfs_attribute *const target_fabric_mappedlun_attrs[] = {
 	&target_fabric_mappedlun_attr_write_protect,
 	NULL,
 };
@@ -609,7 +609,7 @@ CONFIGFS_ATTR(target_fabric_port_, alua_tg_pt_offline);
 CONFIGFS_ATTR(target_fabric_port_, alua_tg_pt_status);
 CONFIGFS_ATTR(target_fabric_port_, alua_tg_pt_write_md);
 
-static struct configfs_attribute *target_fabric_port_attrs[] = {
+static const struct configfs_attribute *const target_fabric_port_attrs[] = {
 	&target_fabric_port_attr_alua_tg_pt_gp,
 	&target_fabric_port_attr_alua_tg_pt_offline,
 	&target_fabric_port_attr_alua_tg_pt_status,
@@ -884,7 +884,7 @@ static int
 target_fabric_setup_tpg_base_cit(struct target_fabric_configfs *tf)
 {
 	struct config_item_type *cit = &tf->tf_tpg_base_cit;
-	struct configfs_attribute **attrs = NULL;
+	const struct configfs_attribute **attrs = NULL;
 	size_t nr_attrs = 0;
 	int i = 0;
 
@@ -913,7 +913,7 @@ target_fabric_setup_tpg_base_cit(struct target_fabric_configfs *tf)
 	attrs[i++] = &target_fabric_tpg_base_attr_rtpi;
 
 	cit->ct_item_ops = &target_fabric_tpg_base_item_ops;
-	cit->ct_attrs = attrs;
+	cit->ct_attrs_const = attrs;
 	cit->ct_owner = tf->tf_ops->module;
 	pr_debug("Setup generic tpg_base\n");
 
@@ -1109,7 +1109,7 @@ target_fabric_wwn_direct_submit_supported_show(struct config_item *item,
 }
 CONFIGFS_ATTR_RO(target_fabric_wwn_, direct_submit_supported);
 
-static struct configfs_attribute *target_fabric_wwn_param_attrs[] = {
+static const struct configfs_attribute *const target_fabric_wwn_param_attrs[] = {
 	&target_fabric_wwn_attr_cmd_completion_affinity,
 	&target_fabric_wwn_attr_default_complete_type,
 	&target_fabric_wwn_attr_direct_complete_supported,
