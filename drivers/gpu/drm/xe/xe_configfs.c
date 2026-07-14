@@ -859,7 +859,7 @@ CONFIGFS_ATTR(, engines_allowed);
 CONFIGFS_ATTR(, gt_types_allowed);
 CONFIGFS_ATTR(, survivability_mode);
 
-static struct configfs_attribute *xe_config_device_attrs[] = {
+static const struct configfs_attribute *const xe_config_device_attrs[] = {
 	&attr_ctx_restore_mid_bb,
 	&attr_ctx_restore_post_bb,
 	&attr_enable_multi_queue,
@@ -905,7 +905,7 @@ static struct configfs_group_operations xe_config_device_group_ops = {
 static const struct config_item_type xe_config_device_type = {
 	.ct_item_ops	= &xe_config_device_ops,
 	.ct_group_ops	= &xe_config_device_group_ops,
-	.ct_attrs	= xe_config_device_attrs,
+	.ct_attrs_const	= xe_config_device_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -974,7 +974,7 @@ static ssize_t sriov_admin_only_pf_store(struct config_item *item, const char *p
 CONFIGFS_ATTR(sriov_, max_vfs);
 CONFIGFS_ATTR(sriov_, admin_only_pf);
 
-static struct configfs_attribute *xe_config_sriov_attrs[] = {
+static const struct configfs_attribute *const xe_config_sriov_attrs[] = {
 	&sriov_attr_max_vfs,
 	&sriov_attr_admin_only_pf,
 	NULL,
@@ -1000,7 +1000,7 @@ static struct configfs_group_operations xe_config_sriov_group_ops = {
 static const struct config_item_type xe_config_sriov_type = {
 	.ct_owner	= THIS_MODULE,
 	.ct_group_ops	= &xe_config_sriov_group_ops,
-	.ct_attrs	= xe_config_sriov_attrs,
+	.ct_attrs_const	= xe_config_sriov_attrs,
 };
 
 static const struct xe_device_desc *xe_match_desc(struct pci_dev *pdev)
