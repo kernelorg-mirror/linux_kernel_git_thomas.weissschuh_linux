@@ -675,7 +675,7 @@ static const struct config_item_type functions_type = {
 
 GS_STRINGS_RW(gadget_config_name, configuration);
 
-static struct configfs_attribute *gadget_config_name_langid_attrs[] = {
+static const struct configfs_attribute *const gadget_config_name_langid_attrs[] = {
 	&gadget_config_name_attr_configuration,
 	NULL,
 };
