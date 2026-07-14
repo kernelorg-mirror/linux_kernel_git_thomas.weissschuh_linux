@@ -822,7 +822,7 @@ static ssize_t nvmet_ns_resv_enable_store(struct config_item *item,
 }
 CONFIGFS_ATTR(nvmet_ns_, resv_enable);
 
-static struct configfs_attribute *nvmet_ns_attrs[] = {
+static const struct configfs_attribute *const nvmet_ns_attrs[] = {
 	&nvmet_ns_attr_device_path,
 	&nvmet_ns_attr_device_nguid,
 	&nvmet_ns_attr_device_uuid,
@@ -850,7 +850,7 @@ static struct configfs_item_operations nvmet_ns_item_ops = {
 
 static const struct config_item_type nvmet_ns_type = {
 	.ct_item_ops		= &nvmet_ns_item_ops,
-	.ct_attrs		= nvmet_ns_attrs,
+	.ct_attrs_const		= nvmet_ns_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -1021,7 +1021,7 @@ static ssize_t nvmet_passthru_clear_ids_store(struct config_item *item,
 }
 CONFIGFS_ATTR(nvmet_passthru_, clear_ids);
 
-static struct configfs_attribute *nvmet_passthru_attrs[] = {
+static const struct configfs_attribute *const nvmet_passthru_attrs[] = {
 	&nvmet_passthru_attr_device_path,
 	&nvmet_passthru_attr_enable,
 	&nvmet_passthru_attr_admin_timeout,
@@ -1031,7 +1031,7 @@ static struct configfs_attribute *nvmet_passthru_attrs[] = {
 };
 
 static const struct config_item_type nvmet_passthru_type = {
-	.ct_attrs		= nvmet_passthru_attrs,
+	.ct_attrs_const		= nvmet_passthru_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -1692,7 +1692,7 @@ static ssize_t nvmet_subsys_attr_qid_max_store(struct config_item *item,
 }
 CONFIGFS_ATTR(nvmet_subsys_, attr_qid_max);
 
-static struct configfs_attribute *nvmet_subsys_attrs[] = {
+static const struct configfs_attribute *const nvmet_subsys_attrs[] = {
 	&nvmet_subsys_attr_attr_allow_any_host,
 	&nvmet_subsys_attr_attr_version,
 	&nvmet_subsys_attr_attr_serial,
@@ -1727,7 +1727,7 @@ static struct configfs_item_operations nvmet_subsys_item_ops = {
 
 static const struct config_item_type nvmet_subsys_type = {
 	.ct_item_ops		= &nvmet_subsys_item_ops,
-	.ct_attrs		= nvmet_subsys_attrs,
+	.ct_attrs_const		= nvmet_subsys_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -1807,7 +1807,7 @@ CONFIGFS_ATTR(nvmet_referral_, enable);
 /*
  * Discovery Service subsystem definitions
  */
-static struct configfs_attribute *nvmet_referral_attrs[] = {
+static const struct configfs_attribute *const nvmet_referral_attrs[] = {
 	&nvmet_attr_addr_adrfam,
 	&nvmet_attr_addr_portid,
 	&nvmet_attr_addr_treq,
@@ -1840,7 +1840,7 @@ static struct configfs_item_operations nvmet_referral_item_ops = {
 
 static const struct config_item_type nvmet_referral_type = {
 	.ct_owner	= THIS_MODULE,
-	.ct_attrs	= nvmet_referral_attrs,
+	.ct_attrs_const	= nvmet_referral_attrs,
 	.ct_item_ops	= &nvmet_referral_item_ops,
 };
 
@@ -1919,7 +1919,7 @@ found:
 
 CONFIGFS_ATTR(nvmet_ana_group_, ana_state);
 
-static struct configfs_attribute *nvmet_ana_group_attrs[] = {
+static const struct configfs_attribute *const nvmet_ana_group_attrs[] = {
 	&nvmet_ana_group_attr_ana_state,
 	NULL,
 };
@@ -1946,7 +1946,7 @@ static struct configfs_item_operations nvmet_ana_group_item_ops = {
 
 static const struct config_item_type nvmet_ana_group_type = {
 	.ct_item_ops		= &nvmet_ana_group_item_ops,
-	.ct_attrs		= nvmet_ana_group_attrs,
+	.ct_attrs_const		= nvmet_ana_group_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
@@ -2010,7 +2010,7 @@ static void nvmet_port_release(struct config_item *item)
 	kfree(port);
 }
 
-static struct configfs_attribute *nvmet_port_attrs[] = {
+static const struct configfs_attribute *const nvmet_port_attrs[] = {
 	&nvmet_attr_addr_adrfam,
 	&nvmet_attr_addr_treq,
 	&nvmet_attr_addr_traddr,
@@ -2031,7 +2031,7 @@ static struct configfs_item_operations nvmet_port_item_ops = {
 };
 
 static const struct config_item_type nvmet_port_type = {
-	.ct_attrs		= nvmet_port_attrs,
+	.ct_attrs_const		= nvmet_port_attrs,
 	.ct_item_ops		= &nvmet_port_item_ops,
 	.ct_owner		= THIS_MODULE,
 };
@@ -2236,7 +2236,7 @@ static ssize_t nvmet_host_dhchap_dhgroup_store(struct config_item *item,
 
 CONFIGFS_ATTR(nvmet_host_, dhchap_dhgroup);
 
-static struct configfs_attribute *nvmet_host_attrs[] = {
+static const struct configfs_attribute *const nvmet_host_attrs[] = {
 	&nvmet_host_attr_dhchap_key,
 	&nvmet_host_attr_dhchap_ctrl_key,
 	&nvmet_host_attr_dhchap_hash,
@@ -2263,7 +2263,7 @@ static struct configfs_item_operations nvmet_host_item_ops = {
 static const struct config_item_type nvmet_host_type = {
 	.ct_item_ops		= &nvmet_host_item_ops,
 #ifdef CONFIG_NVME_TARGET_AUTH
-	.ct_attrs		= nvmet_host_attrs,
+	.ct_attrs_const		= nvmet_host_attrs,
 #endif
 	.ct_owner		= THIS_MODULE,
 };
@@ -2341,13 +2341,13 @@ static ssize_t nvmet_root_discovery_nqn_store(struct config_item *item,
 
 CONFIGFS_ATTR(nvmet_root_, discovery_nqn);
 
-static struct configfs_attribute *nvmet_root_attrs[] = {
+static const struct configfs_attribute *const nvmet_root_attrs[] = {
 	&nvmet_root_attr_discovery_nqn,
 	NULL,
 };
 
 static const struct config_item_type nvmet_root_type = {
-	.ct_attrs		= nvmet_root_attrs,
+	.ct_attrs_const		= nvmet_root_attrs,
 	.ct_owner		= THIS_MODULE,
 };
 
