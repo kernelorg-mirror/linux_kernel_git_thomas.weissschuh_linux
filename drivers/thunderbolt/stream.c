@@ -1232,7 +1232,7 @@ static struct configfs_item_operations tbstream_dev_item_ops = {
 static const struct config_item_type tbstream_dev_type = {
 	.ct_owner = THIS_MODULE,
 	.ct_item_ops = &tbstream_dev_item_ops,
-	.ct_attrs_const = tbstream_dev_attrs,
+	.ct_attrs = tbstream_dev_attrs,
 };
 
 static void service_get_hopids(struct tb_service *svc, const char *name,

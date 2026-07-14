@@ -1601,7 +1601,7 @@ configfs_item_operations gpio_virtuser_lookup_entry_config_item_ops = {
 static const struct
 config_item_type gpio_virtuser_lookup_entry_config_group_type = {
 	.ct_item_ops	= &gpio_virtuser_lookup_entry_config_item_ops,
-	.ct_attrs_const	= gpio_virtuser_lookup_entry_config_attrs,
+	.ct_attrs	= gpio_virtuser_lookup_entry_config_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1717,7 +1717,7 @@ static const struct configfs_group_operations gpio_virtuser_device_config_group_
 static const struct config_item_type gpio_virtuser_device_config_group_type = {
 	.ct_group_ops	= &gpio_virtuser_device_config_group_ops,
 	.ct_item_ops	= &gpio_virtuser_device_config_item_ops,
-	.ct_attrs_const	= gpio_virtuser_device_config_attrs,
+	.ct_attrs	= gpio_virtuser_device_config_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

@@ -862,7 +862,7 @@ static struct configfs_group_operations xe_config_device_group_ops = {
 static const struct config_item_type xe_config_device_type = {
 	.ct_item_ops	= &xe_config_device_ops,
 	.ct_group_ops	= &xe_config_device_group_ops,
-	.ct_attrs_const	= xe_config_device_attrs,
+	.ct_attrs	= xe_config_device_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -957,7 +957,7 @@ static struct configfs_group_operations xe_config_sriov_group_ops = {
 static const struct config_item_type xe_config_sriov_type = {
 	.ct_owner	= THIS_MODULE,
 	.ct_group_ops	= &xe_config_sriov_group_ops,
-	.ct_attrs_const	= xe_config_sriov_attrs,
+	.ct_attrs	= xe_config_sriov_attrs,
 };
 
 static const struct xe_device_desc *xe_match_desc(struct pci_dev *pdev)

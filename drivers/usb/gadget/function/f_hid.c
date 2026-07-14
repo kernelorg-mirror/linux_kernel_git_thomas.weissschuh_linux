@@ -1497,7 +1497,7 @@ static const struct configfs_attribute *const hid_attrs[] = {
 
 static const struct config_item_type hid_func_type = {
 	.ct_item_ops	= &hidg_item_ops,
-	.ct_attrs_const	= hid_attrs,
+	.ct_attrs	= hid_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

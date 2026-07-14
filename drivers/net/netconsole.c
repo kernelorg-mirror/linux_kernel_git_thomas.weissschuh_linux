@@ -1296,7 +1296,7 @@ static const struct configfs_item_operations userdatum_ops = {
 
 static const struct config_item_type userdatum_type = {
 	.ct_item_ops	= &userdatum_ops,
-	.ct_attrs_const	= userdatum_attrs,
+	.ct_attrs	= userdatum_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1353,7 +1353,7 @@ static const struct configfs_group_operations userdata_ops = {
 static const struct config_item_type userdata_type = {
 	.ct_item_ops	= &userdatum_ops,
 	.ct_group_ops	= &userdata_ops,
-	.ct_attrs_const	= userdata_attrs,
+	.ct_attrs	= userdata_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1401,7 +1401,7 @@ static const struct configfs_item_operations netconsole_target_item_ops = {
 };
 
 static const struct config_item_type netconsole_target_type = {
-	.ct_attrs_const		= netconsole_target_attrs,
+	.ct_attrs		= netconsole_target_attrs,
 	.ct_item_ops		= &netconsole_target_item_ops,
 	.ct_owner		= THIS_MODULE,
 };

@@ -1281,7 +1281,7 @@ static const struct configfs_attribute *const ss_attrs[] = {
 
 static const struct config_item_type ss_func_type = {
 	.ct_item_ops    = &ss_item_ops,
-	.ct_attrs_const	= ss_attrs,
+	.ct_attrs	= ss_attrs,
 	.ct_owner       = THIS_MODULE,
 };
 

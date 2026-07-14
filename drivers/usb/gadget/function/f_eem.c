@@ -583,7 +583,7 @@ static const struct configfs_attribute *const eem_attrs[] = {
 
 static const struct config_item_type eem_func_type = {
 	.ct_item_ops	= &eem_item_ops,
-	.ct_attrs_const	= eem_attrs,
+	.ct_attrs	= eem_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

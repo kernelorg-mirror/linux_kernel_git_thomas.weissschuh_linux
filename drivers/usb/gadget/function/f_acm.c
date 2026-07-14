@@ -863,7 +863,7 @@ static const struct configfs_attribute *const acm_attrs[] = {
 
 static const struct config_item_type acm_func_type = {
 	.ct_item_ops    = &acm_item_ops,
-	.ct_attrs_const	= acm_attrs,
+	.ct_attrs	= acm_attrs,
 	.ct_owner       = THIS_MODULE,
 };
 

@@ -2583,7 +2583,7 @@ static const struct configfs_attribute *const nvmet_pci_epf_attrs[] = {
 };
 
 static const struct config_item_type nvmet_pci_epf_group_type = {
-	.ct_attrs_const	= nvmet_pci_epf_attrs,
+	.ct_attrs	= nvmet_pci_epf_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

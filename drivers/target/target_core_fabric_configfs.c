@@ -41,7 +41,7 @@ static void target_fabric_setup_##_name##_cit(struct target_fabric_configfs *tf)
 									\
 	cit->ct_item_ops = _item_ops;					\
 	cit->ct_group_ops = _group_ops;					\
-	cit->ct_attrs_const = _attrs;					\
+	cit->ct_attrs = _attrs;					\
 	cit->ct_owner = tf->tf_ops->module;				\
 	pr_debug("Setup generic %s\n", __stringify(_name));		\
 }
@@ -54,7 +54,7 @@ static void target_fabric_setup_##_name##_cit(struct target_fabric_configfs *tf)
 									\
 	cit->ct_item_ops = _item_ops;					\
 	cit->ct_group_ops = _group_ops;					\
-	cit->ct_attrs_const = attrs;					\
+	cit->ct_attrs = attrs;					\
 	cit->ct_owner = tf->tf_ops->module;				\
 	pr_debug("Setup generic %s\n", __stringify(_name));		\
 }
@@ -913,7 +913,7 @@ target_fabric_setup_tpg_base_cit(struct target_fabric_configfs *tf)
 	attrs[i++] = &target_fabric_tpg_base_attr_rtpi;
 
 	cit->ct_item_ops = &target_fabric_tpg_base_item_ops;
-	cit->ct_attrs_const = attrs;
+	cit->ct_attrs = attrs;
 	cit->ct_owner = tf->tf_ops->module;
 	pr_debug("Setup generic tpg_base\n");
 

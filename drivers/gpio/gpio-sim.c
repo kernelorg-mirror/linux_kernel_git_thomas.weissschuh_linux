@@ -1392,7 +1392,7 @@ static const struct configfs_item_operations gpio_sim_hog_config_item_ops = {
 
 static const struct config_item_type gpio_sim_hog_config_type = {
 	.ct_item_ops	= &gpio_sim_hog_config_item_ops,
-	.ct_attrs_const	= gpio_sim_hog_config_attrs,
+	.ct_attrs	= gpio_sim_hog_config_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1446,7 +1446,7 @@ static const struct configfs_group_operations gpio_sim_line_config_group_ops = {
 static const struct config_item_type gpio_sim_line_config_type = {
 	.ct_item_ops	= &gpio_sim_line_config_item_ops,
 	.ct_group_ops	= &gpio_sim_line_config_group_ops,
-	.ct_attrs_const	= gpio_sim_line_config_attrs,
+	.ct_attrs	= gpio_sim_line_config_attrs,
 	.ct_owner       = THIS_MODULE,
 };
 
@@ -1507,7 +1507,7 @@ static const struct configfs_group_operations gpio_sim_bank_config_group_ops = {
 static const struct config_item_type gpio_sim_bank_config_group_type = {
 	.ct_item_ops	= &gpio_sim_bank_config_item_ops,
 	.ct_group_ops	= &gpio_sim_bank_config_group_ops,
-	.ct_attrs_const	= gpio_sim_bank_config_attrs,
+	.ct_attrs	= gpio_sim_bank_config_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1562,7 +1562,7 @@ static const struct configfs_group_operations gpio_sim_device_config_group_ops =
 static const struct config_item_type gpio_sim_device_config_group_type = {
 	.ct_item_ops	= &gpio_sim_device_config_item_ops,
 	.ct_group_ops	= &gpio_sim_device_config_group_ops,
-	.ct_attrs_const	= gpio_sim_device_config_attrs,
+	.ct_attrs	= gpio_sim_device_config_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

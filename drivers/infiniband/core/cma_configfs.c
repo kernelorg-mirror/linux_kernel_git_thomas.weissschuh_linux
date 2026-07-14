@@ -192,7 +192,7 @@ static const struct configfs_attribute *const cma_configfs_attributes[] = {
 };
 
 static const struct config_item_type cma_port_group_type = {
-	.ct_attrs_const	= cma_configfs_attributes,
+	.ct_attrs	= cma_configfs_attributes,
 	.ct_owner	= THIS_MODULE
 };
 

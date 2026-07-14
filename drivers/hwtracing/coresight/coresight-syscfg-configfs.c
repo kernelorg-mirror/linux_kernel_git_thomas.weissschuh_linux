@@ -162,7 +162,7 @@ static const struct configfs_attribute *const cscfg_config_view_attrs[] = {
 
 static const struct config_item_type cscfg_config_view_type = {
 	.ct_owner = THIS_MODULE,
-	.ct_attrs_const = cscfg_config_view_attrs,
+	.ct_attrs = cscfg_config_view_attrs,
 };
 
 static const struct configfs_attribute *const cscfg_config_preset_attrs[] = {
@@ -172,7 +172,7 @@ static const struct configfs_attribute *const cscfg_config_preset_attrs[] = {
 
 static const struct config_item_type cscfg_config_preset_type = {
 	.ct_owner = THIS_MODULE,
-	.ct_attrs_const = cscfg_config_preset_attrs,
+	.ct_attrs = cscfg_config_preset_attrs,
 };
 
 static int cscfg_add_preset_groups(struct cscfg_fs_config *cfg_view)
@@ -274,7 +274,7 @@ static const struct configfs_attribute *const cscfg_feature_view_attrs[] = {
 
 static const struct config_item_type cscfg_feature_view_type = {
 	.ct_owner = THIS_MODULE,
-	.ct_attrs_const = cscfg_feature_view_attrs,
+	.ct_attrs = cscfg_feature_view_attrs,
 };
 
 static ssize_t cscfg_param_value_show(struct config_item *item, char *page)
@@ -311,7 +311,7 @@ static const struct configfs_attribute *const cscfg_param_view_attrs[] = {
 
 static const struct config_item_type cscfg_param_view_type = {
 	.ct_owner = THIS_MODULE,
-	.ct_attrs_const = cscfg_param_view_attrs,
+	.ct_attrs = cscfg_param_view_attrs,
 };
 
 /*

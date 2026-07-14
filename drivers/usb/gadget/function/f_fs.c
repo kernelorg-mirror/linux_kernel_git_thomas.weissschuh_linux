@@ -4020,7 +4020,7 @@ static const struct configfs_item_operations ffs_item_ops = {
 
 static const struct config_item_type ffs_func_type = {
 	.ct_item_ops	= &ffs_item_ops,
-	.ct_attrs_const	= ffs_attrs,
+	.ct_attrs	= ffs_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

@@ -1732,7 +1732,7 @@ static const struct configfs_attribute *const f_uac1_attrs[] = {
 
 static const struct config_item_type f_uac1_func_type = {
 	.ct_item_ops	= &f_uac1_item_ops,
-	.ct_attrs_const	= f_uac1_attrs,
+	.ct_attrs	= f_uac1_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

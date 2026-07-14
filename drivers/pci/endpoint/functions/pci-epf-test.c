@@ -1456,7 +1456,7 @@ static const struct configfs_attribute *const pci_epf_test_attrs[] = {
 };
 
 static const struct config_item_type pci_epf_test_group_type = {
-	.ct_attrs_const	= pci_epf_test_attrs,
+	.ct_attrs	= pci_epf_test_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

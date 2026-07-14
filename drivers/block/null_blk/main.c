@@ -648,7 +648,7 @@ static const struct configfs_item_operations nullb_device_ops = {
 
 static const struct config_item_type nullb_device_type = {
 	.ct_item_ops	= &nullb_device_ops,
-	.ct_attrs_const	= nullb_device_attrs,
+	.ct_attrs	= nullb_device_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -756,7 +756,7 @@ static const struct configfs_group_operations nullb_group_ops = {
 
 static const struct config_item_type nullb_group_type = {
 	.ct_group_ops	= &nullb_group_ops,
-	.ct_attrs_const	= nullb_group_attrs,
+	.ct_attrs	= nullb_group_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

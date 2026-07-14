@@ -1249,7 +1249,7 @@ static const struct configfs_item_operations gpio_aggregator_line_item_ops = {
 
 static const struct config_item_type gpio_aggregator_line_type = {
 	.ct_item_ops	= &gpio_aggregator_line_item_ops,
-	.ct_attrs_const	= gpio_aggregator_line_attrs,
+	.ct_attrs	= gpio_aggregator_line_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1316,7 +1316,7 @@ static const struct configfs_group_operations gpio_aggregator_device_group_ops =
 static const struct config_item_type gpio_aggregator_device_type = {
 	.ct_group_ops	= &gpio_aggregator_device_group_ops,
 	.ct_item_ops	= &gpio_aggregator_device_item_ops,
-	.ct_attrs_const	= gpio_aggregator_device_attrs,
+	.ct_attrs	= gpio_aggregator_device_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

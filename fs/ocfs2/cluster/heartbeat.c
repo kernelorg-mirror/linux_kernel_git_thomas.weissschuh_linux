@@ -1975,7 +1975,7 @@ static const struct configfs_item_operations o2hb_region_item_ops = {
 
 static const struct config_item_type o2hb_region_type = {
 	.ct_item_ops	= &o2hb_region_item_ops,
-	.ct_attrs_const	= o2hb_region_attrs,
+	.ct_attrs	= o2hb_region_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -2227,7 +2227,7 @@ static const struct configfs_group_operations o2hb_heartbeat_group_group_ops = {
 
 static const struct config_item_type o2hb_heartbeat_group_type = {
 	.ct_group_ops	= &o2hb_heartbeat_group_group_ops,
-	.ct_attrs_const	= o2hb_heartbeat_group_attrs,
+	.ct_attrs	= o2hb_heartbeat_group_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

@@ -1250,7 +1250,7 @@ static const struct configfs_attribute *const midi_attrs[] = {
 
 static const struct config_item_type midi_func_type = {
 	.ct_item_ops	= &midi_item_ops,
-	.ct_attrs_const	= midi_attrs,
+	.ct_attrs	= midi_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

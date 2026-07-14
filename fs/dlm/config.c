@@ -367,7 +367,7 @@ static const struct config_item_type clusters_type = {
 
 static const struct config_item_type cluster_type = {
 	.ct_item_ops = &cluster_ops,
-	.ct_attrs_const = cluster_attrs,
+	.ct_attrs = cluster_attrs,
 	.ct_owner = THIS_MODULE,
 };
 
@@ -388,7 +388,7 @@ static const struct config_item_type comms_type = {
 
 static const struct config_item_type comm_type = {
 	.ct_item_ops = &comm_ops,
-	.ct_attrs_const = comm_attrs,
+	.ct_attrs = comm_attrs,
 	.ct_owner = THIS_MODULE,
 };
 
@@ -399,7 +399,7 @@ static const struct config_item_type nodes_type = {
 
 static const struct config_item_type node_type = {
 	.ct_item_ops = &node_ops,
-	.ct_attrs_const = node_attrs,
+	.ct_attrs = node_attrs,
 	.ct_owner = THIS_MODULE,
 };
 

@@ -2321,7 +2321,7 @@ static const struct configfs_item_operations f_midi2_block_item_ops = {
 
 static const struct config_item_type f_midi2_block_type = {
 	.ct_item_ops	= &f_midi2_block_item_ops,
-	.ct_attrs_const	= f_midi2_block_attrs,
+	.ct_attrs	= f_midi2_block_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -2490,7 +2490,7 @@ static const struct configfs_group_operations f_midi2_ep_group_ops = {
 static const struct config_item_type f_midi2_ep_type = {
 	.ct_item_ops	= &f_midi2_ep_item_ops,
 	.ct_group_ops	= &f_midi2_ep_group_ops,
-	.ct_attrs_const	= f_midi2_ep_attrs,
+	.ct_attrs	= f_midi2_ep_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -2629,7 +2629,7 @@ static const struct configfs_group_operations f_midi2_group_ops = {
 static const struct config_item_type f_midi2_func_type = {
 	.ct_item_ops	= &f_midi2_item_ops,
 	.ct_group_ops	= &f_midi2_group_ops,
-	.ct_attrs_const	= f_midi2_attrs,
+	.ct_attrs	= f_midi2_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

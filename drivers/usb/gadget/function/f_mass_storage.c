@@ -3283,7 +3283,7 @@ static const struct configfs_attribute *const fsg_lun_attrs[] = {
 
 static const struct config_item_type fsg_lun_type = {
 	.ct_item_ops	= &fsg_lun_item_ops,
-	.ct_attrs_const	= fsg_lun_attrs,
+	.ct_attrs	= fsg_lun_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -3478,7 +3478,7 @@ static const struct configfs_group_operations fsg_group_ops = {
 static const struct config_item_type fsg_func_type = {
 	.ct_item_ops	= &fsg_item_ops,
 	.ct_group_ops	= &fsg_group_ops,
-	.ct_attrs_const	= fsg_attrs,
+	.ct_attrs	= fsg_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

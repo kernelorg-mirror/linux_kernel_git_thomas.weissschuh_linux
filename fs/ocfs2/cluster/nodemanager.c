@@ -402,7 +402,7 @@ static const struct configfs_item_operations o2nm_node_item_ops = {
 
 static const struct config_item_type o2nm_node_type = {
 	.ct_item_ops	= &o2nm_node_item_ops,
-	.ct_attrs_const	= o2nm_node_attrs,
+	.ct_attrs	= o2nm_node_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -663,7 +663,7 @@ static const struct configfs_item_operations o2nm_cluster_item_ops = {
 
 static const struct config_item_type o2nm_cluster_type = {
 	.ct_item_ops	= &o2nm_cluster_item_ops,
-	.ct_attrs_const	= o2nm_cluster_attrs,
+	.ct_attrs	= o2nm_cluster_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 

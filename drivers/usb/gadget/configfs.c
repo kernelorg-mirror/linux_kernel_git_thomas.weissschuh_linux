@@ -581,13 +581,13 @@ static const struct configfs_attribute *const gadget_config_attrs[] = {
 
 static const struct config_item_type gadget_config_type = {
 	.ct_item_ops	= &gadget_config_item_ops,
-	.ct_attrs_const	= gadget_config_attrs,
+	.ct_attrs	= gadget_config_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
 static const struct config_item_type gadget_root_type = {
 	.ct_item_ops	= &gadget_root_item_ops,
-	.ct_attrs_const	= gadget_root_attrs,
+	.ct_attrs	= gadget_root_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -858,7 +858,7 @@ static const struct configfs_item_operations gadget_string_item_ops = {
 
 static const struct config_item_type gadget_string_type = {
 	.ct_item_ops	= &gadget_string_item_ops,
-	.ct_attrs_const	= gadget_string_attrs,
+	.ct_attrs	= gadget_string_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -909,7 +909,7 @@ static const struct configfs_group_operations gadget_language_langid_group_ops =
 static const struct config_item_type gadget_language_type = {
 	.ct_item_ops	= &gadget_language_langid_item_ops,
 	.ct_group_ops	= &gadget_language_langid_group_ops,
-	.ct_attrs_const	= gadget_language_langid_attrs,
+	.ct_attrs	= gadget_language_langid_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1113,7 +1113,7 @@ static const struct configfs_attribute *const webusb_attrs[] = {
 };
 
 static const struct config_item_type webusb_type = {
-	.ct_attrs_const	= webusb_attrs,
+	.ct_attrs	= webusb_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1273,7 +1273,7 @@ static const struct configfs_item_operations os_desc_ops = {
 
 static const struct config_item_type os_desc_type = {
 	.ct_item_ops	= &os_desc_ops,
-	.ct_attrs_const	= os_desc_attrs,
+	.ct_attrs	= os_desc_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -1417,7 +1417,7 @@ static struct config_item *ext_prop_make(
 
 	desc = container_of(group, struct usb_os_desc, group);
 	ext_prop_type->ct_item_ops = &ext_prop_ops;
-	ext_prop_type->ct_attrs_const = ext_prop_attrs;
+	ext_prop_type->ct_attrs = ext_prop_attrs;
 	ext_prop_type->ct_owner = desc->owner;
 
 	config_item_init_type_name(&ext_prop->item, name, ext_prop_type);
@@ -1550,7 +1550,7 @@ struct config_group *usb_os_desc_prepare_interf_dir(
 	configfs_add_default_group(os_desc_group, parent);
 
 	interface_type->ct_group_ops = &interf_grp_ops;
-	interface_type->ct_attrs_const = interf_grp_attrs;
+	interface_type->ct_attrs = interf_grp_attrs;
 	interface_type->ct_owner = owner;
 
 	while (n_interf--) {
