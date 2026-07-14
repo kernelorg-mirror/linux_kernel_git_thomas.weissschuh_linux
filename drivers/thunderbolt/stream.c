@@ -1207,7 +1207,7 @@ tbstream_dev_throttling_store(struct config_item *item, const char *buf,
 }
 CONFIGFS_ATTR(tbstream_dev_, throttling);
 
-static struct configfs_attribute *tbstream_dev_attrs[] = {
+static const struct configfs_attribute *const tbstream_dev_attrs[] = {
 	&tbstream_dev_attr_index,
 	&tbstream_dev_attr_in_hopid,
 	&tbstream_dev_attr_out_hopid,
@@ -1232,7 +1232,7 @@ static struct configfs_item_operations tbstream_dev_item_ops = {
 static const struct config_item_type tbstream_dev_type = {
 	.ct_owner = THIS_MODULE,
 	.ct_item_ops = &tbstream_dev_item_ops,
-	.ct_attrs = tbstream_dev_attrs,
+	.ct_attrs_const = tbstream_dev_attrs,
 };
 
 static void service_get_hopids(struct tb_service *svc, const char *name,
