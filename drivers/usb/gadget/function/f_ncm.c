@@ -1640,7 +1640,7 @@ out:
 
 CONFIGFS_ATTR(ncm_opts_, max_segment_size);
 
-static struct configfs_attribute *ncm_attrs[] = {
+static const struct configfs_attribute *const ncm_attrs[] = {
 	&ncm_opts_attr_dev_addr,
 	&ncm_opts_attr_host_addr,
 	&ncm_opts_attr_qmult,
@@ -1651,7 +1651,7 @@ static struct configfs_attribute *ncm_attrs[] = {
 
 static const struct config_item_type ncm_func_type = {
 	.ct_item_ops	= &ncm_item_ops,
-	.ct_attrs	= ncm_attrs,
+	.ct_attrs_const	= ncm_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
