@@ -1960,7 +1960,7 @@ CONFIGFS_ATTR(o2hb_region_, blocks);
 CONFIGFS_ATTR(o2hb_region_, dev);
 CONFIGFS_ATTR_RO(o2hb_region_, pid);
 
-static struct configfs_attribute *o2hb_region_attrs[] = {
+static const struct configfs_attribute *const o2hb_region_attrs[] = {
 	&o2hb_region_attr_block_bytes,
 	&o2hb_region_attr_start_block,
 	&o2hb_region_attr_blocks,
@@ -1975,7 +1975,7 @@ static const struct configfs_item_operations o2hb_region_item_ops = {
 
 static const struct config_item_type o2hb_region_type = {
 	.ct_item_ops	= &o2hb_region_item_ops,
-	.ct_attrs	= o2hb_region_attrs,
+	.ct_attrs_const	= o2hb_region_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -2214,7 +2214,7 @@ static ssize_t o2hb_heartbeat_group_mode_store(struct config_item *item,
 CONFIGFS_ATTR(o2hb_heartbeat_group_, dead_threshold);
 CONFIGFS_ATTR(o2hb_heartbeat_group_, mode);
 
-static struct configfs_attribute *o2hb_heartbeat_group_attrs[] = {
+static const struct configfs_attribute *const o2hb_heartbeat_group_attrs[] = {
 	&o2hb_heartbeat_group_attr_dead_threshold,
 	&o2hb_heartbeat_group_attr_mode,
 	NULL,
@@ -2227,7 +2227,7 @@ static const struct configfs_group_operations o2hb_heartbeat_group_group_ops = {
 
 static const struct config_item_type o2hb_heartbeat_group_type = {
 	.ct_group_ops	= &o2hb_heartbeat_group_group_ops,
-	.ct_attrs	= o2hb_heartbeat_group_attrs,
+	.ct_attrs_const	= o2hb_heartbeat_group_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
