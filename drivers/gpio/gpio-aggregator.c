@@ -1525,7 +1525,7 @@ put_module:
 	return res;
 }
 
-static struct driver_attribute driver_attr_gpio_aggregator_new_device =
+static const struct driver_attribute driver_attr_gpio_aggregator_new_device =
 	__ATTR(new_device, 0200, NULL, gpio_aggregator_new_device_store);
 
 static void gpio_aggregator_destroy(struct gpio_aggregator *aggr)
@@ -1577,10 +1577,10 @@ static ssize_t gpio_aggregator_delete_device_store(struct device_driver *driver,
 	return count;
 }
 
-static struct driver_attribute driver_attr_gpio_aggregator_delete_device =
+static const struct driver_attribute driver_attr_gpio_aggregator_delete_device =
 	__ATTR(delete_device, 0200, NULL, gpio_aggregator_delete_device_store);
 
-static struct attribute *gpio_aggregator_attrs[] = {
+static const struct attribute *const gpio_aggregator_attrs[] = {
 	&driver_attr_gpio_aggregator_new_device.attr,
 	&driver_attr_gpio_aggregator_delete_device.attr,
 	NULL

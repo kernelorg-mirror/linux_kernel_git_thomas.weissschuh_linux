@@ -75,12 +75,12 @@ struct gpiod_data {
 	struct device_attribute edge_attr;
 	struct device_attribute active_low_attr;
 
-	struct attribute *class_attrs[GPIO_SYSFS_LINE_CLASS_ATTR_SIZE];
+	const struct attribute *class_attrs[GPIO_SYSFS_LINE_CLASS_ATTR_SIZE];
 	struct attribute_group class_attr_group;
 	const struct attribute_group *class_attr_groups[2];
 #endif /* CONFIG_GPIO_SYSFS_LEGACY */
 
-	struct attribute *chip_attrs[GPIO_SYSFS_LINE_CHIP_ATTR_SIZE];
+	const struct attribute *chip_attrs[GPIO_SYSFS_LINE_CHIP_ATTR_SIZE];
 	struct attribute_group chip_attr_group;
 	const struct attribute_group *chip_attr_groups[2];
 };
@@ -397,7 +397,7 @@ static ssize_t active_low_store(struct device *dev,
 }
 #endif /* CONFIG_GPIO_SYSFS_LEGACY */
 
-static umode_t gpio_is_visible(struct kobject *kobj, struct attribute *attr,
+static umode_t gpio_is_visible(struct kobject *kobj, const struct attribute *attr,
 			       int n)
 {
 	struct device_attribute *dev_attr = container_of(attr,
@@ -576,7 +576,7 @@ static struct device_attribute dev_attr_unexport = __ATTR(unexport, 0200,
 							  chip_unexport_store);
 
 #if IS_ENABLED(CONFIG_GPIO_SYSFS_LEGACY)
-static struct attribute *gpiochip_attrs[] = {
+static const struct attribute *const gpiochip_attrs[] = {
 	&dev_attr_base.attr,
 	&dev_attr_label.attr,
 	&dev_attr_ngpio.attr,
@@ -585,7 +585,7 @@ static struct attribute *gpiochip_attrs[] = {
 ATTRIBUTE_GROUPS(gpiochip);
 #endif /* CONFIG_GPIO_SYSFS_LEGACY */
 
-static struct attribute *gpiochip_ext_attrs[] = {
+static const struct attribute *const gpiochip_ext_attrs[] = {
 	&dev_attr_label.attr,
 	&dev_attr_ngpio.attr,
 	&dev_attr_export.attr,
@@ -625,7 +625,7 @@ static ssize_t export_store(const struct class *class,
 		pr_debug("%s: status %d\n", __func__, status);
 	return status ? : len;
 }
-static CLASS_ATTR_WO(export);
+static const CLASS_ATTR_WO(export);
 
 static ssize_t unexport_store(const struct class *class,
 			      const struct class_attribute *attr,
@@ -651,9 +651,9 @@ static ssize_t unexport_store(const struct class *class,
 		pr_debug("%s: status %d\n", __func__, status);
 	return status ? : len;
 }
-static CLASS_ATTR_WO(unexport);
+static const CLASS_ATTR_WO(unexport);
 
-static struct attribute *gpio_class_attrs[] = {
+static const struct attribute *const gpio_class_attrs[] = {
 	&class_attr_export.attr,
 	&class_attr_unexport.attr,
 	NULL,
@@ -730,7 +730,7 @@ int gpiod_export(struct gpio_desc *desc, bool direction_may_change)
 	struct gpiodev_data *gdev_data;
 	struct gpiod_data *desc_data;
 	struct gpio_device *gdev;
-	struct attribute **attrs;
+	const struct attribute **attrs;
 	int status;
 
 	/* can't export until sysfs is available ... */
@@ -784,13 +784,13 @@ int gpiod_export(struct gpio_desc *desc, bool direction_may_change)
 			active_low_show, active_low_store);
 
 	attrs = desc_data->class_attrs;
-	desc_data->class_attr_group.is_visible = gpio_is_visible;
+	desc_data->class_attr_group.is_visible_const = gpio_is_visible;
 	attrs[GPIO_SYSFS_LINE_CLASS_ATTR_DIRECTION] = &desc_data->dir_attr.attr;
 	attrs[GPIO_SYSFS_LINE_CLASS_ATTR_VALUE] = &desc_data->val_attr.attr;
 	attrs[GPIO_SYSFS_LINE_CLASS_ATTR_EDGE] = &desc_data->edge_attr.attr;
 	attrs[GPIO_SYSFS_LINE_CLASS_ATTR_ACTIVE_LOW] = &desc_data->active_low_attr.attr;
 
-	desc_data->class_attr_group.attrs = desc_data->class_attrs;
+	desc_data->class_attr_group.attrs_const = desc_data->class_attrs;
 	desc_data->class_attr_groups[0] = &desc_data->class_attr_group;
 
 	/*
@@ -830,11 +830,11 @@ int gpiod_export(struct gpio_desc *desc, bool direction_may_change)
 	}
 
 	attrs = desc_data->chip_attrs;
-	desc_data->chip_attr_group.is_visible = gpio_is_visible;
+	desc_data->chip_attr_group.is_visible_const = gpio_is_visible;
 	attrs[GPIO_SYSFS_LINE_CHIP_ATTR_DIRECTION] = &desc_data->dir_attr.attr;
 	attrs[GPIO_SYSFS_LINE_CHIP_ATTR_VALUE] = &desc_data->val_attr.attr;
 
-	desc_data->chip_attr_group.attrs = attrs;
+	desc_data->chip_attr_group.attrs_const = attrs;
 	desc_data->chip_attr_groups[0] = &desc_data->chip_attr_group;
 
 	desc_data->parent = &gdev_data->cdev_id->kobj;
