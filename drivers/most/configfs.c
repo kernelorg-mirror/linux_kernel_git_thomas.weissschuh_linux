@@ -360,7 +360,7 @@ CONFIGFS_ATTR(mdev_link_, datatype);
 CONFIGFS_ATTR(mdev_link_, direction);
 CONFIGFS_ATTR(mdev_link_, dbr_size);
 
-static struct configfs_attribute *mdev_link_attrs[] = {
+static const struct configfs_attribute *const mdev_link_attrs[] = {
 	&mdev_link_attr_create_link,
 	&mdev_link_attr_destroy_link,
 	&mdev_link_attr_device,
@@ -405,7 +405,7 @@ static struct configfs_item_operations mdev_link_item_ops = {
 
 static const struct config_item_type mdev_link_type = {
 	.ct_item_ops	= &mdev_link_item_ops,
-	.ct_attrs	= mdev_link_attrs,
+	.ct_attrs_const	= mdev_link_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -558,7 +558,7 @@ static ssize_t most_snd_grp_create_card_store(struct config_item *item,
 
 CONFIGFS_ATTR_WO(most_snd_grp_, create_card);
 
-static struct configfs_attribute *most_snd_grp_attrs[] = {
+static const struct configfs_attribute *const most_snd_grp_attrs[] = {
 	&most_snd_grp_attr_create_card,
 	NULL,
 };
@@ -582,7 +582,7 @@ static struct configfs_group_operations most_snd_grp_group_ops = {
 static const struct config_item_type most_snd_grp_type = {
 	.ct_item_ops	= &most_snd_grp_item_ops,
 	.ct_group_ops	= &most_snd_grp_group_ops,
-	.ct_attrs	= most_snd_grp_attrs,
+	.ct_attrs_const	= most_snd_grp_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
