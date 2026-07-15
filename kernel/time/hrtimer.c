@@ -2598,6 +2598,11 @@ static int __sched do_nanosleep(struct hrtimer_sleeper *t, enum hrtimer_mode mod
 
 	__set_current_state(TASK_RUNNING);
 
+	if (hrtimer_is_aborted(&t->timer)) {
+		/* Disabled auxiliary clock */
+		return -ENODEV;
+	}
+
 	if (!t->task)
 		return 0;
 
