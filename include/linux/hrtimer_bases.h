@@ -34,6 +34,7 @@ struct hrtimer_clock_base {
 	ktime_t				expires_next;
 	struct hrtimer			*running;
 	struct timerqueue_linked_head	active;
+	const bool			*enabled;
 	const ktime_t			*offset;
 } __hrtimer_clock_base_align;
 
@@ -68,6 +69,7 @@ enum hrtimer_base_type {
  * @max_hang_time:		Maximum time spent in hrtimer_interrupt
  * @softirq_expiry_lock:	Lock which is taken while softirq based hrtimer are expired
  * @online:			CPU is online from an hrtimers point of view
+ * @enabled_core:		Always true for hrtimer_clock_base::enabled of core clocks.
  * @timer_waiters:		A hrtimer_cancel() waiters for the timer callback to finish.
  * @expires_next:		Absolute time of the next event, is required for remote
  *				hrtimer enqueue; it is the total first expiry time (hard
@@ -94,6 +96,7 @@ struct hrtimer_cpu_base {
 	bool				hang_detected;
 	bool				softirq_activated;
 	bool				online;
+	const bool			enabled_core;
 #ifdef CONFIG_HIGH_RES_TIMERS
 	unsigned int			nr_events;
 	unsigned short			nr_retries;
