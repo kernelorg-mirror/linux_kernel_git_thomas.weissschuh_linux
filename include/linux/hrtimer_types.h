@@ -35,6 +35,7 @@ enum hrtimer_restart {
  *		even on RT.
  * @is_lazy:	Set if the timer is frequently rearmed to avoid updates
  *		of the clock event device
+ * @is_aborted: Set if the timer was aborted since the last queuing.
  *
  * The hrtimer structure must be initialized by hrtimer_setup()
  */
@@ -46,6 +47,7 @@ struct hrtimer {
 	bool				is_soft;
 	bool				is_hard;
 	bool				is_lazy;
+	bool __private			is_aborted;
 	ktime_t				_softexpires;
 	enum hrtimer_restart		(*__private function)(struct hrtimer *);
 };
