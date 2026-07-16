@@ -117,7 +117,8 @@ DEFINE_PER_CPU(struct hrtimer_cpu_base, hrtimer_bases) =
 		BASE_INIT(HRTIMER_BASE_BOOTTIME_SOFT,	CLOCK_BOOTTIME),
 		BASE_INIT(HRTIMER_BASE_TAI_SOFT,	CLOCK_TAI),
 	},
-	.csd = CSD_INIT(retrigger_next_event, NULL)
+	.csd = CSD_INIT(retrigger_next_event, NULL),
+	.enabled_core = true,
 };
 
 static inline bool hrtimer_base_is_online(struct hrtimer_cpu_base *base)
@@ -126,6 +127,16 @@ static inline bool hrtimer_base_is_online(struct hrtimer_cpu_base *base)
 		return true;
 	else
 		return likely(base->online);
+}
+
+static __always_inline bool hrtimer_base_is_enabled(const struct hrtimer_clock_base *base)
+{
+	lockdep_assert_held(&base->cpu_base->lock);
+
+	if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
+		return true;
+
+	return *base->enabled;
 }
 
 static ktime_t hrtimer_expires_to_monotonic(const struct hrtimer_clock_base *base, ktime_t t)
@@ -1537,11 +1548,22 @@ void hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim, u64 delta_ns,
 }
 EXPORT_SYMBOL_GPL(hrtimer_start_range_ns);
 
+static void hrtimer_set_aborted(struct hrtimer *timer, bool is_aborted)
+{
+	if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
+		return;
+
+	ACCESS_PRIVATE(timer, is_aborted) = is_aborted;
+}
+
 static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 {
 	struct hrtimer_clock_base *base = timer->base;
 	struct hrtimer_cpu_base *cpu_base = base->cpu_base;
 	ktime_t expires;
+	bool is_aborted;
+
+	is_aborted = !hrtimer_base_is_enabled(base);
 
 	/*
 	 * This uses soft expires because that's the user provided
@@ -1553,20 +1575,25 @@ static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 	/* Convert to monotonic */
 	expires = hrtimer_expires_to_monotonic(base, expires);
 
+	/* An already aborted timer is never queued. */
+	if (unlikely(is_aborted))
+		; /* fall through */
+
 	/*
 	 * Check whether this timer will end up as the first expiring timer in
 	 * the CPU base. If not, no further checks required as it's then
 	 * guaranteed to expire in the future.
 	 */
-	if (expires >= cpu_base->expires_next)
+	else if (expires >= cpu_base->expires_next)
 		return true;
 
 	/* Validate that the expiry time is in the future. */
-	if (expires > ktime_get())
+	else if (expires > ktime_get())
 		return true;
 
 	debug_hrtimer_deactivate(timer);
 	__remove_hrtimer(timer, base, HRTIMER_STATE_INACTIVE, false);
+	hrtimer_set_aborted(timer, is_aborted);
 	trace_hrtimer_start_expired(timer);
 	return false;
 }
@@ -2019,7 +2046,7 @@ EXPORT_SYMBOL_GPL(hrtimer_active);
  * __run_hrtimer() invocations.
  */
 static void __run_hrtimer(struct hrtimer_cpu_base *cpu_base, struct hrtimer_clock_base *base,
-			  struct hrtimer *timer, ktime_t now, unsigned long flags)
+			  struct hrtimer *timer, ktime_t now, unsigned long flags, bool is_aborted)
 	__must_hold(&cpu_base->lock)
 {
 	enum hrtimer_restart (*fn)(struct hrtimer *);
@@ -2050,6 +2077,8 @@ static void __run_hrtimer(struct hrtimer_cpu_base *cpu_base, struct hrtimer_cloc
 	 */
 	if (IS_ENABLED(CONFIG_TIME_LOW_RES))
 		timer->is_rel = false;
+
+	hrtimer_set_aborted(timer, is_aborted);
 
 	/*
 	 * The timer is marked as running in the CPU base, so it is
@@ -2117,7 +2146,7 @@ static void __hrtimer_run_queues(struct hrtimer_cpu_base *cpu_base, ktime_t now,
 			if (basenow < hrtimer_get_softexpires(timer))
 				break;
 
-			__run_hrtimer(cpu_base, base, timer, basenow, flags);
+			__run_hrtimer(cpu_base, base, timer, basenow, flags, false);
 			if (active_mask == HRTIMER_ACTIVE_SOFT)
 				hrtimer_sync_wait_running(cpu_base, flags);
 		}
@@ -2546,6 +2575,15 @@ static void hrtimer_clock_base_setup_offset(const struct hrtimer_cpu_base *cpu_b
 		WARN_ON(1);
 }
 
+static void hrtimer_clock_base_setup_enabled(const struct hrtimer_cpu_base *cpu_base,
+					     struct hrtimer_clock_base *base)
+{
+	if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
+		return;
+
+	base->enabled = &cpu_base->enabled_core;
+}
+
 /*
  * Functions related to boot-time initialization:
  */
@@ -2558,6 +2596,7 @@ int hrtimers_prepare_cpu(unsigned int cpu)
 
 		clock_b->cpu_base = cpu_base;
 		hrtimer_clock_base_setup_offset(cpu_base, clock_b);
+		hrtimer_clock_base_setup_enabled(cpu_base, clock_b);
 		seqcount_raw_spinlock_init(&clock_b->seq, &cpu_base->lock);
 		timerqueue_linked_init_head(&clock_b->active);
 	}

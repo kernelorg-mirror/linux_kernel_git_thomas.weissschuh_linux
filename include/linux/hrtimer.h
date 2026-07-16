@@ -122,6 +122,20 @@ static inline ktime_t hrtimer_expires_remaining(const struct hrtimer *timer)
 	return ktime_sub(timer->node.expires, hrtimer_cb_get_time(timer));
 }
 
+/**
+ * hrtimer_is_aborted() - Test if an hrtimer has been aborted.
+ * @timer:	The timer to test.
+ *
+ * Context: From @timer's callback, or on a stopped timer.
+ */
+static inline bool hrtimer_is_aborted(const struct hrtimer *timer)
+{
+	if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
+		return false;
+
+	return ACCESS_PRIVATE(timer, is_aborted);
+}
+
 #ifdef CONFIG_HIGH_RES_TIMERS
 extern unsigned int hrtimer_resolution;
 struct clock_event_device;
