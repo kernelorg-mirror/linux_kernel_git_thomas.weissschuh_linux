@@ -128,6 +128,12 @@ static inline bool hrtimer_base_is_online(struct hrtimer_cpu_base *base)
 		return likely(base->online);
 }
 
+static __always_inline
+bool hrtimer_clock_base_has_active_disabled(const struct hrtimer_cpu_base *base)
+{
+	return hrtimer_cpubase_disabled_bases(base) & base->active_bases;
+}
+
 static ktime_t hrtimer_expires_to_monotonic(const struct hrtimer_clock_base *base, ktime_t t)
 {
 	return ktime_sub(t, *base->offset);
@@ -556,6 +562,9 @@ static ktime_t hrtimer_bases_next_event_without(struct hrtimer_cpu_base *cpu_bas
 
 	lockdep_assert_held(&cpu_base->lock);
 
+	if (hrtimer_clock_base_has_active_disabled(cpu_base))
+		return 0;
+
 	for_each_active_base(base, cpu_base, active) {
 		expires = hrtimer_expires_to_monotonic(base, base->expires_next);
 		if (expires >= expires_next)
@@ -594,7 +603,15 @@ static void hrtimer_bases_first(struct hrtimer_cpu_base *cpu_base,unsigned int a
 				ktime_t *expires_next, struct hrtimer **next_timer)
 {
 	struct hrtimer_clock_base *base;
+	unsigned int active_disabled;
 	ktime_t expires;
+
+	active_disabled = active & hrtimer_cpubase_disabled_bases(cpu_base);
+	for_each_active_base(base, cpu_base, active_disabled) {
+		*expires_next = 0;
+		*next_timer = clock_base_next_timer(base);
+		return;
+	}
 
 	for_each_active_base(base, cpu_base, active) {
 		expires = hrtimer_expires_to_monotonic(base, base->expires_next);
@@ -929,6 +946,10 @@ static bool update_needs_ipi(struct hrtimer_cpu_base *cpu_base, unsigned int act
 		cpu_base->deferred_needs_update = true;
 		return false;
 	}
+
+	/* A clock was disabled, expire its timers right away. */
+	if (hrtimer_clock_base_has_active_disabled(cpu_base))
+		return true;
 
 	/*
 	 * Walk the affected clock bases and check whether the first expiring
@@ -1546,11 +1567,22 @@ void hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim, u64 delta_ns,
 }
 EXPORT_SYMBOL_GPL(hrtimer_start_range_ns);
 
+static void hrtimer_set_aborted(struct hrtimer *timer, bool is_aborted)
+{
+	if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
+		return;
+
+	ACCESS_PRIVATE(timer, is_aborted) = is_aborted;
+}
+
 static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 {
 	struct hrtimer_clock_base *base = timer->base;
 	struct hrtimer_cpu_base *cpu_base = base->cpu_base;
 	ktime_t expires;
+	bool is_aborted;
+
+	is_aborted = hrtimer_base_is_disabled(base);
 
 	/*
 	 * This uses soft expires because that's the user provided
@@ -1562,20 +1594,25 @@ static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 	/* Convert to monotonic */
 	expires = hrtimer_expires_to_monotonic(base, expires);
 
+	/* An already aborted timer is never queued. */
+	if (unlikely(is_aborted))
+		; /* Fall through to expiration. */
+
 	/*
 	 * Check whether this timer will end up as the first expiring timer in
 	 * the CPU base. If not, no further checks required as it's then
 	 * guaranteed to expire in the future.
 	 */
-	if (expires >= cpu_base->expires_next)
+	else if (expires >= cpu_base->expires_next)
 		return true;
 
 	/* Validate that the expiry time is in the future. */
-	if (expires > ktime_get())
+	else if (expires > ktime_get())
 		return true;
 
 	debug_hrtimer_deactivate(timer);
 	__remove_hrtimer(timer, base, HRTIMER_STATE_INACTIVE, false);
+	hrtimer_set_aborted(timer, is_aborted);
 	trace_hrtimer_start_expired(timer);
 	return false;
 }
@@ -2028,7 +2065,7 @@ EXPORT_SYMBOL_GPL(hrtimer_active);
  * __run_hrtimer() invocations.
  */
 static void __run_hrtimer(struct hrtimer_cpu_base *cpu_base, struct hrtimer_clock_base *base,
-			  struct hrtimer *timer, ktime_t now, unsigned long flags)
+			  struct hrtimer *timer, ktime_t now, unsigned long flags, bool is_aborted)
 	__must_hold(&cpu_base->lock)
 {
 	enum hrtimer_restart (*fn)(struct hrtimer *);
@@ -2059,6 +2096,8 @@ static void __run_hrtimer(struct hrtimer_cpu_base *cpu_base, struct hrtimer_cloc
 	 */
 	if (IS_ENABLED(CONFIG_TIME_LOW_RES))
 		timer->is_rel = false;
+
+	hrtimer_set_aborted(timer, is_aborted);
 
 	/*
 	 * The timer is marked as running in the CPU base, so it is
@@ -2101,7 +2140,8 @@ static void __run_hrtimer(struct hrtimer_cpu_base *cpu_base, struct hrtimer_cloc
 }
 
 static void hrtimer_run_base(struct hrtimer_cpu_base *cpu_base, struct hrtimer_clock_base *base,
-			     ktime_t basenow, unsigned long flags, unsigned int active_mask)
+			     ktime_t basenow, unsigned long flags, unsigned int active_mask,
+			     bool is_aborted)
 {
 	struct hrtimer *timer;
 
@@ -2121,7 +2161,7 @@ static void hrtimer_run_base(struct hrtimer_cpu_base *cpu_base, struct hrtimer_c
 		if (basenow < hrtimer_get_softexpires(timer))
 			break;
 
-		__run_hrtimer(cpu_base, base, timer, basenow, flags);
+		__run_hrtimer(cpu_base, base, timer, basenow, flags, is_aborted);
 		if (active_mask == HRTIMER_ACTIVE_SOFT)
 			hrtimer_sync_wait_running(cpu_base, flags);
 	}
@@ -2134,7 +2174,8 @@ static void __hrtimer_run_queues(struct hrtimer_cpu_base *cpu_base, ktime_t now,
 	struct hrtimer_clock_base *base;
 
 	for_each_active_base(base, cpu_base, active)
-		hrtimer_run_base(cpu_base, base, ktime_add(now, *base->offset), flags, active_mask);
+		hrtimer_run_base(cpu_base, base, ktime_add(now, *base->offset), flags, active_mask,
+				 /* is_aborted= */ false);
 }
 
 static __latent_entropy void hrtimer_run_softirq(void)

@@ -67,6 +67,7 @@ enum hrtimer_base_type {
  * @softirq_expiry_lock:	Lock which is taken while softirq based hrtimer are expired
  * @online:			CPU is online from an hrtimers point of view
  * @timer_waiters:		A hrtimer_cancel() waiters for the timer callback to finish.
+ * @disabled_bases:		Bitfield to mark disabled bases
  * @expires_next:		Absolute time of the next event, is required for remote
  *				hrtimer enqueue; it is the total first expiry time (hard
  *				and soft hrtimer are taken into account)
@@ -101,6 +102,9 @@ struct hrtimer_cpu_base {
 #ifdef CONFIG_PREEMPT_RT
 	spinlock_t			softirq_expiry_lock;
 	atomic_t			timer_waiters;
+#endif
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+	unsigned int			disabled_bases;
 #endif
 	ktime_t				expires_next;
 	struct hrtimer			*next_timer;

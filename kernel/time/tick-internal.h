@@ -177,6 +177,21 @@ static inline void timers_update_nohz(void) { }
 
 DECLARE_PER_CPU(struct hrtimer_cpu_base, hrtimer_bases);
 
+static __always_inline
+unsigned int hrtimer_cpubase_disabled_bases(const struct hrtimer_cpu_base *base)
+{
+#ifdef CONFIG_POSIX_AUX_CLOCKS
+	return base->disabled_bases;
+#else
+	return 0;
+#endif
+}
+
+static __always_inline bool hrtimer_base_is_disabled(const struct hrtimer_clock_base *base)
+{
+	return hrtimer_cpubase_disabled_bases(base->cpu_base) & (1 << base->index);
+}
+
 extern u64 get_next_timer_interrupt(unsigned long basej, u64 basem);
 u64 timer_base_try_to_set_idle(unsigned long basej, u64 basem, bool *idle);
 void timer_clear_idle(void);
