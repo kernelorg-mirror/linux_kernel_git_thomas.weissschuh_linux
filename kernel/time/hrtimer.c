@@ -2159,37 +2159,43 @@ static void __run_hrtimer(struct hrtimer_cpu_base *cpu_base, struct hrtimer_cloc
 	base->running = NULL;
 }
 
+static void hrtimer_run_base(struct hrtimer_cpu_base *cpu_base, struct hrtimer_clock_base *base,
+			     ktime_t basenow, unsigned long flags, unsigned int active_mask,
+			     bool is_aborted)
+{
+	struct hrtimer *timer;
+
+	while ((timer = clock_base_next_timer(base))) {
+		/*
+		 * The immediate goal for using the softexpires is
+		 * minimizing wakeups, not running timers at the
+		 * earliest interrupt after their soft expiration.
+		 * This allows us to avoid using a Priority Search
+		 * Tree, which can answer a stabbing query for
+		 * overlapping intervals and instead use the simple
+		 * BST we already have.
+		 * We don't add extra wakeups by delaying timers that
+		 * are right-of a not yet expired timer, because that
+		 * timer will have to trigger a wakeup anyway.
+		 */
+		if (basenow < hrtimer_get_softexpires(timer))
+			break;
+
+		__run_hrtimer(cpu_base, base, timer, basenow, flags, is_aborted);
+		if (active_mask == HRTIMER_ACTIVE_SOFT)
+			hrtimer_sync_wait_running(cpu_base, flags);
+	}
+}
+
 static void __hrtimer_run_queues(struct hrtimer_cpu_base *cpu_base, ktime_t now,
 				 unsigned long flags, unsigned int active_mask)
 {
 	unsigned int active = cpu_base->active_bases & active_mask;
 	struct hrtimer_clock_base *base;
 
-	for_each_active_base(base, cpu_base, active) {
-		ktime_t basenow = ktime_add(now, *base->offset);
-		struct hrtimer *timer;
-
-		while ((timer = clock_base_next_timer(base))) {
-			/*
-			 * The immediate goal for using the softexpires is
-			 * minimizing wakeups, not running timers at the
-			 * earliest interrupt after their soft expiration.
-			 * This allows us to avoid using a Priority Search
-			 * Tree, which can answer a stabbing query for
-			 * overlapping intervals and instead use the simple
-			 * BST we already have.
-			 * We don't add extra wakeups by delaying timers that
-			 * are right-of a not yet expired timer, because that
-			 * timer will have to trigger a wakeup anyway.
-			 */
-			if (basenow < hrtimer_get_softexpires(timer))
-				break;
-
-			__run_hrtimer(cpu_base, base, timer, basenow, flags, false);
-			if (active_mask == HRTIMER_ACTIVE_SOFT)
-				hrtimer_sync_wait_running(cpu_base, flags);
-		}
-	}
+	for_each_active_base(base, cpu_base, active)
+		hrtimer_run_base(cpu_base, base, ktime_add(now, *base->offset), flags, active_mask,
+				 /* is_aborted= */ false);
 }
 
 static __latent_entropy void hrtimer_run_softirq(void)
