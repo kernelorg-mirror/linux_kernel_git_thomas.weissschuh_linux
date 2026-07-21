@@ -1572,9 +1572,6 @@ static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 	 */
 	expires = hrtimer_get_softexpires(timer);
 
-	/* Convert to monotonic */
-	expires = hrtimer_expires_to_monotonic(base, expires);
-
 	/* An already aborted timer is never queued. */
 	if (unlikely(is_aborted))
 		; /* fall through */
@@ -1584,11 +1581,11 @@ static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 	 * the CPU base. If not, no further checks required as it's then
 	 * guaranteed to expire in the future.
 	 */
-	else if (expires >= cpu_base->expires_next)
+	else if (hrtimer_expires_to_monotonic(base, expires) >= cpu_base->expires_next)
 		return true;
 
 	/* Validate that the expiry time is in the future. */
-	else if (expires > ktime_get())
+	else if (expires > hrtimer_cb_get_time(timer))
 		return true;
 
 	debug_hrtimer_deactivate(timer);
