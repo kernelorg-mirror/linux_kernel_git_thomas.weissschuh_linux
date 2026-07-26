@@ -1710,10 +1710,23 @@ static void psy_unregister_thermal(struct power_supply *psy)
 }
 #endif
 
-static struct power_supply *__must_check
-__power_supply_register(struct device *parent,
-				   const struct power_supply_desc *desc,
-				   const struct power_supply_config *cfg)
+/**
+ * power_supply_register() - Register new power supply
+ * @parent:	Device to be a parent of power supply's device, usually
+ *		the device which probe function calls this
+ * @desc:	Description of power supply, must be valid through whole
+ *		lifetime of this power supply
+ * @cfg:	Run-time specific configuration accessed during registering,
+ *		may be NULL
+ *
+ * Return: A pointer to newly allocated power_supply on success
+ * or ERR_PTR otherwise.
+ * Use power_supply_unregister() on returned power_supply pointer to release
+ * resources.
+ */
+struct power_supply *__must_check power_supply_register(struct device *parent,
+		const struct power_supply_desc *desc,
+		const struct power_supply_config *cfg)
 {
 	struct device *dev;
 	struct power_supply *psy;
@@ -1830,27 +1843,6 @@ dev_set_name_failed:
 	put_device(dev);
 	return ERR_PTR(rc);
 }
-
-/**
- * power_supply_register() - Register new power supply
- * @parent:	Device to be a parent of power supply's device, usually
- *		the device which probe function calls this
- * @desc:	Description of power supply, must be valid through whole
- *		lifetime of this power supply
- * @cfg:	Run-time specific configuration accessed during registering,
- *		may be NULL
- *
- * Return: A pointer to newly allocated power_supply on success
- * or ERR_PTR otherwise.
- * Use power_supply_unregister() on returned power_supply pointer to release
- * resources.
- */
-struct power_supply *__must_check power_supply_register(struct device *parent,
-		const struct power_supply_desc *desc,
-		const struct power_supply_config *cfg)
-{
-	return __power_supply_register(parent, desc, cfg);
-}
 EXPORT_SYMBOL_GPL(power_supply_register);
 
 static void devm_power_supply_release(struct device *dev, void *res)
@@ -1885,7 +1877,7 @@ devm_power_supply_register(struct device *parent,
 
 	if (!ptr)
 		return ERR_PTR(-ENOMEM);
-	psy = __power_supply_register(parent, desc, cfg);
+	psy = power_supply_register(parent, desc, cfg);
 	if (IS_ERR(psy)) {
 		devres_free(ptr);
 	} else {
