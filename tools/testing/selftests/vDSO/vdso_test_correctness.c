@@ -28,6 +28,10 @@
 static const char *version;
 static const char **name;
 
+#ifndef CLOCK_AUX
+#define CLOCK_AUX	16
+#endif
+
 #ifndef __NR_clock_gettime64
 #define __NR_clock_gettime64	403
 #endif
@@ -265,6 +269,14 @@ static const __kernel_clockid_t clocks[] = {
 	CLOCK_BOOTTIME_ALARM,
 	10 /* CLOCK_SGI_CYCLE */,
 	CLOCK_TAI,
+	CLOCK_AUX + 0,
+	CLOCK_AUX + 1,
+	CLOCK_AUX + 2,
+	CLOCK_AUX + 3,
+	CLOCK_AUX + 4,
+	CLOCK_AUX + 5,
+	CLOCK_AUX + 6,
+	CLOCK_AUX + 7,
 };
 
 static void test_one_clock_gettime(int clock)
@@ -284,6 +296,8 @@ static void test_one_clock_gettime(int clock)
 			nerrs++;
 		} else if (errno == EINVAL) {
 			printf("[OK]\tNo such clock.\n");
+		} else if (errno == ENODEV) {
+			printf("[SKIP]\t clock_gettime(%d) syscall returned ENODEV\n", clock);
 		} else {
 			printf("[WARN]\t clock_gettime(%d) syscall returned error %d\n", clock, errno);
 		}
@@ -347,6 +361,8 @@ static void test_one_clock_gettime64(int clock)
 			nerrs++;
 		} else if (errno == EINVAL) {
 			printf("[OK]\tNo such clock.\n");
+		} else if (errno == ENODEV) {
+			printf("[SKIP]\t clock_gettime64(%d) syscall returned ENODEV\n", clock);
 		} else {
 			printf("[WARN]\t clock_gettime64(%d) syscall returned error %d\n", clock, errno);
 		}
