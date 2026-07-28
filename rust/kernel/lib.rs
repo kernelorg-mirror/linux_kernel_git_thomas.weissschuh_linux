@@ -160,7 +160,7 @@ pub use module::{
 pub use uapi;
 
 /// Prefix to appear before log messages printed from within the `kernel` crate.
-const __LOG_PREFIX: &[u8] = b"rust_kernel\0";
+const __LOG_PREFIX: &core::ffi::CStr = c"rust_kernel";
 
 /// Dummy module type for `#[vtable]` `impl` blocks within the `kernel` crate (e.g. KUnit tests).
 // The `allow` is needed since it may be unused (e.g. KUnit tests may be disabled).
