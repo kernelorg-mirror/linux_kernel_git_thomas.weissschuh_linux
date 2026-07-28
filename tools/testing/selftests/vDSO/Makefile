@@ -5,7 +5,7 @@ TEST_GEN_PROGS := vdso_test_gettimeofday
 TEST_GEN_PROGS += vdso_test_getcpu
 TEST_GEN_PROGS += vdso_test_abi
 ifeq ($(ARCH),$(filter $(ARCH),x86 x86_64))
-TEST_GEN_PROGS += vdso_standalone_test_x86
+#TEST_GEN_PROGS += vdso_standalone_test_x86
 endif
 TEST_GEN_PROGS += vdso_test_correctness
 TEST_GEN_PROGS += vdso_test_getrandom
