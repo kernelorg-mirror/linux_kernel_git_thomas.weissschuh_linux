@@ -84,6 +84,8 @@ static void vdso_test_clock_gettime64(clockid_t clk_id)
 		ksft_print_msg("The time is %lld.%06lld\n",
 			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
 		ksft_test_result_pass("%s %s\n", name[5], clk_name);
+	} else if (ret == -ENODEV) {
+		ksft_test_result_skip("%s %s\n", name[5], clk_name);
 	} else {
 		ksft_test_result_fail("%s %s\n", name[5], clk_name);
 	}
@@ -109,6 +111,8 @@ static void vdso_test_clock_gettime(clockid_t clk_id)
 		ksft_print_msg("The time is %lld.%06lld\n",
 			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
 		ksft_test_result_pass("%s %s\n", name[1], clk_name);
+	} else if (ret == -ENODEV) {
+		ksft_test_result_skip("%s %s\n", name[1], clk_name);
 	} else {
 		ksft_test_result_fail("%s %s\n", name[1], clk_name);
 	}
@@ -237,7 +241,8 @@ static inline void vdso_test_clock(clockid_t clock_id)
 	vdso_test_clock_getres_time64(clock_id);
 }
 
-#define VDSO_TEST_PLAN	38
+#define NUM_AUX_TESTS (4 * (CLOCK_AUX_LAST - CLOCK_AUX + 1))
+#define VDSO_TEST_PLAN	(38 + NUM_AUX_TESTS)
 
 int main(int argc, char **argv)
 {
@@ -268,6 +273,9 @@ int main(int argc, char **argv)
 	vdso_test_clock(CLOCK_MONOTONIC_COARSE);
 	vdso_test_clock(CLOCK_PROCESS_CPUTIME_ID);
 	vdso_test_clock(CLOCK_THREAD_CPUTIME_ID);
+
+	for (clockid_t aux_clock = CLOCK_AUX; aux_clock <= CLOCK_AUX_LAST; aux_clock++)
+		vdso_test_clock(aux_clock);
 
 	vdso_test_time();
 
