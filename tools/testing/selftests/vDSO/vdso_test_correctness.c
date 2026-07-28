@@ -276,14 +276,14 @@ static void test_one_clock_gettime(int clock)
 	printf("[RUN]\tTesting clock_gettime for clock %s (%d)...\n", name, clock);
 
 	if (sys_clock_gettime(clock, &start) < 0) {
-		if (errno == EINVAL) {
-			vdso_ret = VDSO_CALL(vdso_clock_gettime, 2, clock, &vdso);
-			if (vdso_ret == -EINVAL) {
-				printf("[OK]\tNo such clock.\n");
-			} else {
-				printf("[FAIL]\tNo such clock, but __vdso_clock_gettime returned %d\n", vdso_ret);
-				nerrs++;
-			}
+		vdso_ret = VDSO_CALL(vdso_clock_gettime, 2, clock, &vdso);
+
+		if (-vdso_ret != errno) {
+			printf("[FAIL]\t clock_gettime(%d): Differing errors between syscall and vdso: %d %d\n",
+			       clock, vdso_ret, errno);
+			nerrs++;
+		} else if (errno == EINVAL) {
+			printf("[OK]\tNo such clock.\n");
 		} else {
 			printf("[WARN]\t clock_gettime(%d) syscall returned error %d\n", clock, errno);
 		}
@@ -339,14 +339,14 @@ static void test_one_clock_gettime64(int clock)
 	printf("[RUN]\tTesting clock_gettime64 for clock %s (%d)...\n", name, clock);
 
 	if (sys_clock_gettime64(clock, &start) < 0) {
-		if (errno == EINVAL) {
-			vdso_ret = VDSO_CALL(vdso_clock_gettime64, 2, clock, &vdso);
-			if (vdso_ret == -EINVAL) {
-				printf("[OK]\tNo such clock.\n");
-			} else {
-				printf("[FAIL]\tNo such clock, but __vdso_clock_gettime64 returned %d\n", vdso_ret);
-				nerrs++;
-			}
+		vdso_ret = VDSO_CALL(vdso_clock_gettime64, 2, clock, &vdso);
+
+		if (-vdso_ret != errno) {
+			printf("[FAIL]\t clock_gettime64(%d): Differing errors between syscall and vdso: %d %d\n",
+			       clock, vdso_ret, errno);
+			nerrs++;
+		} else if (errno == EINVAL) {
+			printf("[OK]\tNo such clock.\n");
 		} else {
 			printf("[WARN]\t clock_gettime64(%d) syscall returned error %d\n", clock, errno);
 		}
