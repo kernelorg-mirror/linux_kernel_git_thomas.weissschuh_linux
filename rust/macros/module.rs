@@ -496,7 +496,7 @@ pub(crate) fn module(info: ModuleInfo) -> Result<TokenStream> {
         /// The module name.
         ///
         /// Used by the printing macros, e.g. [`info!`].
-        const __LOG_PREFIX: &[u8] = #name_cstr.to_bytes_with_nul();
+        const __LOG_PREFIX: &::core::ffi::CStr = #name_cstr;
 
         /// The `LocalModule` type is the type of the module created by `module!`,
         /// `module_pci_driver!`, `module_platform_driver!`, etc.
