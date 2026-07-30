@@ -25,6 +25,7 @@
 #include <linux/limits.h>
 #include <clocksource/timer-riscv.h>
 #include <asm/smp.h>
+#include <asm/clock_inlined.h>
 #include <asm/cpufeature.h>
 #include <asm/sbi.h>
 #include <asm/timex.h>
@@ -77,16 +78,6 @@ static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
 	.set_state_shutdown	= riscv_clock_shutdown,
 };
 
-/*
- * It is guaranteed that all the timers across all the harts are synchronized
- * within one tick of each other, so while this could technically go
- * backwards when hopping between CPUs, practically it won't happen.
- */
-static unsigned long long riscv_clocksource_rdtime(struct clocksource *cs)
-{
-	return get_cycles64();
-}
-
 static u64 notrace riscv_sched_clock(void)
 {
 	return get_cycles64();
@@ -96,8 +87,8 @@ static struct clocksource riscv_clocksource = {
 	.name		= "riscv_clocksource",
 	.rating		= 400,
 	.mask		= CLOCKSOURCE_MASK(64),
-	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
-	.read		= riscv_clocksource_rdtime,
+	.flags		= CLOCK_SOURCE_IS_CONTINUOUS | CLOCK_SOURCE_CAN_INLINE_READ,
+	.read		= arch_inlined_clocksource_read,
 #if IS_ENABLED(CONFIG_GENERIC_GETTIMEOFDAY)
 	.vdso_clock_mode = VDSO_CLOCKMODE_ARCHTIMER,
 #else
