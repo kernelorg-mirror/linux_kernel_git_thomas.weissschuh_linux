@@ -30,7 +30,7 @@
 #include <asm/sbi.h>
 #include <asm/timex.h>
 
-static DEFINE_STATIC_KEY_FALSE(riscv_sstc_available);
+DEFINE_STATIC_KEY_FALSE(riscv_sstc_available);
 static bool riscv_timer_cannot_wake_cpu;
 
 static void riscv_clock_event_stop(void)
@@ -44,26 +44,10 @@ static void riscv_clock_event_stop(void)
 	}
 }
 
-static void riscv_clock_next_coupled(u64 cycles, struct clock_event_device *ce)
-{
-	u64 next_tval = cycles;
-
-	if (static_branch_likely(&riscv_sstc_available)) {
-#if defined(CONFIG_32BIT)
-		csr_write(CSR_STIMECMP, ULONG_MAX);
-		csr_write(CSR_STIMECMPH, next_tval >> 32);
-		csr_write(CSR_STIMECMP, next_tval & 0xFFFFFFFF);
-#else
-		csr_write(CSR_STIMECMP, next_tval);
-#endif
-	} else
-		sbi_set_timer(next_tval);
-}
-
 static int riscv_clock_next_event(unsigned long delta,
 		struct clock_event_device *ce)
 {
-	riscv_clock_next_coupled(get_cycles64() + delta, ce);
+	arch_inlined_clockevent_set_next_coupled(get_cycles64() + delta, ce);
 
 	return 0;
 }
@@ -80,7 +64,7 @@ static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
 	.features		= CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_CLOCKSOURCE_COUPLED,
 	.rating			= 100,
 	.set_next_event		= riscv_clock_next_event,
-	.set_next_coupled	= riscv_clock_next_coupled,
+	.set_next_coupled	= arch_inlined_clockevent_set_next_coupled,
 	.set_state_shutdown	= riscv_clock_shutdown,
 };
 
