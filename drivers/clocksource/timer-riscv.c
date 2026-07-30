@@ -44,10 +44,9 @@ static void riscv_clock_event_stop(void)
 	}
 }
 
-static int riscv_clock_next_event(unsigned long delta,
-		struct clock_event_device *ce)
+static void riscv_clock_next_coupled(u64 cycles, struct clock_event_device *ce)
 {
-	u64 next_tval = get_cycles64() + delta;
+	u64 next_tval = cycles;
 
 	if (static_branch_likely(&riscv_sstc_available)) {
 #if defined(CONFIG_32BIT)
@@ -59,6 +58,12 @@ static int riscv_clock_next_event(unsigned long delta,
 #endif
 	} else
 		sbi_set_timer(next_tval);
+}
+
+static int riscv_clock_next_event(unsigned long delta,
+		struct clock_event_device *ce)
+{
+	riscv_clock_next_coupled(get_cycles64() + delta, ce);
 
 	return 0;
 }
@@ -72,9 +77,10 @@ static int riscv_clock_shutdown(struct clock_event_device *evt)
 static unsigned int riscv_clock_event_irq;
 static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
 	.name			= "riscv_timer_clockevent",
-	.features		= CLOCK_EVT_FEAT_ONESHOT,
+	.features		= CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_CLOCKSOURCE_COUPLED,
 	.rating			= 100,
 	.set_next_event		= riscv_clock_next_event,
+	.set_next_coupled	= riscv_clock_next_coupled,
 	.set_state_shutdown	= riscv_clock_shutdown,
 };
 
