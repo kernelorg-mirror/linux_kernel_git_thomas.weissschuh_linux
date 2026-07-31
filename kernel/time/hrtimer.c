@@ -1037,6 +1037,14 @@ static inline void unlock_hrtimer_base(const struct hrtimer *timer, unsigned lon
 	raw_spin_unlock_irqrestore(&timer->base->cpu_base->lock, *flags);
 }
 
+DEFINE_LOCK_GUARD_1(lock_hrtimer_base, const struct hrtimer,
+		    lock_hrtimer_base(_T->lock, &_T->flags),
+		    unlock_hrtimer_base(_T->lock, &_T->flags),
+		    unsigned long flags)
+DECLARE_LOCK_GUARD_1_ATTRS(lock_hrtimer_base, __acquires(&_T->lock->base->cpu_base->lock),
+					      __releases(&_T->lock->base->cpu_base->lock))
+#define class_lock_hrtimer_base_constructor(_T) WITH_LOCK_GUARD_1_ATTRS(lock_hrtimer_base, _T)
+
 /**
  * hrtimer_update_function - Update the timer's callback function
  * @timer:	Timer to update
@@ -1515,11 +1523,9 @@ static int hrtimer_start_range_ns_common(struct hrtimer *timer, ktime_t tim,
 void hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim, u64 delta_ns,
 			    const enum hrtimer_mode mode)
 {
-	unsigned long flags;
-
 	debug_hrtimer_assert_init(timer);
 
-	lock_hrtimer_base(timer, &flags);
+	guard(lock_hrtimer_base)(timer);
 
 	switch (hrtimer_start_range_ns_common(timer, tim, delta_ns, mode)) {
 	case HRTIMER_REPROGRAM:
@@ -1531,8 +1537,6 @@ void hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim, u64 delta_ns,
 	case HRTIMER_REPROGRAM_NONE:
 		break;
 	}
-
-	unlock_hrtimer_base(timer, &flags);
 }
 EXPORT_SYMBOL_GPL(hrtimer_start_range_ns);
 
@@ -1587,12 +1591,11 @@ static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 bool hrtimer_start_range_ns_user(struct hrtimer *timer, ktime_t tim,
 				 u64 delta_ns, const enum hrtimer_mode mode)
 {
-	unsigned long flags;
 	bool ret = true;
 
 	debug_hrtimer_assert_init(timer);
 
-	lock_hrtimer_base(timer, &flags);
+	guard(lock_hrtimer_base)(timer);
 
 	switch (hrtimer_start_range_ns_common(timer, tim, delta_ns, mode)) {
 	case HRTIMER_REPROGRAM:
@@ -1612,7 +1615,6 @@ bool hrtimer_start_range_ns_user(struct hrtimer *timer, ktime_t tim,
 		break;
 	}
 
-	unlock_hrtimer_base(timer, &flags);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(hrtimer_start_range_ns_user);
@@ -1630,7 +1632,6 @@ EXPORT_SYMBOL_GPL(hrtimer_start_range_ns_user);
  */
 int hrtimer_try_to_cancel(struct hrtimer *timer)
 {
-	unsigned long flags;
 	int ret = -1;
 
 	/*
@@ -1642,15 +1643,13 @@ int hrtimer_try_to_cancel(struct hrtimer *timer)
 	if (!hrtimer_active(timer))
 		return 0;
 
-	lock_hrtimer_base(timer, &flags);
+	guard(lock_hrtimer_base)(timer);
 
 	if (!hrtimer_callback_running(timer)) {
 		ret = remove_hrtimer(timer, timer->base, HRTIMER_STATE_INACTIVE);
 		if (ret)
 			trace_hrtimer_cancel(timer);
 	}
-
-	unlock_hrtimer_base(timer, &flags);
 
 	return ret;
 
@@ -1782,17 +1781,12 @@ EXPORT_SYMBOL_GPL(hrtimer_cancel);
  */
 ktime_t __hrtimer_get_remaining(const struct hrtimer *timer, bool adjust)
 {
-	unsigned long flags;
-	ktime_t rem;
+	guard(lock_hrtimer_base)(timer);
 
-	lock_hrtimer_base(timer, &flags);
 	if (IS_ENABLED(CONFIG_TIME_LOW_RES) && adjust)
-		rem = hrtimer_expires_remaining_adjusted(timer);
+		return hrtimer_expires_remaining_adjusted(timer);
 	else
-		rem = hrtimer_expires_remaining(timer);
-	unlock_hrtimer_base(timer, &flags);
-
-	return rem;
+		return hrtimer_expires_remaining(timer);
 }
 EXPORT_SYMBOL_GPL(__hrtimer_get_remaining);
 
