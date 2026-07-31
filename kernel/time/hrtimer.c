@@ -1381,10 +1381,11 @@ enum {
 };
 
 static int __hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim, u64 delta_ns,
-				    const enum hrtimer_mode mode, struct hrtimer_clock_base *base)
+				    const enum hrtimer_mode mode)
 {
 	struct hrtimer_cpu_base *this_cpu_base = this_cpu_ptr(&hrtimer_bases);
 	bool is_pinned, first, was_first, keep_base = false;
+	struct hrtimer_clock_base *base = timer->base;
 	struct hrtimer_cpu_base *cpu_base = base->cpu_base;
 
 	was_first = cpu_base->next_timer == timer;
@@ -1487,8 +1488,7 @@ static int __hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim, u64 delt
 }
 
 static int hrtimer_start_range_ns_common(struct hrtimer *timer, ktime_t tim,
-					 u64 delta_ns, const enum hrtimer_mode mode,
-					 struct hrtimer_clock_base *base)
+					 u64 delta_ns, const enum hrtimer_mode mode)
 {
 	/*
 	 * Check whether the HRTIMER_MODE_SOFT bit and hrtimer.is_soft
@@ -1500,7 +1500,7 @@ static int hrtimer_start_range_ns_common(struct hrtimer *timer, ktime_t tim,
 	else
 		WARN_ON_ONCE(!(mode & HRTIMER_MODE_HARD) ^ !timer->is_hard);
 
-	return __hrtimer_start_range_ns(timer, tim, delta_ns, mode, base);
+	return __hrtimer_start_range_ns(timer, tim, delta_ns, mode);
 }
 
 /**
@@ -1521,7 +1521,7 @@ void hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim, u64 delta_ns,
 
 	lock_hrtimer_base(timer, &flags);
 
-	switch (hrtimer_start_range_ns_common(timer, tim, delta_ns, mode, timer->base)) {
+	switch (hrtimer_start_range_ns_common(timer, tim, delta_ns, mode)) {
 	case HRTIMER_REPROGRAM:
 		hrtimer_reprogram(timer, true);
 		break;
@@ -1594,7 +1594,7 @@ bool hrtimer_start_range_ns_user(struct hrtimer *timer, ktime_t tim,
 
 	lock_hrtimer_base(timer, &flags);
 
-	switch (hrtimer_start_range_ns_common(timer, tim, delta_ns, mode, timer->base)) {
+	switch (hrtimer_start_range_ns_common(timer, tim, delta_ns, mode)) {
 	case HRTIMER_REPROGRAM:
 		ret = hrtimer_check_user_timer(timer);
 		if (ret)
