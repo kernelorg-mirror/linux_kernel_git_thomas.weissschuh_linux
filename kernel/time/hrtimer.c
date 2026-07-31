@@ -181,8 +181,7 @@ static struct hrtimer_cpu_base migration_cpu_base = {
  * possible to set timer->base = &migration_base and drop the lock: the timer
  * remains locked.
  */
-static struct hrtimer_clock_base *lock_hrtimer_base(const struct hrtimer *timer,
-						    unsigned long *flags)
+static void lock_hrtimer_base(const struct hrtimer *timer, unsigned long *flags)
 	__acquires(&timer->base->lock)
 {
 	for (;;) {
@@ -191,7 +190,7 @@ static struct hrtimer_clock_base *lock_hrtimer_base(const struct hrtimer *timer,
 		if (likely(base != &migration_base)) {
 			raw_spin_lock_irqsave(&base->cpu_base->lock, *flags);
 			if (likely(base == timer->base))
-				return base;
+				return;
 			/* The timer has migrated to another CPU: */
 			raw_spin_unlock_irqrestore(&base->cpu_base->lock, *flags);
 		}
@@ -315,14 +314,10 @@ again:
 
 #else /* CONFIG_SMP */
 
-static inline struct hrtimer_clock_base *lock_hrtimer_base(const struct hrtimer *timer,
-							   unsigned long *flags)
+static inline void lock_hrtimer_base(const struct hrtimer *timer, unsigned long *flags)
 	__acquires(&timer->base->cpu_base->lock)
 {
-	struct hrtimer_clock_base *base = timer->base;
-
-	raw_spin_lock_irqsave(&base->cpu_base->lock, *flags);
-	return base;
+	raw_spin_lock_irqsave(&timer->base->cpu_base->lock, *flags);
 }
 
 # define switch_hrtimer_base(t, b, p)	(b)
@@ -1520,14 +1515,13 @@ static int hrtimer_start_range_ns_common(struct hrtimer *timer, ktime_t tim,
 void hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim, u64 delta_ns,
 			    const enum hrtimer_mode mode)
 {
-	struct hrtimer_clock_base *base;
 	unsigned long flags;
 
 	debug_hrtimer_assert_init(timer);
 
-	base = lock_hrtimer_base(timer, &flags);
+	lock_hrtimer_base(timer, &flags);
 
-	switch (hrtimer_start_range_ns_common(timer, tim, delta_ns, mode, base)) {
+	switch (hrtimer_start_range_ns_common(timer, tim, delta_ns, mode, timer->base)) {
 	case HRTIMER_REPROGRAM:
 		hrtimer_reprogram(timer, true);
 		break;
@@ -1593,15 +1587,14 @@ static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 bool hrtimer_start_range_ns_user(struct hrtimer *timer, ktime_t tim,
 				 u64 delta_ns, const enum hrtimer_mode mode)
 {
-	struct hrtimer_clock_base *base;
 	unsigned long flags;
 	bool ret = true;
 
 	debug_hrtimer_assert_init(timer);
 
-	base = lock_hrtimer_base(timer, &flags);
+	lock_hrtimer_base(timer, &flags);
 
-	switch (hrtimer_start_range_ns_common(timer, tim, delta_ns, mode, base)) {
+	switch (hrtimer_start_range_ns_common(timer, tim, delta_ns, mode, timer->base)) {
 	case HRTIMER_REPROGRAM:
 		ret = hrtimer_check_user_timer(timer);
 		if (ret)
@@ -1637,7 +1630,6 @@ EXPORT_SYMBOL_GPL(hrtimer_start_range_ns_user);
  */
 int hrtimer_try_to_cancel(struct hrtimer *timer)
 {
-	struct hrtimer_clock_base *base;
 	unsigned long flags;
 	int ret = -1;
 
@@ -1650,10 +1642,10 @@ int hrtimer_try_to_cancel(struct hrtimer *timer)
 	if (!hrtimer_active(timer))
 		return 0;
 
-	base = lock_hrtimer_base(timer, &flags);
+	lock_hrtimer_base(timer, &flags);
 
 	if (!hrtimer_callback_running(timer)) {
-		ret = remove_hrtimer(timer, base, HRTIMER_STATE_INACTIVE);
+		ret = remove_hrtimer(timer, timer->base, HRTIMER_STATE_INACTIVE);
 		if (ret)
 			trace_hrtimer_cancel(timer);
 	}
