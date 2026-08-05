@@ -907,6 +907,7 @@ int put_timespec64(const struct timespec64 *ts,
 }
 EXPORT_SYMBOL_GPL(put_timespec64);
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 static int __get_old_timespec32(struct timespec64 *ts64,
 				   const struct old_timespec32 __user *cts)
 {
@@ -969,6 +970,7 @@ int put_old_timespec32(const struct timespec64 *ts, void __user *uts)
 		return __put_old_timespec32(ts, uts);
 }
 EXPORT_SYMBOL_GPL(put_old_timespec32);
+#endif /* CONFIG_COMPAT_32BIT_TIME */
 
 /**
  * get_itimerspec64 - get user's &struct __kernel_itimerspec into kernel space
@@ -1015,6 +1017,7 @@ int put_itimerspec64(const struct itimerspec64 *it,
 }
 EXPORT_SYMBOL_GPL(put_itimerspec64);
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 /**
  * get_old_itimerspec32 - get user's &struct old_itimerspec32 into kernel space
  * @its: destination &struct itimerspec64
@@ -1050,3 +1053,4 @@ int put_old_itimerspec32(const struct itimerspec64 *its,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(put_old_itimerspec32);
+#endif /* CONFIG_COMPAT_32BIT_TIME */
