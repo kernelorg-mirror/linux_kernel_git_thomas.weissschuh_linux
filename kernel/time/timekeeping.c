@@ -163,7 +163,9 @@ static inline u32 tk_aux_calc_conv_mult(u32 this_mult, u32 other_mult)
 	return div_u64(((u64)1 << TK_AUX_MONO_CONV_SHIFT) * other_mult, this_mult);
 }
 
+#if !IS_ENABLED(CONFIG_TIME_KUNIT_TEST)
 static inline
+#endif
 void tk_aux_capture_mono_conv(struct tk_aux_mono_conv *conv,
 			      ktime_t mono_now, u32 mono_mult,
 			      ktime_t aux_now, u32 aux_mult)
@@ -179,6 +181,7 @@ void tk_aux_capture_mono_conv(struct tk_aux_mono_conv *conv,
 		conv->aux_mult = aux_mult;
 	}
 }
+EXPORT_SYMBOL_FOR_TIME_TEST(tk_aux_capture_mono_conv);
 
 static __always_inline
 u64 tk_aux_mono_conv_mul_shr_ns(u64 delta, u32 conv_mult)
@@ -237,6 +240,7 @@ ktime_t ktime_mono_to_aux(ktime_t mono, const struct tk_aux_mono_conv *c)
 {
 	return ktime_mono_from_to_aux(mono, c->mono_base, c->aux_base, c->mono_to_aux_conv_mult);
 }
+EXPORT_SYMBOL_FOR_TIME_TEST(ktime_mono_to_aux);
 
 /**
  * ktime_aux_before_mono_and_convert() - Compare and convert an auxiliary clock timestamp.
@@ -296,6 +300,7 @@ bool ktime_aux_before_mono_and_convert(const struct tk_aux_mono_conv *c, ktime_t
 	*mono_converted = ktime_add(c->mono_base, mono_delta);
 	return ktime_before(*mono_converted, mono_ref);
 }
+EXPORT_SYMBOL_FOR_TIME_TEST(ktime_aux_before_mono_and_convert);
 
 #else
 static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)

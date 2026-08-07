@@ -14,6 +14,11 @@ bool ktime_expiry_to_cycles(enum clocksource_ids id, ktime_t expires_ns, u64 *cy
 ktime_t ktime_mono_to_aux(ktime_t mono, const struct tk_aux_mono_conv *c);
 bool ktime_aux_before_mono_and_convert(const struct tk_aux_mono_conv *c, ktime_t aux,
 				       ktime_t mono_ref, ktime_t *mono_converted);
+#if IS_ENABLED(CONFIG_TIME_KUNIT_TEST)
+void tk_aux_capture_mono_conv(struct tk_aux_mono_conv *conv,
+			      ktime_t mono_now, u32 mono_mult,
+			      ktime_t aux_now, u32 aux_mult);
+#endif
 
 extern int timekeeping_valid_for_hres(void);
 extern u64 timekeeping_max_deferment(void);
@@ -36,5 +41,11 @@ extern raw_spinlock_t jiffies_lock;
 extern seqcount_raw_spinlock_t jiffies_seq;
 
 #define CS_NAME_LEN	32
+
+#if IS_MODULE(CONFIG_TIME_KUNIT_TEST)
+#define EXPORT_SYMBOL_FOR_TIME_TEST(_symbol)	EXPORT_SYMBOL_FOR_MODULES(_symbol, "time_test")
+#else
+#define EXPORT_SYMBOL_FOR_TIME_TEST(_symbol)
+#endif
 
 #endif
