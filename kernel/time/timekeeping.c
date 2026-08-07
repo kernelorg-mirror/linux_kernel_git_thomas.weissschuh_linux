@@ -154,7 +154,9 @@ static inline u32 tk_aux_calc_conv_mult(u32 this_mult, u32 other_mult)
 	return div_u64(((u64)1 << TK_AUX_MONO_CONV_SHIFT) * other_mult, this_mult);
 }
 
+#if !IS_ENABLED(CONFIG_TIME_KUNIT_TEST)
 static inline
+#endif
 void tk_aux_capture_mono_conv(struct tk_aux_mono_conv *conv,
 			      ktime_t mono_now, u32 mono_mult,
 			      ktime_t aux_now, u32 aux_mult)
@@ -170,6 +172,7 @@ void tk_aux_capture_mono_conv(struct tk_aux_mono_conv *conv,
 		conv->aux_mult = aux_mult;
 	}
 }
+EXPORT_SYMBOL_FOR_TIME_TEST(tk_aux_capture_mono_conv);
 
 static __always_inline
 u64 tk_aux_mono_conv_mul_shr_ns(u64 delta, u32 conv_mult)
@@ -217,6 +220,7 @@ ktime_t ktime_mono_to_aux(const struct tk_aux_mono_conv *c, ktime_t mono)
 
 	return ktime_add(c->aux_base, aux_delta);
 }
+EXPORT_SYMBOL_FOR_TIME_TEST(ktime_mono_to_aux);
 
 /**
  * ktime_aux_to_mono() - Convert an auxiliary clock timestamp to a monotonic clock one.
@@ -253,6 +257,7 @@ ktime_t ktime_aux_to_mono(const struct tk_aux_mono_conv *c, ktime_t aux)
 
 	return ktime_add(c->mono_base, mono_delta);
 }
+EXPORT_SYMBOL_FOR_TIME_TEST(ktime_aux_to_mono);
 
 #else
 static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)

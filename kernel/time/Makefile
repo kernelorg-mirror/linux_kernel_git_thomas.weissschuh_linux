@@ -32,4 +32,6 @@ obj-$(CONFIG_TEST_UDELAY)			+= test_udelay.o
 obj-$(CONFIG_TIME_NS)				+= namespace.o
 obj-$(CONFIG_TIME_NS_VDSO)			+= namespace_vdso.o
 obj-$(CONFIG_TEST_CLOCKSOURCE_WATCHDOG)		+= clocksource-wdtest.o
-obj-$(CONFIG_TIME_KUNIT_TEST)			+= time_test.o
+obj-$(CONFIG_TIME_KUNIT_TEST)			+= time_tests.o
+time_tests-y					:= time_test.o
+time_tests-$(CONFIG_POSIX_AUX_CLOCKS)		+= aux_clock_test.o
