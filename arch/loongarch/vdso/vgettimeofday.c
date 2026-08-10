@@ -7,6 +7,8 @@
 #include <linux/types.h>
 #include <vdso/gettime.h>
 
+#if __BITS_PER_LONG == 64
+
 int __vdso_clock_gettime(clockid_t clock, struct __kernel_timespec *ts)
 {
 	return __cvdso_clock_gettime(clock, ts);
@@ -21,3 +23,17 @@ int __vdso_clock_getres(clockid_t clock_id, struct __kernel_timespec *res)
 {
 	return __cvdso_clock_getres(clock_id, res);
 }
+
+#else /* __BITS_PER_LONG == 32 */
+
+int __vdso_clock_gettime64(clockid_t clock, struct __kernel_timespec *ts)
+{
+	return __cvdso_clock_gettime(clock, ts);
+}
+
+int __vdso_clock_getres_time64(clockid_t clock_id, struct __kernel_timespec *res)
+{
+	return __cvdso_clock_getres(clock_id, res);
+}
+
+#endif /* __BITS_PER_LONG */

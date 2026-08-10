@@ -61,10 +61,13 @@ VERSION
 	LINUX_5.10 {
 	global:
 		__vdso_getcpu;
-#ifdef CONFIG_GENERIC_GETTIMEOFDAY
+#if __BITS_PER_LONG == 64
 		__vdso_clock_getres;
 		__vdso_clock_gettime;
 		__vdso_gettimeofday;
+#else
+		__vdso_clock_getres_time64;
+		__vdso_clock_gettime64;
 #endif
 		__vdso_getrandom;
 		__vdso_rt_sigreturn;
