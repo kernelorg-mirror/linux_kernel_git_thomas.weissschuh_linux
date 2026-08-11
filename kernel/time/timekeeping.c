@@ -90,6 +90,11 @@ static inline void tk_update_aux_offs(struct timekeeper *tk, ktime_t offs)
 	tk->monotonic_to_aux = ktime_to_timespec64(offs);
 }
 
+static inline bool timekeeper_is_core_tk(struct timekeeper *tk)
+{
+	return !IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS) || tk->id == TIMEKEEPER_CORE;
+}
+
 /* flag for if timekeeping is suspended */
 int __read_mostly timekeeping_suspended;
 
@@ -1734,11 +1739,6 @@ int do_settimeofday64(const struct timespec64 *ts)
 	return 0;
 }
 EXPORT_SYMBOL(do_settimeofday64);
-
-static inline bool timekeeper_is_core_tk(struct timekeeper *tk)
-{
-	return !IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS) || tk->id == TIMEKEEPER_CORE;
-}
 
 /**
  * __timekeeping_inject_offset - Adds or subtracts from the current time.
