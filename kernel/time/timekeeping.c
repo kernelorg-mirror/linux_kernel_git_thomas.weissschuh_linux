@@ -842,7 +842,7 @@ static void timekeeping_update_from_shadow(struct tk_data *tkd, unsigned int act
 	tk_update_ktime_data(tk);
 	tk->tkr_mono.base_real = tk->tkr_mono.base + tk->offs_real;
 
-	if (tk->id == TIMEKEEPER_CORE) {
+	if (timekeeper_is_core_tk(tk)) {
 		tk_update_ns_to_cyc(tk, &tkd->timekeeper);
 		update_vsyscall(tk);
 		update_pvclock_gtod(tk, action & TK_CLOCK_WAS_SET);
