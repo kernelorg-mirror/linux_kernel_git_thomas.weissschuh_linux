@@ -85,6 +85,11 @@ static inline bool timekeeper_is_core_tk(struct timekeeper *tk)
 	return !IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS) || tk->id == TIMEKEEPER_CORE;
 }
 
+static inline bool timekeeper_is_clock_valid(const struct timekeeper *tk)
+{
+	return !IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS) || tk->clock_valid;
+}
+
 /* flag for if timekeeping is suspended */
 int __read_mostly timekeeping_suspended;
 
@@ -1292,7 +1297,7 @@ void ktime_get_snapshot_id(clockid_t clock_id, struct system_time_snapshot *syst
 		seq = read_seqcount_begin(&tkd->seq);
 
 		/* Aux clocks can be invalid */
-		if (!tk->clock_valid)
+		if (!timekeeper_is_clock_valid(tk))
 			return;
 
 		now = tk_clock_read_snapshot(&tk->tkr_mono, &chs);
@@ -2993,7 +2998,7 @@ static int __do_adjtimex(struct tk_data *tkd, struct __kernel_timex *txc,
 
 	guard(raw_spinlock_irqsave)(&tkd->lock);
 
-	if (!tks->clock_valid)
+	if (!timekeeper_is_clock_valid(tks))
 		return -ENODEV;
 
 	if (txc->modes & ADJ_SETOFFSET) {
@@ -3108,7 +3113,7 @@ static void tk_aux_update_clocksource(void)
 		struct timekeeper *tks = &tkd->shadow_timekeeper;
 
 		guard(raw_spinlock_irqsave)(&tkd->lock);
-		if (!tks->clock_valid)
+		if (!timekeeper_is_clock_valid(tks))
 			continue;
 
 		timekeeping_forward_now(tks);
@@ -3127,7 +3132,7 @@ static void tk_aux_advance(void)
 		struct tk_data *aux_tkd = &timekeeper_data[id + TIMEKEEPER_AUX_FIRST];
 
 		guard(raw_spinlock)(&aux_tkd->lock);
-		if (aux_tkd->shadow_timekeeper.clock_valid)
+		if (timekeeper_is_clock_valid(&aux_tkd->shadow_timekeeper))
 			__timekeeping_advance(aux_tkd, TK_ADV_TICK);
 	}
 }
@@ -3155,7 +3160,7 @@ bool ktime_get_aux(clockid_t id, ktime_t *kt)
 	aux_tk = &aux_tkd->timekeeper;
 	do {
 		seq = read_seqcount_begin(&aux_tkd->seq);
-		if (!aux_tk->clock_valid)
+		if (!timekeeper_is_clock_valid(aux_tk))
 			return false;
 
 		base = ktime_add(aux_tk->tkr_mono.base, aux_tk->offs_aux);
@@ -3214,7 +3219,7 @@ static int aux_clock_set(const clockid_t id, const struct timespec64 *tnew)
 	aux_tks = &aux_tkd->shadow_timekeeper;
 
 	guard(raw_spinlock_irq)(&aux_tkd->lock);
-	if (!aux_tks->clock_valid)
+	if (!timekeeper_is_clock_valid(aux_tks))
 		return -ENODEV;
 
 	/* Forward the timekeeper base time */
