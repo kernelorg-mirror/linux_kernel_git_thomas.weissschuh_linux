@@ -62,19 +62,9 @@ static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)
 {
 	return ktime_get_aux_ts64(CLOCK_AUX + tkid - TIMEKEEPER_AUX_FIRST, ts);
 }
-
-static inline bool tk_is_aux(const struct timekeeper *tk)
-{
-	return tk->id >= TIMEKEEPER_AUX_FIRST && tk->id <= TIMEKEEPER_AUX_LAST;
-}
 static inline struct tk_data *aux_get_tk_data(clockid_t id);
 #else
 static inline bool tk_get_aux_ts64(unsigned int tkid, struct timespec64 *ts)
-{
-	return false;
-}
-
-static inline bool tk_is_aux(const struct timekeeper *tk)
 {
 	return false;
 }
@@ -849,7 +839,7 @@ static void timekeeping_update_from_shadow(struct tk_data *tkd, unsigned int act
 
 		update_fast_timekeeper(&tk->tkr_mono, &tk_fast_mono);
 		update_fast_timekeeper(&tk->tkr_raw,  &tk_fast_raw);
-	} else if (tk_is_aux(tk)) {
+	} else {
 		vdso_time_update_aux(tk);
 	}
 
