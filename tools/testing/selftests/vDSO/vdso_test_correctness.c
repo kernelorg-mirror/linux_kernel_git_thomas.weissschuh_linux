@@ -23,6 +23,7 @@
 #include "vdso_config.h"
 #include "vdso_call.h"
 #include "kselftest.h"
+#include "clock-helpers.h"
 
 static const char *version;
 static const char **name;
@@ -266,8 +267,9 @@ static char const * const clocknames[] = {
 	[11] = "CLOCK_TAI",
 };
 
-static void test_one_clock_gettime(int clock, const char *name)
+static void test_one_clock_gettime(int clock)
 {
+	const char *name = clock_name(clock);
 	struct timespec start, vdso, end;
 	int vdso_ret, end_ret;
 
@@ -320,17 +322,18 @@ static void test_clock_gettime(void)
 	}
 
 	for (int clock = 0; clock < ARRAY_SIZE(clocknames); clock++)
-		test_one_clock_gettime(clock, clocknames[clock]);
+		test_one_clock_gettime(clock);
 
 	/* Also test some invalid clock ids */
-	test_one_clock_gettime(-1, "invalid");
-	test_one_clock_gettime(INT_MIN, "invalid");
-	test_one_clock_gettime(INT_MAX, "invalid");
+	test_one_clock_gettime(-1);
+	test_one_clock_gettime(INT_MIN);
+	test_one_clock_gettime(INT_MAX);
 }
 
-static void test_one_clock_gettime64(int clock, const char *name)
+static void test_one_clock_gettime64(int clock)
 {
 	struct __kernel_timespec start, vdso, end;
+	const char *name = clock_name(clock);
 	int vdso_ret, end_ret;
 
 	printf("[RUN]\tTesting clock_gettime64 for clock %s (%d)...\n", name, clock);
@@ -382,12 +385,12 @@ static void test_clock_gettime64(void)
 	}
 
 	for (int clock = 0; clock < ARRAY_SIZE(clocknames); clock++)
-		test_one_clock_gettime64(clock, clocknames[clock]);
+		test_one_clock_gettime64(clock);
 
 	/* Also test some invalid clock ids */
-	test_one_clock_gettime64(-1, "invalid");
-	test_one_clock_gettime64(INT_MIN, "invalid");
-	test_one_clock_gettime64(INT_MAX, "invalid");
+	test_one_clock_gettime64(-1);
+	test_one_clock_gettime64(INT_MIN);
+	test_one_clock_gettime64(INT_MAX);
 }
 
 static void test_gettimeofday(void)
