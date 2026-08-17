@@ -252,19 +252,19 @@ static bool tv_leq(const struct timeval *a, const struct timeval *b)
 		return a->tv_usec <= b->tv_usec;
 }
 
-static char const * const clocknames[] = {
-	[CLOCK_REALTIME] = "CLOCK_REALTIME",
-	[CLOCK_MONOTONIC] = "CLOCK_MONOTONIC",
-	[CLOCK_PROCESS_CPUTIME_ID] = "CLOCK_PROCESS_CPUTIME_ID",
-	[CLOCK_THREAD_CPUTIME_ID] = "CLOCK_THREAD_CPUTIME_ID",
-	[CLOCK_MONOTONIC_RAW] = "CLOCK_MONOTONIC_RAW",
-	[CLOCK_REALTIME_COARSE] = "CLOCK_REALTIME_COARSE",
-	[CLOCK_MONOTONIC_COARSE] = "CLOCK_MONOTONIC_COARSE",
-	[CLOCK_BOOTTIME] = "CLOCK_BOOTTIME",
-	[CLOCK_REALTIME_ALARM] = "CLOCK_REALTIME_ALARM",
-	[CLOCK_BOOTTIME_ALARM] = "CLOCK_BOOTTIME_ALARM",
-	[10] = "CLOCK_SGI_CYCLE",
-	[CLOCK_TAI] = "CLOCK_TAI",
+static const __kernel_clockid_t clocks[] = {
+	CLOCK_REALTIME,
+	CLOCK_MONOTONIC,
+	CLOCK_PROCESS_CPUTIME_ID,
+	CLOCK_THREAD_CPUTIME_ID,
+	CLOCK_MONOTONIC_RAW,
+	CLOCK_REALTIME_COARSE,
+	CLOCK_MONOTONIC_COARSE,
+	CLOCK_BOOTTIME,
+	CLOCK_REALTIME_ALARM,
+	CLOCK_BOOTTIME_ALARM,
+	10 /* CLOCK_SGI_CYCLE */,
+	CLOCK_TAI,
 };
 
 static void test_one_clock_gettime(int clock)
@@ -321,8 +321,8 @@ static void test_clock_gettime(void)
 		return;
 	}
 
-	for (int clock = 0; clock < ARRAY_SIZE(clocknames); clock++)
-		test_one_clock_gettime(clock);
+	for (size_t clock_index = 0; clock_index < ARRAY_SIZE(clocks); clock_index++)
+		test_one_clock_gettime(clocks[clock_index]);
 
 	/* Also test some invalid clock ids */
 	test_one_clock_gettime(-1);
@@ -384,8 +384,8 @@ static void test_clock_gettime64(void)
 		return;
 	}
 
-	for (int clock = 0; clock < ARRAY_SIZE(clocknames); clock++)
-		test_one_clock_gettime64(clock);
+	for (size_t clock_index = 0; clock_index < ARRAY_SIZE(clocks); clock_index++)
+		test_one_clock_gettime64(clocks[clock_index]);
 
 	/* Also test some invalid clock ids */
 	test_one_clock_gettime64(-1);
