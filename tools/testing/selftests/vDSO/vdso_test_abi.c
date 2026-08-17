@@ -22,6 +22,7 @@
 #include "vdso_config.h"
 #include "vdso_call.h"
 #include "parse_vdso.h"
+#include "clock-helpers.h"
 
 static const char *version;
 static const char **name;
@@ -38,21 +39,6 @@ typedef long (*vdso_clock_gettime64_t)(clockid_t clk_id, struct vdso_timespec64 
 typedef long (*vdso_clock_getres_t)(clockid_t clk_id, struct timespec *ts);
 typedef long (*vdso_clock_getres_time64_t)(clockid_t clk_id, struct vdso_timespec64 *ts);
 typedef time_t (*vdso_time_t)(time_t *t);
-
-static const char * const vdso_clock_name[] = {
-	[CLOCK_REALTIME]		= "CLOCK_REALTIME",
-	[CLOCK_MONOTONIC]		= "CLOCK_MONOTONIC",
-	[CLOCK_PROCESS_CPUTIME_ID]	= "CLOCK_PROCESS_CPUTIME_ID",
-	[CLOCK_THREAD_CPUTIME_ID]	= "CLOCK_THREAD_CPUTIME_ID",
-	[CLOCK_MONOTONIC_RAW]		= "CLOCK_MONOTONIC_RAW",
-	[CLOCK_REALTIME_COARSE]		= "CLOCK_REALTIME_COARSE",
-	[CLOCK_MONOTONIC_COARSE]	= "CLOCK_MONOTONIC_COARSE",
-	[CLOCK_BOOTTIME]		= "CLOCK_BOOTTIME",
-	[CLOCK_REALTIME_ALARM]		= "CLOCK_REALTIME_ALARM",
-	[CLOCK_BOOTTIME_ALARM]		= "CLOCK_BOOTTIME_ALARM",
-	[10 /* CLOCK_SGI_CYCLE */]	= "CLOCK_SGI_CYCLE",
-	[CLOCK_TAI]			= "CLOCK_TAI",
-};
 
 static void vdso_test_gettimeofday(void)
 {
@@ -83,11 +69,11 @@ static void vdso_test_clock_gettime64(clockid_t clk_id)
 	/* Find clock_gettime64. */
 	vdso_clock_gettime64_t vdso_clock_gettime64 =
 		(vdso_clock_gettime64_t)vdso_sym(version, name[5]);
+	const char *clk_name = clock_name(clk_id);
 
 	if (!vdso_clock_gettime64) {
 		ksft_print_msg("Couldn't find %s\n", name[5]);
-		ksft_test_result_skip("%s %s\n", name[5],
-				      vdso_clock_name[clk_id]);
+		ksft_test_result_skip("%s %s\n", name[5], clk_name);
 		return;
 	}
 
@@ -97,11 +83,9 @@ static void vdso_test_clock_gettime64(clockid_t clk_id)
 	if (ret == 0) {
 		ksft_print_msg("The time is %lld.%06lld\n",
 			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
-		ksft_test_result_pass("%s %s\n", name[5],
-				      vdso_clock_name[clk_id]);
+		ksft_test_result_pass("%s %s\n", name[5], clk_name);
 	} else {
-		ksft_test_result_fail("%s %s\n", name[5],
-				      vdso_clock_name[clk_id]);
+		ksft_test_result_fail("%s %s\n", name[5], clk_name);
 	}
 }
 
@@ -110,11 +94,11 @@ static void vdso_test_clock_gettime(clockid_t clk_id)
 	/* Find clock_gettime. */
 	vdso_clock_gettime_t vdso_clock_gettime =
 		(vdso_clock_gettime_t)vdso_sym(version, name[1]);
+	const char *clk_name = clock_name(clk_id);
 
 	if (!vdso_clock_gettime) {
 		ksft_print_msg("Couldn't find %s\n", name[1]);
-		ksft_test_result_skip("%s %s\n", name[1],
-				      vdso_clock_name[clk_id]);
+		ksft_test_result_skip("%s %s\n", name[1], clk_name);
 		return;
 	}
 
@@ -124,11 +108,9 @@ static void vdso_test_clock_gettime(clockid_t clk_id)
 	if (ret == 0) {
 		ksft_print_msg("The time is %lld.%06lld\n",
 			       (long long)ts.tv_sec, (long long)ts.tv_nsec);
-		ksft_test_result_pass("%s %s\n", name[1],
-				      vdso_clock_name[clk_id]);
+		ksft_test_result_pass("%s %s\n", name[1], clk_name);
 	} else {
-		ksft_test_result_fail("%s %s\n", name[1],
-				      vdso_clock_name[clk_id]);
+		ksft_test_result_fail("%s %s\n", name[1], clk_name);
 	}
 }
 
@@ -157,6 +139,7 @@ static void vdso_test_time(void)
 
 static void vdso_test_clock_getres(clockid_t clk_id)
 {
+	const char *clk_name = clock_name(clk_id);
 	int clock_getres_fail = 0;
 
 	/* Find clock_getres. */
@@ -165,8 +148,7 @@ static void vdso_test_clock_getres(clockid_t clk_id)
 
 	if (!vdso_clock_getres) {
 		ksft_print_msg("Couldn't find %s\n", name[3]);
-		ksft_test_result_skip("%s %s\n", name[3],
-				      vdso_clock_name[clk_id]);
+		ksft_test_result_skip("%s %s\n", name[3], clk_name);
 		return;
 	}
 
@@ -188,18 +170,16 @@ static void vdso_test_clock_getres(clockid_t clk_id)
 	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec))
 		clock_getres_fail++;
 
-	if (clock_getres_fail > 0) {
-		ksft_test_result_fail("%s %s\n", name[3],
-				      vdso_clock_name[clk_id]);
-	} else {
-		ksft_test_result_pass("%s %s\n", name[3],
-				      vdso_clock_name[clk_id]);
-	}
+	if (clock_getres_fail > 0)
+		ksft_test_result_fail("%s %s\n", name[3], clk_name);
+	else
+		ksft_test_result_pass("%s %s\n", name[3], clk_name);
 }
 
 #ifdef __NR_clock_getres_time64
 static void vdso_test_clock_getres_time64(clockid_t clk_id)
 {
+	const char *clk_name = clock_name(clk_id);
 	int clock_getres_fail = 0;
 
 	/* Find clock_getres. */
@@ -208,8 +188,7 @@ static void vdso_test_clock_getres_time64(clockid_t clk_id)
 
 	if (!vdso_clock_getres_time64) {
 		ksft_print_msg("Couldn't find %s\n", name[7]);
-		ksft_test_result_skip("%s %s\n", name[7],
-				      vdso_clock_name[clk_id]);
+		ksft_test_result_skip("%s %s\n", name[7], clk_name);
 		return;
 	}
 
@@ -231,18 +210,15 @@ static void vdso_test_clock_getres_time64(clockid_t clk_id)
 	if ((sys_ts.tv_sec != ts.tv_sec) || (sys_ts.tv_nsec != ts.tv_nsec))
 		clock_getres_fail++;
 
-	if (clock_getres_fail > 0) {
-		ksft_test_result_fail("%s %s\n", name[7],
-				      vdso_clock_name[clk_id]);
-	} else {
-		ksft_test_result_pass("%s %s\n", name[7],
-				      vdso_clock_name[clk_id]);
-	}
+	if (clock_getres_fail > 0)
+		ksft_test_result_fail("%s %s\n", name[7], clk_name);
+	else
+		ksft_test_result_pass("%s %s\n", name[7], clk_name);
 }
 #else /* !__NR_clock_getres_time64 */
 static void vdso_test_clock_getres_time64(clockid_t clk_id)
 {
-	ksft_test_result_skip("%s %s\n", name[7], vdso_clock_name[clk_id]);
+	ksft_test_result_skip("%s %s\n", name[7], clock_name(clk_id));
 }
 #endif /* __NR_clock_getres_time64 */
 
@@ -252,7 +228,7 @@ static void vdso_test_clock_getres_time64(clockid_t clk_id)
  */
 static inline void vdso_test_clock(clockid_t clock_id)
 {
-	ksft_print_msg("clock_id: %s\n", vdso_clock_name[clock_id]);
+	ksft_print_msg("clock_id: %s\n", clock_name(clock_id));
 
 	vdso_test_clock_gettime(clock_id);
 	vdso_test_clock_gettime64(clock_id);
