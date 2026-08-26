@@ -24,7 +24,7 @@ karch() {
 	ppc*) echo "powerpc";;
 	mips*) echo "mips";;
 	riscv*) echo "riscv";;
-	um*) echo x86;;
+	um*) echo um;;
 	arm64*) echo arm64;;
 	arm*) echo arm;;
 	*) echo "$1";;
@@ -42,7 +42,8 @@ crosstool_arch() {
 	riscv*) echo riscv64;;
 	loongarch) echo loongarch64;;
 	mips*) echo mips;;
-	um*) echo x86_64;;
+	um) echo x86_64;;
+	um32) echo i386;;
 	*) echo "$1";;
 	esac
 }
@@ -86,7 +87,7 @@ build_arch() {
 		MAKE+=(CROSS_COMPILE_COMPAT="${download_location}gcc-${crosstool_version}-nolibc/arm-linux-gnueabi/bin/arm-linux-gnueabi-")
 	fi
 
-	if [ "$arch" = "um" ]; then
+	if [ "$arch" = "um" -o "$arch" = "um32" ]; then
 		MAKE+=(CROSS_COMPILE="")
 	fi
 
