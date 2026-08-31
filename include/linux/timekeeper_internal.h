@@ -78,6 +78,7 @@ struct tk_read_base {
  * @cs_ns_to_cyc_maxns:		Maximum nanoseconds to cyles conversion range
  * @cs_was_changed_seq:		The sequence number of clocksource change events
  * @clock_valid:		Indicator for valid clock
+ * @multiplier_was_set_seq:	The sequence number of multiplier changes
  * @monotonic_to_boot:		CLOCK_MONOTONIC to CLOCK_BOOTTIME offset
  * @monotonic_to_aux:		CLOCK_MONOTONIC to CLOCK_AUX offset
  * @cycle_interval:		Number of clock cycles in one NTP interval
@@ -170,6 +171,7 @@ struct timekeeper {
 	u64			cs_ns_to_cyc_maxns;
 	u8			cs_was_changed_seq;
 	u8			clock_valid;
+	u32			multiplier_was_set_seq;
 
 	union {
 		struct timespec64	monotonic_to_boot;
