@@ -102,6 +102,7 @@ struct tk_read_base {
  *				clocksource's integer @cycle_interval (upscaled).
  * @skip_second_overflow:	Flag used to avoid updating NTP twice with same second
  * @tai_offset:			The current UTC to TAI offset in seconds
+ * @mult_was_set_seq:		The sequence number of multiplier changes
  *
  * Note: For timespec(64) based interfaces wall_to_monotonic is what
  * we need to add to xtime (or xtime corrected for sub jiffy times)
@@ -189,6 +190,7 @@ struct timekeeper {
 	u32			skip_second_overflow;
 	s64			skew_delta;
 	s32			tai_offset;
+	u32			mult_was_set_seq;
 };
 
 #endif /* _LINUX_TIMEKEEPER_INTERNAL_H */

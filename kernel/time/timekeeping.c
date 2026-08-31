@@ -307,6 +307,11 @@ static void tk_aux_update_core_mono_conv(struct timekeeper *aux_tk, bool clock_w
 		 */
 		do_update = true;
 
+	} else if (aux_tk->mult_was_set_seq != core_tk->mult_was_set_seq) {
+		/* The core or auxiliary timekeeper had its multiplier changed explicitly. */
+		do_update = true;
+		aux_tk->mult_was_set_seq = core_tk->mult_was_set_seq;
+
 	} else {
 		/*
 		 * The scaled math used in the conversion of the timestamp deltas is imprecise.
@@ -3308,8 +3313,11 @@ static int __do_adjtimex(struct tk_data *tkd, struct __kernel_timex *txc,
 	}
 
 	/* Update the multiplier immediately if frequency was set directly */
-	if (txc->modes & (ADJ_FREQUENCY | ADJ_TICK))
+	if (txc->modes & (ADJ_FREQUENCY | ADJ_TICK)) {
 		result->clock_set |= __timekeeping_advance(tkd, TK_ADV_FREQ);
+		if (IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS))
+			tks->mult_was_set_seq++;
+	}
 
 	return ret;
 }
@@ -3580,6 +3588,8 @@ static void aux_clock_enable(clockid_t id)
 	aux_tks->id = aux_tkd->timekeeper.id;
 	/* Setup the timekeeper based on the current system clocksource */
 	tk_setup_internals(aux_tks, tkr_raw->clock);
+	/* Reset to the core timekeeper sequence value */
+	aux_tks->mult_was_set_seq = tk_core.shadow_timekeeper.mult_was_set_seq;
 
 	/* Mark it valid and set it live */
 	aux_tks->clock_valid = true;
