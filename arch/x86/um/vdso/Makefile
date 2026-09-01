@@ -3,6 +3,8 @@
 # Building vDSO images for x86.
 #
 
+include $(srctree)/lib/vdso/Makefile.include
+
 # files to link into the vdso
 vobjs-y := vdso-note.o um_vdso.o
 
@@ -22,7 +24,7 @@ VDSO_LDFLAGS_vdso.lds = -m64 -Wl,-soname=linux-vdso.so.1 \
 
 $(obj)/vdso.o: $(src)/vdso.S $(obj)/vdso.so
 
-$(obj)/vdso.so.dbg: $(obj)/vdso.lds $(vobjs) FORCE
+$(obj)/vdso.so.dbg: $(obj)/vdso.lds $(vdsocheck) $(vobjs) FORCE
 	$(call if_changed,vdso)
 
 $(obj)/%.so: OBJCOPYFLAGS := -S
@@ -51,6 +53,6 @@ CFLAGS_REMOVE_um_vdso.o = -pg -fprofile-arcs -ftest-coverage
 quiet_cmd_vdso = VDSO    $@
       cmd_vdso = $(CC) -nostdlib -o $@ \
 		       $(CC_FLAGS_LTO) $(VDSO_LDFLAGS) $(VDSO_LDFLAGS_$(filter %.lds,$(^F))) \
-		       -Wl,-T,$(filter %.lds,$^) $(filter %.o,$^)
+		       -Wl,-T,$(filter %.lds,$^) $(filter %.o,$^); $(cmd_vdso_check)
 
 VDSO_LDFLAGS = -fPIC -shared -Wl,--hash-style=sysv -z noexecstack -Wl,--no-undefined
