@@ -1539,7 +1539,8 @@ EXPORT_SYMBOL_GPL(hrtimer_start_range_ns);
 
 static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 {
-	struct hrtimer_cpu_base *cpu_base = timer->base->cpu_base;
+	struct hrtimer_clock_base *base = timer->base;
+	struct hrtimer_cpu_base *cpu_base = base->cpu_base;
 	ktime_t expires;
 
 	/*
@@ -1550,7 +1551,7 @@ static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 	expires = hrtimer_get_softexpires(timer);
 
 	/* Convert to monotonic */
-	expires = hrtimer_expires_to_monotonic(timer->base, expires);
+	expires = hrtimer_expires_to_monotonic(base, expires);
 
 	/*
 	 * Check whether this timer will end up as the first expiring timer in
@@ -1565,7 +1566,7 @@ static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 		return true;
 
 	debug_hrtimer_deactivate(timer);
-	__remove_hrtimer(timer, timer->base, HRTIMER_STATE_INACTIVE, false);
+	__remove_hrtimer(timer, base, HRTIMER_STATE_INACTIVE, false);
 	trace_hrtimer_start_expired(timer);
 	return false;
 }
