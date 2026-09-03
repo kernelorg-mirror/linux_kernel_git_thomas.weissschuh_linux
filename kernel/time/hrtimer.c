@@ -253,7 +253,7 @@ static bool hrtimer_suitable_target(struct hrtimer *timer, struct hrtimer_clock_
 
 	expires = hrtimer_expires_to_monotonic(new_base, hrtimer_get_expires(timer));
 
-	return expires >= new_base->cpu_base->expires_next;
+	return !ktime_before(expires, new_base->cpu_base->expires_next);
 }
 
 static inline struct hrtimer_cpu_base *get_target_base(struct hrtimer_cpu_base *base, bool pinned)
@@ -569,7 +569,7 @@ static ktime_t hrtimer_bases_next_event_without(struct hrtimer_cpu_base *cpu_bas
 
 	for_each_active_base(base, cpu_base, active) {
 		expires = hrtimer_expires_to_monotonic(base, base->expires_next);
-		if (expires >= expires_next)
+		if (!ktime_before(expires, expires_next))
 			continue;
 
 		/*
@@ -583,7 +583,7 @@ static ktime_t hrtimer_bases_next_event_without(struct hrtimer_cpu_base *cpu_bas
 			if (!node)
 				continue;
 			expires = hrtimer_expires_to_monotonic(base, node->expires);
-			if (expires >= expires_next)
+			if (!ktime_before(expires, expires_next))
 				continue;
 		}
 		expires_next = expires;
@@ -609,7 +609,7 @@ static void hrtimer_bases_first(struct hrtimer_cpu_base *cpu_base,unsigned int a
 
 	for_each_active_base(base, cpu_base, active) {
 		expires = hrtimer_expires_to_monotonic(base, base->expires_next);
-		if (expires < *expires_next) {
+		if (ktime_before(expires, *expires_next)) {
 			*expires_next = expires;
 			*next_timer = clock_base_next_timer(base);
 		}
@@ -953,7 +953,7 @@ static bool update_needs_ipi(struct hrtimer_cpu_base *cpu_base, unsigned int act
 
 		next = timerqueue_linked_first(&base->active);
 		expires = hrtimer_expires_to_monotonic(base, next->expires);
-		if (expires < cpu_base->expires_next)
+		if (ktime_before(expires, cpu_base->expires_next))
 			return true;
 
 		/* Extra check for softirq clock bases */
@@ -961,7 +961,7 @@ static bool update_needs_ipi(struct hrtimer_cpu_base *cpu_base, unsigned int act
 			continue;
 		if (cpu_base->softirq_activated)
 			continue;
-		if (expires < cpu_base->softirq_expires_next)
+		if (ktime_before(expires, cpu_base->softirq_expires_next))
 			return true;
 	}
 	return false;
@@ -1581,7 +1581,7 @@ static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 	 * the CPU base. If not, no further checks required as it's then
 	 * guaranteed to expire in the future.
 	 */
-	else if (hrtimer_expires_to_monotonic(base, expires) >= cpu_base->expires_next)
+	else if (!ktime_before(hrtimer_expires_to_monotonic(base, expires), cpu_base->expires_next))
 		return true;
 
 	/* Validate that the expiry time is in the future. */
