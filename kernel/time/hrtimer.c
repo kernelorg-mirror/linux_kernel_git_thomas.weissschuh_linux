@@ -27,6 +27,7 @@
 #include <linux/percpu.h>
 #include <linux/hrtimer.h>
 #include <linux/hrtimer_bases.h>
+#include <linux/kmsan-checks.h>
 #include <linux/notifier.h>
 #include <linux/syscalls.h>
 #include <linux/interrupt.h>
@@ -139,9 +140,54 @@ static __always_inline bool hrtimer_base_is_enabled(const struct hrtimer_clock_b
 	return *base->enabled;
 }
 
-static ktime_t hrtimer_expires_to_monotonic(const struct hrtimer_clock_base *base, ktime_t t)
+/*
+ * Shared implementation to compare a clockbase's timestamp against a monotonic clock timestamp
+ * and/or convert it to a monotonic timestamp.
+ * Marked __always_inline to get specialized copies of its users to avoid conditionals at runtime.
+ */
+static __always_inline
+bool __hrtimer_expires_before_mono_and_convert(const struct hrtimer_clock_base *base,
+					       ktime_t expires_base, ktime_t expires_ref_mono,
+					       ktime_t *converted_mono)
 {
-	return ktime_sub(t, *base->offset);
+	ktime_t expires_mono;
+	bool is_before;
+
+	expires_mono = ktime_sub(expires_base, *base->offset);
+	is_before = ktime_before(expires_mono, expires_ref_mono);
+
+	if (converted_mono) {
+		if (is_before)
+			*converted_mono = expires_mono;
+		else
+			kmsan_poison_memory(converted_mono, sizeof(*converted_mono), GFP_ATOMIC);
+	}
+
+	return is_before;
+}
+
+static __nonnull_args(4)
+bool hrtimer_expires_before_mono_and_convert(const struct hrtimer_clock_base *base,
+					     ktime_t expires_base, ktime_t expires_ref_mono,
+					     ktime_t *converted_mono)
+{
+	return __hrtimer_expires_before_mono_and_convert(base, expires_base, expires_ref_mono,
+							 converted_mono);
+}
+
+static bool hrtimer_expires_before_mono(const struct hrtimer_clock_base *base,
+					ktime_t expires, ktime_t mono)
+{
+	return __hrtimer_expires_before_mono_and_convert(base, expires, mono, NULL);
+}
+
+static ktime_t hrtimer_expires_to_monotonic(const struct hrtimer_clock_base *base, ktime_t expires)
+{
+	ktime_t ret;
+
+	__hrtimer_expires_before_mono_and_convert(base, expires, KTIME_MAX, &ret);
+
+	return ret;
 }
 
 #ifdef CONFIG_HIGH_RES_TIMERS
@@ -233,8 +279,6 @@ static bool hrtimer_suitable_target(struct hrtimer *timer, struct hrtimer_clock_
 				    struct hrtimer_cpu_base *new_cpu_base,
 				    struct hrtimer_cpu_base *this_cpu_base)
 {
-	ktime_t expires;
-
 	/*
 	 * The local CPU clockevent can be reprogrammed. Also get_target_base()
 	 * guarantees it is online.
@@ -251,9 +295,8 @@ static bool hrtimer_suitable_target(struct hrtimer *timer, struct hrtimer_clock_
 	if (!hrtimer_base_is_online(this_cpu_base))
 		return true;
 
-	expires = hrtimer_expires_to_monotonic(new_base, hrtimer_get_expires(timer));
-
-	return !ktime_before(expires, new_base->cpu_base->expires_next);
+	return !hrtimer_expires_before_mono(new_base, hrtimer_get_expires(timer),
+					    new_base->cpu_base->expires_next);
 }
 
 static inline struct hrtimer_cpu_base *get_target_base(struct hrtimer_cpu_base *base, bool pinned)
@@ -568,8 +611,8 @@ static ktime_t hrtimer_bases_next_event_without(struct hrtimer_cpu_base *cpu_bas
 	lockdep_assert_held(&cpu_base->lock);
 
 	for_each_active_base(base, cpu_base, active) {
-		expires = hrtimer_expires_to_monotonic(base, base->expires_next);
-		if (!ktime_before(expires, expires_next))
+		if (!hrtimer_expires_before_mono_and_convert(base, base->expires_next,
+							     expires_next, &expires))
 			continue;
 
 		/*
@@ -582,8 +625,8 @@ static ktime_t hrtimer_bases_next_event_without(struct hrtimer_cpu_base *cpu_bas
 			node = timerqueue_linked_next(node);
 			if (!node)
 				continue;
-			expires = hrtimer_expires_to_monotonic(base, node->expires);
-			if (!ktime_before(expires, expires_next))
+			if (!hrtimer_expires_before_mono_and_convert(base, node->expires,
+								     expires_next, &expires))
 				continue;
 		}
 		expires_next = expires;
@@ -608,8 +651,8 @@ static void hrtimer_bases_first(struct hrtimer_cpu_base *cpu_base,unsigned int a
 	ktime_t expires;
 
 	for_each_active_base(base, cpu_base, active) {
-		expires = hrtimer_expires_to_monotonic(base, base->expires_next);
-		if (ktime_before(expires, *expires_next)) {
+		if (hrtimer_expires_before_mono_and_convert(base, base->expires_next,
+							    *expires_next, &expires)) {
 			*expires_next = expires;
 			*next_timer = clock_base_next_timer(base);
 		}
@@ -911,7 +954,6 @@ static void hrtimer_reprogram(struct hrtimer *timer, bool reprogram)
 static bool update_needs_ipi(struct hrtimer_cpu_base *cpu_base, unsigned int active)
 {
 	struct hrtimer_clock_base *base;
-	ktime_t expires;
 	u64 seq;
 
 	/*
@@ -952,8 +994,7 @@ static bool update_needs_ipi(struct hrtimer_cpu_base *cpu_base, unsigned int act
 		struct timerqueue_linked_node *next;
 
 		next = timerqueue_linked_first(&base->active);
-		expires = hrtimer_expires_to_monotonic(base, next->expires);
-		if (ktime_before(expires, cpu_base->expires_next))
+		if (hrtimer_expires_before_mono(base, next->expires, cpu_base->expires_next))
 			return true;
 
 		/* Extra check for softirq clock bases */
@@ -961,7 +1002,8 @@ static bool update_needs_ipi(struct hrtimer_cpu_base *cpu_base, unsigned int act
 			continue;
 		if (cpu_base->softirq_activated)
 			continue;
-		if (ktime_before(expires, cpu_base->softirq_expires_next))
+		if (hrtimer_expires_before_mono(base, next->expires,
+						cpu_base->softirq_expires_next))
 			return true;
 	}
 	return false;
@@ -1581,7 +1623,7 @@ static inline bool hrtimer_check_user_timer(struct hrtimer *timer)
 	 * the CPU base. If not, no further checks required as it's then
 	 * guaranteed to expire in the future.
 	 */
-	else if (!ktime_before(hrtimer_expires_to_monotonic(base, expires), cpu_base->expires_next))
+	else if (!hrtimer_expires_before_mono(base, expires, cpu_base->expires_next))
 		return true;
 
 	/* Validate that the expiry time is in the future. */
