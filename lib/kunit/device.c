@@ -142,23 +142,6 @@ static struct kunit_device *kunit_device_register_internal(struct kunit *test,
 }
 
 /*
- * Create and register a new KUnit-managed device, using the user-supplied device_driver.
- * On failure, returns an error pointer.
- */
-struct device *kunit_device_register_with_driver(struct kunit *test,
-						 const char *name,
-						 const struct device_driver *drv)
-{
-	struct kunit_device *kunit_dev = kunit_device_register_internal(test, name);
-
-	if (IS_ERR_OR_NULL(kunit_dev))
-		return ERR_CAST(kunit_dev);
-
-	return &kunit_dev->dev;
-}
-EXPORT_SYMBOL_GPL(kunit_device_register_with_driver);
-
-/*
  * Create and register a new KUnit-managed device, including a matching device_driver.
  * On failure, returns an error pointer.
  */

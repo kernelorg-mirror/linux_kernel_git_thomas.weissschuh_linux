@@ -1227,8 +1227,7 @@ be manually destroyed with ``driver_unregister()``.
 
 To create a fake device, use the ``kunit_device_register()``, which will create
 and register a device, using a new KUnit-managed driver created with ``kunit_driver_create()``.
-To provide a specific, non-KUnit-managed driver, use ``kunit_device_register_with_driver()``
-instead. Like with managed drivers, KUnit-managed fake devices are automatically
+Like with managed drivers, KUnit-managed fake devices are automatically
 cleaned up when the test finishes, but can be manually cleaned up early with
 ``kunit_device_unregister()``.
 

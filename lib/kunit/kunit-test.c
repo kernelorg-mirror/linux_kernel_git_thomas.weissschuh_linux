@@ -778,86 +778,9 @@ static void kunit_device_cleanup_test(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, action_was_run, 1);
 }
 
-struct driver_test_state {
-	bool driver_device_probed;
-	bool driver_device_removed;
-	long action_was_run;
-};
-
-static int driver_probe_hook(struct device *dev)
-{
-	struct kunit *test = kunit_get_current_test();
-	struct driver_test_state *state = (struct driver_test_state *)test->priv;
-
-	state->driver_device_probed = true;
-	return 0;
-}
-
-static int driver_remove_hook(struct device *dev)
-{
-	struct kunit *test = kunit_get_current_test();
-	struct driver_test_state *state = (struct driver_test_state *)test->priv;
-
-	state->driver_device_removed = true;
-	return 0;
-}
-
-static void kunit_device_driver_test(struct kunit *test)
-{
-	struct device_driver *test_driver;
-	struct device *test_device;
-	struct driver_test_state *test_state = kunit_kzalloc(test, sizeof(*test_state), GFP_KERNEL);
-
-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, test_state);
-
-	test->priv = test_state;
-	test_driver = kunit_driver_create(test, "my_driver");
-
-	// This can fail with an error pointer.
-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, test_driver);
-
-	test_driver->probe = driver_probe_hook;
-	test_driver->remove = driver_remove_hook;
-
-	test_device = kunit_device_register_with_driver(test, "my_device", test_driver);
-
-	// This can fail with an error pointer.
-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, test_device);
-
-	// Make sure the probe function was called.
-	KUNIT_ASSERT_TRUE(test, test_state->driver_device_probed);
-
-	// Add an action to verify cleanup.
-	devm_add_action(test_device, test_dev_action, &test_state->action_was_run);
-
-	KUNIT_EXPECT_EQ(test, test_state->action_was_run, 0);
-
-	kunit_device_unregister(test, test_device);
-	test_device = NULL;
-
-	// Make sure the remove hook was called.
-	KUNIT_ASSERT_TRUE(test, test_state->driver_device_removed);
-
-	// We're going to test this again.
-	test_state->driver_device_probed = false;
-
-	// The driver should not automatically be destroyed by
-	// kunit_device_unregister, so we can re-use it.
-	test_device = kunit_device_register_with_driver(test, "my_device", test_driver);
-
-	// This can fail with an error pointer.
-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, test_device);
-
-	// Probe was called again.
-	KUNIT_ASSERT_TRUE(test, test_state->driver_device_probed);
-
-	// Everything is automatically freed here.
-}
-
 static struct kunit_case kunit_device_test_cases[] = {
 	KUNIT_CASE(kunit_device_test),
 	KUNIT_CASE(kunit_device_cleanup_test),
-	KUNIT_CASE(kunit_device_driver_test),
 	{}
 };
 
