@@ -79,7 +79,7 @@ static void kunit_device_release(struct device *d)
  * Create and register a KUnit-managed struct device_driver on the kunit_bus.
  * Returns an error pointer on failure.
  */
-struct device_driver *kunit_driver_create(struct kunit *test, const char *name)
+static struct device_driver *kunit_driver_create(struct kunit *test, const char *name)
 {
 	struct device_driver *driver;
 	int err = -ENOMEM;
@@ -102,7 +102,6 @@ struct device_driver *kunit_driver_create(struct kunit *test, const char *name)
 	kunit_add_action(test, driver_unregister_wrapper, driver);
 	return driver;
 }
-EXPORT_SYMBOL_GPL(kunit_driver_create);
 
 /* Helper which creates a kunit_device, attaches it to the kunit_bus*/
 static struct kunit_device *kunit_device_register_internal(struct kunit *test,

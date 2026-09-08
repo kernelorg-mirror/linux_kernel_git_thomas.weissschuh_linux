@@ -1220,16 +1220,10 @@ are internally of type ``struct kunit_device``, and are attached to a special
 ``kunit_bus``. These devices support managed device resources (devres), as
 described in Documentation/driver-api/driver-model/devres.rst
 
-To create a KUnit-managed ``struct device_driver``, use ``kunit_driver_create()``,
-which will create a driver with the given name, on the ``kunit_bus``. This driver
-will automatically be destroyed when the corresponding test finishes, but can also
-be manually destroyed with ``driver_unregister()``.
-
 To create a fake device, use the ``kunit_device_register()``, which will create
-and register a device, using a new KUnit-managed driver created with ``kunit_driver_create()``.
-Like with managed drivers, KUnit-managed fake devices are automatically
-cleaned up when the test finishes, but can be manually cleaned up early with
-``kunit_device_unregister()``.
+and register a device, using a new KUnit-managed driver.
+KUnit-managed fake devices are automatically cleaned up when the test finishes,
+but can be manually cleaned up early with ``kunit_device_unregister()``.
 
 The KUnit devices should be used in preference to ``root_device_register()``, and
 instead of ``platform_device_register()`` in cases where the device is not otherwise

@@ -16,19 +16,6 @@
 #include <kunit/test.h>
 
 struct device;
-struct device_driver;
-
-/**
- * kunit_driver_create() - Create a struct device_driver attached to the kunit_bus
- * @test: The test context object.
- * @name: The name to give the created driver.
- *
- * Creates a struct device_driver attached to the kunit_bus, with the name @name.
- * This driver will automatically be cleaned up on test exit.
- *
- * Return: a stub struct device_driver, managed by KUnit, with the name @name.
- */
-struct device_driver *kunit_driver_create(struct kunit *test, const char *name);
 
 /**
  * kunit_device_register() - Create a struct device for use in KUnit tests
