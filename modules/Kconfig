@@ -1,0 +1,4 @@
+config BENCH_MATH64
+	tristate "math64 benchmark"
+	depends on KUNIT
+	depends on !LTO
