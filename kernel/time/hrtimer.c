@@ -853,12 +853,6 @@ static void hrtimer_reprogram(struct hrtimer *timer, bool reprogram)
 	WARN_ON_ONCE(expires < 0);
 
 	expires = ktime_sub(expires, base->offset);
-	/*
-	 * CLOCK_REALTIME timer might be requested with an absolute
-	 * expiry time which is less than base->offset. Set it to 0.
-	 */
-	if (expires < 0)
-		expires = 0;
 
 	if (timer->is_soft) {
 		/*
@@ -898,6 +892,13 @@ static void hrtimer_reprogram(struct hrtimer *timer, bool reprogram)
 		return;
 
 	cpu_base->next_timer = timer;
+
+	/*
+	 * CLOCK_REALTIME timer might be requested with an absolute
+	 * expiry time which is less than base->offset. Set it to 0.
+	 */
+	if (expires < 0)
+		expires = 0;
 
 	__hrtimer_reprogram(cpu_base, expires);
 }
