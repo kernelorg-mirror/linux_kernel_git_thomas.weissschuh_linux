@@ -190,6 +190,7 @@ enum ValidationError<'a> {
     UnrecognizedElfFileType(u32),
     UnexpectedSection(elf::Section<'a>),
     InvalidRelocation(elf::Section<'a>, u32),
+    BssSection,
 }
 
 impl<'a> From<elf::ParseError> for ValidationError<'a> {
@@ -213,6 +214,9 @@ impl fmt::Display for ValidationError<'_> {
             }
             ValidationError::InvalidRelocation(ref s, t) => {
                 write!(f, "Invalid relocation {} in section '{}'", t, s.info().name)
+            }
+            ValidationError::BssSection => {
+                write!(f, "Invalid .bss section")
             }
         }
     }
@@ -245,6 +249,10 @@ fn validate_object_file<'a>(file: &'a elf::File<'a>) -> ValidationResult<'a> {
 
         if allowed_relocs.is_ignored_section(&section) {
             continue;
+        }
+
+        if section.info().name == ".bss" && section.info().data.len() > 0 {
+            return Err(ValidationError::BssSection);
         }
 
         match section {
