@@ -2147,6 +2147,15 @@ static __latent_entropy void hrtimer_run_softirq(void)
 	hrtimer_cpu_base_unlock_expiry(cpu_base);
 }
 
+static void hrtimer_raise_softirq(ktime_t now, struct hrtimer_cpu_base *cpu_base)
+{
+	if (!ktime_before(now, cpu_base->softirq_expires_next)) {
+		cpu_base->softirq_expires_next = KTIME_MAX;
+		cpu_base->softirq_activated = true;
+		raise_timer_softirq(HRTIMER_SOFTIRQ);
+	}
+}
+
 #ifdef CONFIG_HIGH_RES_TIMERS
 
 /*
@@ -2234,12 +2243,7 @@ retry:
 	 */
 	cpu_base->expires_next = KTIME_MAX;
 
-	if (!ktime_before(now, cpu_base->softirq_expires_next)) {
-		cpu_base->softirq_expires_next = KTIME_MAX;
-		cpu_base->softirq_activated = true;
-		raise_timer_softirq(HRTIMER_SOFTIRQ);
-	}
-
+	hrtimer_raise_softirq(now, cpu_base);
 	__hrtimer_run_queues(cpu_base, now, flags, HRTIMER_ACTIVE_HARD);
 
 	/*
@@ -2300,12 +2304,7 @@ void hrtimer_run_queues(void)
 	raw_spin_lock_irqsave(&cpu_base->lock, flags);
 	now = hrtimer_update_base(cpu_base);
 
-	if (!ktime_before(now, cpu_base->softirq_expires_next)) {
-		cpu_base->softirq_expires_next = KTIME_MAX;
-		cpu_base->softirq_activated = true;
-		raise_timer_softirq(HRTIMER_SOFTIRQ);
-	}
-
+	hrtimer_raise_softirq(now, cpu_base);
 	__hrtimer_run_queues(cpu_base, now, flags, HRTIMER_ACTIVE_HARD);
 	raw_spin_unlock_irqrestore(&cpu_base->lock, flags);
 }
