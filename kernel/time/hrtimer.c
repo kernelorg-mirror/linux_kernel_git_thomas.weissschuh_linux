@@ -1052,7 +1052,8 @@ void clock_was_set(unsigned int bases)
 	free_cpumask_var(mask);
 
 out_timerfd:
-	timerfd_clock_was_set();
+	if (!IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS) || bases & CLOCK_SET_TIMERFD)
+		timerfd_clock_was_set();
 }
 
 static void clock_was_set_work(struct work_struct *work)

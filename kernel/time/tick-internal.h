@@ -186,6 +186,9 @@ void timer_clear_idle(void);
 #define CLOCK_SET_BOOT							\
 	(BIT(HRTIMER_BASE_BOOTTIME) | BIT(HRTIMER_BASE_BOOTTIME_SOFT))
 
+#define CLOCK_SET_TIMERFD						\
+	(BIT(HRTIMER_BASE_REALTIME) | BIT(HRTIMER_BASE_REALTIME_SOFT))
+
 void clock_was_set(unsigned int bases);
 void clock_was_set_delayed(void);
 
