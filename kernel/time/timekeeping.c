@@ -346,6 +346,9 @@ static void tk_aux_update_core_mono_conv(struct timekeeper *aux_tk, bool clock_w
 	if (clock_valid)
 		*mono_conv = updated_mono_conv;
 	write_seqcount_end(&tk_core.seq);
+
+	trace_timekeeping_auxclock_conversion_update(tkid_to_clockid(aux_tk->id), clock_valid,
+						     mono_conv);
 }
 
 #else
