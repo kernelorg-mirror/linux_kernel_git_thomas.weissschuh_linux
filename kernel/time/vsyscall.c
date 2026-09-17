@@ -81,6 +81,10 @@ static inline void update_vdso_time_data(struct vdso_time_data *vdata, struct ti
 	vdso_ts		= &vdata->hres_coarse.basetime[CLOCK_TAI];
 	vdso_ts->sec	= tk->xtime_sec + (s64)tk->tai_offset;
 	vdso_ts->nsec	= tk->tkr_mono.xtime_nsec;
+
+	/* CLOCK_REALTIME_ALARM, copy of CLOCK_REALTIME */
+	vdso_ts		= &vdata->hres_coarse.basetime[CLOCK_REALTIME_ALARM];
+	*vdso_ts	= vdata->hres_coarse.basetime[CLOCK_REALTIME];
 }
 
 void update_vsyscall(struct timekeeper *tk)
