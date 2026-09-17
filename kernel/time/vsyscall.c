@@ -69,6 +69,9 @@ static inline void update_vdso_time_data(struct vdso_time_data *vdata, struct ti
 	vdso_ts->sec	+= __iter_div64_u64_rem(nsec, (u64)NSEC_PER_SEC << tk->tkr_mono.shift,
 						&vdso_ts->nsec);
 
+	/* CLOCK_BOOTTIME_ALARM, copy of CLOCK_BOOTIME */
+	vdata->hres_coarse.basetime[CLOCK_BOOTTIME_ALARM] = *vdso_ts;
+
 	/* CLOCK_MONOTONIC_RAW */
 	vdso_ts		= &vdata->raw.basetime[CLOCK_MONOTONIC_RAW];
 	vdso_ts->sec	= tk->raw_sec;

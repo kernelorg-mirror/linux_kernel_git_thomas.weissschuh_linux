@@ -40,7 +40,7 @@ struct vdso_arch_data {
 			 BIT(CLOCK_MONOTONIC_COARSE))
 #define VDSO_RAW	(BIT(CLOCK_MONOTONIC_RAW))
 #define VDSO_AUX	__GENMASK(CLOCK_AUX_LAST, CLOCK_AUX)
-#define VDSO_ALARM	0
+#define VDSO_ALARM	BIT(CLOCK_BOOTTIME_ALARM)
 
 /**
  * struct vdso_timestamp - basetime per clock_id
