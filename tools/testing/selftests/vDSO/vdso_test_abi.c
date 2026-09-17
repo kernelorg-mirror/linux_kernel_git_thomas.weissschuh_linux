@@ -261,7 +261,7 @@ static inline void vdso_test_clock(clockid_t clock_id)
 	vdso_test_clock_getres_time64(clock_id);
 }
 
-#define VDSO_TEST_PLAN	38
+#define VDSO_TEST_PLAN	46
 
 int main(int argc, char **argv)
 {
@@ -284,7 +284,9 @@ int main(int argc, char **argv)
 	vdso_test_gettimeofday();
 
 	vdso_test_clock(CLOCK_REALTIME);
+	vdso_test_clock(CLOCK_REALTIME_ALARM);
 	vdso_test_clock(CLOCK_BOOTTIME);
+	vdso_test_clock(CLOCK_BOOTTIME_ALARM);
 	vdso_test_clock(CLOCK_TAI);
 	vdso_test_clock(CLOCK_REALTIME_COARSE);
 	vdso_test_clock(CLOCK_MONOTONIC);
