@@ -28,6 +28,7 @@ impl Module for SampleModule {
         let fdev = reg.as_ref();
 
         dev_info!(fdev, "Hello from faux device!\n");
+        dev_dbg!(fdev, "foobar\n");
 
         Ok(Self { _reg: reg })
     }

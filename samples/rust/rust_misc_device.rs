@@ -181,6 +181,7 @@ impl MiscDevice for RustMiscDevice {
         let dev = ARef::from(misc.device());
 
         dev_info!(dev, "Opening Rust Misc Device Sample\n");
+        dev_dbg!(dev, "Opening Rust Misc Device Sample: {:?}\n", "foo");
 
         KBox::try_pin_init(
             try_pin_init! {
