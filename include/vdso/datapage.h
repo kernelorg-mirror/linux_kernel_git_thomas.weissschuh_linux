@@ -112,6 +112,8 @@ struct vdso_clock {
  * @arch_data:		architecture specific data (optional, defaults
  *			to an empty struct)
  * @clock_data:		clocksource related data (array)
+ * @hres_coarse:	high and coarse resolution clocksource related data (array)
+ * @raw:		raw clocksource related data (array)
  * @aux_clock_data:	auxiliary clocksource related data (array)
  * @tz_minuteswest:	minutes west of Greenwich
  * @tz_dsttime:		type of DST correction
@@ -128,7 +130,13 @@ struct vdso_clock {
 struct vdso_time_data {
 	struct arch_vdso_time_data	arch_data;
 
-	struct vdso_clock		clock_data[CS_BASES];
+	union {
+		struct vdso_clock	clock_data[CS_BASES];
+		struct {
+			struct vdso_clock	hres_coarse;
+			struct vdso_clock	raw;
+		};
+	};
 	struct vdso_clock		aux_clock_data[MAX_AUX_CLOCKS];
 
 	struct timezone			tz;
