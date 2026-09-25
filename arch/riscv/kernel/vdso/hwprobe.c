@@ -8,9 +8,28 @@
 #include <vdso/datapage.h>
 #include <vdso/helpers.h>
 
-extern int riscv_hwprobe(struct riscv_hwprobe *pairs, size_t pair_count,
-			 size_t cpusetsize, unsigned long *cpus,
-			 unsigned int flags);
+#include <uapi/linux/unistd.h>
+
+static __always_inline
+int riscv_hwprobe_fallback(struct riscv_hwprobe *_pairs, size_t _pair_count,
+			   size_t _cpusetsize, unsigned long *_cpus,
+			   unsigned int _flags)
+{
+	register struct riscv_hwprobe *pairs asm ("a0") = _pairs;
+	register size_t pair_count asm ("a1") = _pair_count;
+	register size_t cpusetsize asm ("a2") = _cpusetsize;
+	register unsigned long *cpus asm ("a3") = _cpus;
+	register unsigned int flags asm ("a4") = _flags;
+	register long ret asm("a0");
+	register long nr asm("a7") = __NR_riscv_hwprobe;
+
+	asm volatile ("ecall\n"
+		      : "=r" (ret)
+		      : "r"(pairs), "r"(pair_count), "r"(cpusetsize), "r"(cpus), "r"(flags), "r"(nr)
+		      : "memory");
+
+	return ret;
+}
 
 static int riscv_vdso_get_values(struct riscv_hwprobe *pairs, size_t pair_count,
 				 size_t cpusetsize, unsigned long *cpus,
@@ -28,7 +47,7 @@ static int riscv_vdso_get_values(struct riscv_hwprobe *pairs, size_t pair_count,
 	 * masks.
 	 */
 	if ((flags != 0) || (!all_cpus && !avd->homogeneous_cpus))
-		return riscv_hwprobe(pairs, pair_count, cpusetsize, cpus, flags);
+		return riscv_hwprobe_fallback(pairs, pair_count, cpusetsize, cpus, flags);
 
 	/* This is something we can handle, fill out the pairs. */
 	while (p < end) {
@@ -69,7 +88,7 @@ static int riscv_vdso_get_cpus(struct riscv_hwprobe *pairs, size_t pair_count,
 	}
 
 	if (empty_cpus || flags != RISCV_HWPROBE_WHICH_CPUS || !avd->homogeneous_cpus)
-		return riscv_hwprobe(pairs, pair_count, cpusetsize, cpus, flags);
+		return riscv_hwprobe_fallback(pairs, pair_count, cpusetsize, cpus, flags);
 
 	while (p < end) {
 		if (riscv_hwprobe_key_is_valid(p->key)) {

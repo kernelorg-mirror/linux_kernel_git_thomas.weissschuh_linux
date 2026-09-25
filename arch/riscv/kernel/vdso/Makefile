@@ -11,7 +11,6 @@ endif
 vdso-syms += getcpu
 vdso-syms += flush_icache
 vdso-syms += hwprobe
-vdso-syms += sys_hwprobe
 
 ifdef CONFIG_VDSO_GETRANDOM
 vdso-syms += getrandom
