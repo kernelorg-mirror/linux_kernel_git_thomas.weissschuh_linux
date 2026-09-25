@@ -14,8 +14,6 @@
 
 #ifdef CONFIG_GENERIC_GETTIMEOFDAY
 
-#define VDSO_HAS_CLOCK_GETRES		1
-
 static __always_inline long gettimeofday_fallback(
 				struct __kernel_old_timeval *_tv,
 				struct timezone *_tz)

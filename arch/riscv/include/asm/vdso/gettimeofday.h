@@ -9,8 +9,6 @@
 #include <asm/csr.h>
 #include <uapi/linux/time.h>
 
-#define VDSO_HAS_CLOCK_GETRES	1
-
 static __always_inline
 int gettimeofday_fallback(struct __kernel_old_timeval *_tv,
 			  struct timezone *_tz)

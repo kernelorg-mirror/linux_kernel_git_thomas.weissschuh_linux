@@ -18,8 +18,6 @@
 #include <asm/unistd.h>
 #include <asm/vdso.h>
 
-#define VDSO_HAS_CLOCK_GETRES		1
-
 #if MIPS_ISA_REV < 6
 #define VDSO_SYSCALL_CLOBBERS "hi", "lo",
 #else
