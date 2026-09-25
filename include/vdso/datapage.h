@@ -131,8 +131,7 @@ struct vdso_time_data {
 	struct vdso_clock		clock_data[CS_BASES];
 	struct vdso_clock		aux_clock_data[MAX_AUX_CLOCKS];
 
-	s32				tz_minuteswest;
-	s32				tz_dsttime;
+	struct timezone			tz;
 	u32				hrtimer_res;
 	u32				__unused;
 } ____cacheline_aligned;
