@@ -429,7 +429,6 @@ static __maybe_unused __kernel_old_time_t __cvdso_time(__kernel_old_time_t *time
 	return __cvdso_time_data(__arch_get_vdso_u_time_data(), time);
 }
 
-#ifdef VDSO_HAS_CLOCK_GETRES
 static __always_inline
 bool __cvdso_clock_getres_common(const struct vdso_time_data *vd, clockid_t clock,
 				 struct __kernel_timespec *res)
@@ -518,4 +517,3 @@ __cvdso_clock_getres_time32(clockid_t clock, struct old_timespec32 *res)
 	return __cvdso_clock_getres_time32_data(__arch_get_vdso_u_time_data(),
 						clock, res);
 }
-#endif /* VDSO_HAS_CLOCK_GETRES */

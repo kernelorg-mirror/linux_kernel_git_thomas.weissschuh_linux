@@ -16,8 +16,6 @@
 
 #include <asm/vdso/compat_barrier.h>
 
-#define VDSO_HAS_CLOCK_GETRES		1
-
 #define BUILD_VDSO32			1
 
 static __always_inline
