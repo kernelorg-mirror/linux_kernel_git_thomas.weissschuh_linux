@@ -130,8 +130,7 @@ void update_vsyscall_tz(void)
 {
 	struct vdso_time_data *vdata = vdso_k_time_data;
 
-	vdata->tz_minuteswest = sys_tz.tz_minuteswest;
-	vdata->tz_dsttime = sys_tz.tz_dsttime;
+	vdata->tz = sys_tz;
 
 	__arch_sync_vdso_time_data(vdata);
 }
