@@ -93,6 +93,20 @@ static inline bool vdso_cycles_ok(u64 cycles)
 }
 #endif
 
+#ifndef BUILD_VDSO32
+static __always_inline int clock_getres32_fallback(clockid_t clkid, struct old_timespec32 *ts)
+{
+	BUILD_BUG();
+	return 0;
+}
+
+static __always_inline int clock_gettime32_fallback(clockid_t clkid, struct old_timespec32 *ts)
+{
+	BUILD_BUG();
+	return 0;
+}
+#endif /* BUILD_VDSO32 */
+
 static __always_inline bool vdso_clockid_valid(clockid_t clock)
 {
 	/* Check for negative values or invalid clocks */
@@ -320,7 +334,6 @@ __cvdso_clock_gettime(clockid_t clock, struct __kernel_timespec *ts)
 	return __cvdso_clock_gettime_data(__arch_get_vdso_u_time_data(), clock, ts);
 }
 
-#ifdef BUILD_VDSO32
 static int
 __cvdso_clock_gettime32_data(const struct vdso_time_data *vd, clockid_t clock,
 			     struct old_timespec32 *res)
@@ -347,7 +360,6 @@ __cvdso_clock_gettime32(clockid_t clock, struct old_timespec32 *res)
 {
 	return __cvdso_clock_gettime32_data(__arch_get_vdso_u_time_data(), clock, res);
 }
-#endif /* BUILD_VDSO32 */
 
 static int
 __cvdso_gettimeofday_data(const struct vdso_time_data *vd,
@@ -481,7 +493,6 @@ int __cvdso_clock_getres(clockid_t clock, struct __kernel_timespec *res)
 	return __cvdso_clock_getres_data(__arch_get_vdso_u_time_data(), clock, res);
 }
 
-#ifdef BUILD_VDSO32
 static int
 __cvdso_clock_getres_time32_data(const struct vdso_time_data *vd, clockid_t clock,
 				 struct old_timespec32 *res)
@@ -509,5 +520,4 @@ __cvdso_clock_getres_time32(clockid_t clock, struct old_timespec32 *res)
 	return __cvdso_clock_getres_time32_data(__arch_get_vdso_u_time_data(),
 						clock, res);
 }
-#endif /* BUILD_VDSO32 */
 #endif /* VDSO_HAS_CLOCK_GETRES */
