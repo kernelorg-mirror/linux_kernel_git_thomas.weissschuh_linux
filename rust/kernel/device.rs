@@ -298,88 +298,6 @@ impl<Ctx: DeviceContext> Device<Ctx> {
         unsafe { &*ptr.cast() }
     }
 
-    /// Prints an emergency-level message (level 0) prefixed with device information.
-    ///
-    /// More details are available from [`dev_emerg`].
-    ///
-    /// [`dev_emerg`]: crate::dev_emerg
-    pub fn pr_emerg(&self, args: fmt::Arguments<'_>) {
-        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-        unsafe { self.printk(bindings::KERN_EMERG, args) };
-    }
-
-    /// Prints an alert-level message (level 1) prefixed with device information.
-    ///
-    /// More details are available from [`dev_alert`].
-    ///
-    /// [`dev_alert`]: crate::dev_alert
-    pub fn pr_alert(&self, args: fmt::Arguments<'_>) {
-        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-        unsafe { self.printk(bindings::KERN_ALERT, args) };
-    }
-
-    /// Prints a critical-level message (level 2) prefixed with device information.
-    ///
-    /// More details are available from [`dev_crit`].
-    ///
-    /// [`dev_crit`]: crate::dev_crit
-    pub fn pr_crit(&self, args: fmt::Arguments<'_>) {
-        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-        unsafe { self.printk(bindings::KERN_CRIT, args) };
-    }
-
-    /// Prints an error-level message (level 3) prefixed with device information.
-    ///
-    /// More details are available from [`dev_err`].
-    ///
-    /// [`dev_err`]: crate::dev_err
-    pub fn pr_err(&self, args: fmt::Arguments<'_>) {
-        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-        unsafe { self.printk(bindings::KERN_ERR, args) };
-    }
-
-    /// Prints a warning-level message (level 4) prefixed with device information.
-    ///
-    /// More details are available from [`dev_warn`].
-    ///
-    /// [`dev_warn`]: crate::dev_warn
-    pub fn pr_warn(&self, args: fmt::Arguments<'_>) {
-        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-        unsafe { self.printk(bindings::KERN_WARNING, args) };
-    }
-
-    /// Prints a notice-level message (level 5) prefixed with device information.
-    ///
-    /// More details are available from [`dev_notice`].
-    ///
-    /// [`dev_notice`]: crate::dev_notice
-    pub fn pr_notice(&self, args: fmt::Arguments<'_>) {
-        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-        unsafe { self.printk(bindings::KERN_NOTICE, args) };
-    }
-
-    /// Prints an info-level message (level 6) prefixed with device information.
-    ///
-    /// More details are available from [`dev_info`].
-    ///
-    /// [`dev_info`]: crate::dev_info
-    pub fn pr_info(&self, args: fmt::Arguments<'_>) {
-        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-        unsafe { self.printk(bindings::KERN_INFO, args) };
-    }
-
-    /// Prints a debug-level message (level 7) prefixed with device information.
-    ///
-    /// More details are available from [`dev_dbg`].
-    ///
-    /// [`dev_dbg`]: crate::dev_dbg
-    pub fn pr_dbg(&self, args: fmt::Arguments<'_>) {
-        if cfg!(debug_assertions) {
-            // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-            unsafe { self.printk(bindings::KERN_DEBUG, args) };
-        }
-    }
-
     /// Prints the provided message to the console.
     ///
     /// # Safety
@@ -387,7 +305,7 @@ impl<Ctx: DeviceContext> Device<Ctx> {
     /// Callers must ensure that `klevel` is null-terminated; in particular, one of the
     /// `KERN_*`constants, for example, `KERN_CRIT`, `KERN_ALERT`, etc.
     #[cfg_attr(not(CONFIG_PRINTK), allow(unused_variables))]
-    unsafe fn printk(&self, klevel: &[u8], msg: fmt::Arguments<'_>) {
+    pub unsafe fn printk(&self, klevel: &[u8], msg: fmt::Arguments<'_>) {
         // SAFETY: `klevel` is null-terminated and one of the kernel constants. `self.as_raw`
         // is valid because `self` is valid. The "%pA" format string expects a pointer to
         // `fmt::Arguments`, which is what we're passing as the last argument.
@@ -738,9 +656,9 @@ macro_rules! impl_device_context_into_aref {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! dev_printk {
-    ($method:ident, $dev:expr, $($f:tt)*) => {
-        $crate::device::Device::$method($dev.as_ref(), $crate::prelude::fmt!($($f)*))
-    }
+    ($klevel:expr, $dev:expr, $args:expr) => {
+        $crate::device::Device::printk($dev.as_ref(), $klevel, $args)
+    };
 }
 
 /// Prints an emergency-level message (level 0) prefixed with device information.
@@ -766,7 +684,14 @@ macro_rules! dev_printk {
 /// ```
 #[macro_export]
 macro_rules! dev_emerg {
-    ($($f:tt)*) => { $crate::dev_printk!(pr_emerg, $($f)*) }
+    ($dev:expr, $($f:tt)*) => {
+        match (&$dev, $crate::prelude::fmt!($($f)*)) {
+            (dev, args) => {
+                // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
+                unsafe { $crate::dev_printk!($crate::bindings::KERN_EMERG, dev, args) }
+            }
+        }
+    }
 }
 
 /// Prints an alert-level message (level 1) prefixed with device information.
@@ -792,7 +717,14 @@ macro_rules! dev_emerg {
 /// ```
 #[macro_export]
 macro_rules! dev_alert {
-    ($($f:tt)*) => { $crate::dev_printk!(pr_alert, $($f)*) }
+    ($dev:expr, $($f:tt)*) => {
+        match (&$dev, $crate::prelude::fmt!($($f)*)) {
+            (dev, args) => {
+                // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
+                unsafe { $crate::dev_printk!($crate::bindings::KERN_ALERT, dev, args) }
+            }
+        }
+    }
 }
 
 /// Prints a critical-level message (level 2) prefixed with device information.
@@ -818,7 +750,14 @@ macro_rules! dev_alert {
 /// ```
 #[macro_export]
 macro_rules! dev_crit {
-    ($($f:tt)*) => { $crate::dev_printk!(pr_crit, $($f)*) }
+    ($dev:expr, $($f:tt)*) => {
+        match (&$dev, $crate::prelude::fmt!($($f)*)) {
+            (dev, args) => {
+                // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
+                unsafe { $crate::dev_printk!($crate::bindings::KERN_CRIT, dev, args) }
+            }
+        }
+    }
 }
 
 /// Prints an error-level message (level 3) prefixed with device information.
@@ -844,7 +783,14 @@ macro_rules! dev_crit {
 /// ```
 #[macro_export]
 macro_rules! dev_err {
-    ($($f:tt)*) => { $crate::dev_printk!(pr_err, $($f)*) }
+    ($dev:expr, $($f:tt)*) => {
+        match (&$dev, $crate::prelude::fmt!($($f)*)) {
+            (dev, args) => {
+                // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
+                unsafe { $crate::dev_printk!($crate::bindings::KERN_ERR, dev, args) }
+            }
+        }
+    }
 }
 
 /// Prints a warning-level message (level 4) prefixed with device information.
@@ -870,7 +816,14 @@ macro_rules! dev_err {
 /// ```
 #[macro_export]
 macro_rules! dev_warn {
-    ($($f:tt)*) => { $crate::dev_printk!(pr_warn, $($f)*) }
+    ($dev:expr, $($f:tt)*) => {
+        match (&$dev, $crate::prelude::fmt!($($f)*)) {
+            (dev, args) => {
+                // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
+                unsafe { $crate::dev_printk!($crate::bindings::KERN_WARNING, dev, args) }
+            }
+        }
+    }
 }
 
 /// Prints a notice-level message (level 5) prefixed with device information.
@@ -896,7 +849,14 @@ macro_rules! dev_warn {
 /// ```
 #[macro_export]
 macro_rules! dev_notice {
-    ($($f:tt)*) => { $crate::dev_printk!(pr_notice, $($f)*) }
+    ($dev:expr, $($f:tt)*) => {
+        match (&$dev, $crate::prelude::fmt!($($f)*)) {
+            (dev, args) => {
+                // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
+                unsafe { $crate::dev_printk!($crate::bindings::KERN_NOTICE, dev, args) }
+            }
+        }
+    }
 }
 
 /// Prints an info-level message (level 6) prefixed with device information.
@@ -922,7 +882,14 @@ macro_rules! dev_notice {
 /// ```
 #[macro_export]
 macro_rules! dev_info {
-    ($($f:tt)*) => { $crate::dev_printk!(pr_info, $($f)*) }
+    ($dev:expr, $($f:tt)*) => {
+        match (&$dev, $crate::prelude::fmt!($($f)*)) {
+            (dev, args) => {
+                // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
+                unsafe { $crate::dev_printk!($crate::bindings::KERN_INFO, dev, args) }
+            }
+        }
+    }
 }
 
 /// Prints a debug-level message (level 7) prefixed with device information.
@@ -948,5 +915,14 @@ macro_rules! dev_info {
 /// ```
 #[macro_export]
 macro_rules! dev_dbg {
-    ($($f:tt)*) => { $crate::dev_printk!(pr_dbg, $($f)*) }
+    ($dev:expr, $($f:tt)*) => {
+        match (&$dev, $crate::prelude::fmt!($($f)*)) {
+            (dev, args) => {
+                if cfg!(debug_assertions) {
+                    // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
+                    unsafe { $crate::dev_printk!($crate::bindings::KERN_DEBUG, dev, args) }
+                }
+            }
+        }
+    }
 }
