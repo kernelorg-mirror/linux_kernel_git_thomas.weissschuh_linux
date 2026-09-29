@@ -113,6 +113,18 @@ unsafe impl super::AtomicAdd<isize> for isize {
     }
 }
 
+// SAFETY: `u8` and `i8` has the same size and alignment, and `u8` is round-trip transmutable to
+// `i8`.
+unsafe impl super::AtomicType for u8 {
+    type Repr = i8;
+}
+
+// SAFETY: `u16` and `i16` has the same size and alignment, and `u16` is round-trip transmutable to
+// `i16`.
+unsafe impl super::AtomicType for u16 {
+    type Repr = i16;
+}
+
 // SAFETY: `u32` and `i32` has the same size and alignment, and `u32` is round-trip transmutable to
 // `i32`.
 unsafe impl super::AtomicType for u32 {
@@ -170,13 +182,13 @@ mod tests {
 
     #[test]
     fn atomic_basic_tests() {
-        for_each_type!(42 in [i8, i16, i32, i64, u32, u64, isize, usize] |v| {
+        for_each_type!(42 in [i8, i16, i32, i64, u8, u16, u32, u64, isize, usize] |v| {
             let x = Atomic::new(v);
 
             assert_eq!(v, x.load(Relaxed));
         });
 
-        for_each_type!(42 in [i8, i16, i32, i64, u32, u64, isize, usize] |v| {
+        for_each_type!(42 in [i8, i16, i32, i64, u8, u16, u32, u64, isize, usize] |v| {
             let x = Atomic::new(v);
             let ptr = x.as_ptr();
 
@@ -187,14 +199,14 @@ mod tests {
 
     #[test]
     fn atomic_acquire_release_tests() {
-        for_each_type!(42 in [i8, i16, i32, i64, u32, u64, isize, usize] |v| {
+        for_each_type!(42 in [i8, i16, i32, i64, u8, u16, u32, u64, isize, usize] |v| {
             let x = Atomic::new(0);
 
             x.store(v, Release);
             assert_eq!(v, x.load(Acquire));
         });
 
-        for_each_type!(42 in [i8, i16, i32, i64, u32, u64, isize, usize] |v| {
+        for_each_type!(42 in [i8, i16, i32, i64, u8, u16, u32, u64, isize, usize] |v| {
             let x = Atomic::new(0);
             let ptr = x.as_ptr();
 
@@ -208,7 +220,7 @@ mod tests {
 
     #[test]
     fn atomic_xchg_tests() {
-        for_each_type!(42 in [i8, i16, i32, i64, u32, u64, isize, usize] |v| {
+        for_each_type!(42 in [i8, i16, i32, i64, u8, u16, u32, u64, isize, usize] |v| {
             let x = Atomic::new(v);
 
             let old = v;
@@ -218,7 +230,7 @@ mod tests {
             assert_eq!(new, x.load(Relaxed));
         });
 
-        for_each_type!(42 in [i8, i16, i32, i64, u32, u64, isize, usize] |v| {
+        for_each_type!(42 in [i8, i16, i32, i64, u8, u16, u32, u64, isize, usize] |v| {
             let x = Atomic::new(v);
             let ptr = x.as_ptr();
 
@@ -233,7 +245,7 @@ mod tests {
 
     #[test]
     fn atomic_cmpxchg_tests() {
-        for_each_type!(42 in [i8, i16, i32, i64, u32, u64, isize, usize] |v| {
+        for_each_type!(42 in [i8, i16, i32, i64, u8, u16, u32, u64, isize, usize] |v| {
             let x = Atomic::new(v);
 
             let old = v;
@@ -245,7 +257,7 @@ mod tests {
             assert_eq!(new, x.load(Relaxed));
         });
 
-        for_each_type!(42 in [i8, i16, i32, i64, u32, u64, isize, usize] |v| {
+        for_each_type!(42 in [i8, i16, i32, i64, u8, u16, u32, u64, isize, usize] |v| {
             let x = Atomic::new(v);
             let ptr = x.as_ptr();
 
