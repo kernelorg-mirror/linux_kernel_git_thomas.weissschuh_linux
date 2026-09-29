@@ -369,12 +369,30 @@ macro_rules! pr_info (
     )
 );
 
+/// Prints the provided message to the dynamic debug system.
+#[doc(hidden)]
+#[cfg(CONFIG_DYNAMIC_DEBUG_CORE)]
+pub fn dynamic_pr_debug(
+    descriptor: &crate::dynamic_debug::Descriptor<'_>,
+    msg: fmt::Arguments<'_>,
+) {
+    // SAFETY: `descriptor.as_ffi_ptr` is valid because `descriptor` is valid.
+    // The "%pA" format string expects a pointer to `fmt::Arguments`, which is what we're
+    // passing as the last argument.
+    unsafe {
+        bindings::__dynamic_pr_debug(
+            descriptor.as_ffi_ptr(),
+            c"%pA".as_char_ptr(),
+            &raw const msg,
+        );
+    }
+}
+
 /// Prints a debug-level message (level 7).
 ///
 /// Use this level for debug messages.
 ///
-/// Equivalent to the kernel's [`pr_debug`] macro, except that it doesn't support dynamic debug
-/// yet.
+/// Equivalent to the kernel's [`pr_debug`] macro.
 ///
 /// Mimics the interface of [`std::print!`]. See [`core::fmt`] and
 /// [`std::format!`] for information about the formatting syntax.
@@ -392,6 +410,17 @@ macro_rules! pr_info (
 #[doc(alias = "print")]
 macro_rules! pr_debug (
     ($($arg:tt)*) => (
+        // TODO: Switch to cfg_select!() when that is usable.
+        #[cfg(any(CONFIG_DYNAMIC_DEBUG, all(CONFIG_DYNAMIC_DEBUG_CORE, debug_assertions)))]
+        match ($crate::prelude::fmt!($($arg)*)) {
+            (args) => {
+                $crate::dynamic_func_call!($crate::__format_string!($($arg)+), |desc| {
+                    $crate::print::dynamic_pr_debug(desc, args)
+                });
+            },
+        }
+
+        #[cfg(not(any(CONFIG_DYNAMIC_DEBUG, all(CONFIG_DYNAMIC_DEBUG_CORE, debug_assertions))))]
         if cfg!(debug_assertions) {
             $crate::print_macro!($crate::print::format_strings::DEBUG, false, $($arg)*)
         }
