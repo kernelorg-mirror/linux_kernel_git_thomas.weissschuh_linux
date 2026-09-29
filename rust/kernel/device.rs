@@ -320,6 +320,27 @@ impl<Ctx: DeviceContext> Device<Ctx> {
         };
     }
 
+    /// Prints the provided message to the dynamic debug system.
+    #[cfg(CONFIG_DYNAMIC_DEBUG_CORE)]
+    pub fn dynamic_dev_dbg(
+        &self,
+        descriptor: &crate::dynamic_debug::Descriptor<'_>,
+        msg: fmt::Arguments<'_>,
+    ) {
+        // SAFETY: `descriptor.as_ffi_ptr` is valid because `descriptor` is valid.
+        // `self.as_raw` is valid because `self` is valid.
+        // The "%pA" format string expects a pointer to `fmt::Arguments`, which is what we're
+        // passing as the last argument.
+        unsafe {
+            bindings::__dynamic_dev_dbg(
+                descriptor.as_ffi_ptr(),
+                self.as_raw(),
+                c"%pA".as_char_ptr(),
+                ptr::addr_of!(msg),
+            )
+        }
+    }
+
     /// Obtain the [`FwNode`](property::FwNode) corresponding to this [`Device`].
     pub fn fwnode(&self) -> Option<&property::FwNode> {
         // SAFETY: `self` is valid.
@@ -896,7 +917,7 @@ macro_rules! dev_info {
 ///
 /// This level should be used for debug messages.
 ///
-/// Equivalent to the kernel's `dev_dbg` macro, except that it doesn't support dynamic debug yet.
+/// Equivalent to the kernel's `dev_dbg` macro.
 ///
 /// Mimics the interface of [`std::print!`]. More information about the syntax is available from
 /// [`core::fmt`] and [`std::format!`].
@@ -918,6 +939,14 @@ macro_rules! dev_dbg {
     ($dev:expr, $($f:tt)*) => {
         match (&$dev, $crate::prelude::fmt!($($f)*)) {
             (dev, args) => {
+                // TODO: Switch to cfg_select!() when that is usable.
+                #[cfg(any(CONFIG_DYNAMIC_DEBUG, all(CONFIG_DYNAMIC_DEBUG_CORE, debug_assertions)))]
+                $crate::dynamic_func_call!($crate::__format_string!($($f)*), |desc| {
+                    $crate::device::Device::dynamic_dev_dbg($dev.as_ref(), desc, args)
+                });
+
+                #[cfg(not(any(CONFIG_DYNAMIC_DEBUG,
+                          all(CONFIG_DYNAMIC_DEBUG_CORE, debug_assertions))))]
                 if cfg!(debug_assertions) {
                     // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
                     unsafe { $crate::dev_printk!($crate::bindings::KERN_DEBUG, dev, args) }

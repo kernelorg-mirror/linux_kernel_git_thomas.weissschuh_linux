@@ -383,7 +383,7 @@ pub fn dynamic_pr_debug(
         bindings::__dynamic_pr_debug(
             descriptor.as_ffi_ptr(),
             c"%pA".as_char_ptr(),
-            &raw const msg,
+            core::ptr::addr_of!(msg),
         );
     }
 }
