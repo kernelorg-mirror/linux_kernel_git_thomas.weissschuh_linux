@@ -7,6 +7,7 @@
 #endif
 
 #include <linux/build_bug.h>
+#include <linux/types.h>
 
 /*
  * An instance of this structure is created in a special
@@ -22,9 +23,9 @@ struct _ddebug {
 	const char *function;
 	const char *filename;
 	const char *format;
-	unsigned int lineno:18;
+	u32 lineno:18;
 #define CLS_BITS 6
-	unsigned int class_id:CLS_BITS;
+	u32 class_id:CLS_BITS;
 #define _DPRINTK_CLASS_DFLT		((1 << CLS_BITS) - 1)
 	/*
 	 * The flags field controls the behaviour at the callsite.
@@ -50,7 +51,7 @@ struct _ddebug {
 #else
 #define _DPRINTK_FLAGS_DEFAULT 0
 #endif
-	unsigned int flags:8;
+	u32 flags:8;
 #ifdef CONFIG_JUMP_LABEL
 	union {
 		struct static_key_true dd_key_true;
