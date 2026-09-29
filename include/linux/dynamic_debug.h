@@ -164,7 +164,7 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
 
 #define __dynamic_dump_stack(desc)				\
 {								\
-	if (desc.flags & _DPRINTK_FLAGS_INCL_STACK)		\
+	if (READ_ONCE(desc.flags) & _DPRINTK_FLAGS_INCL_STACK)	\
 		dump_stack();					\
 }
 
@@ -207,10 +207,10 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
 
 #ifdef DEBUG
 #define DYNAMIC_DEBUG_BRANCH(descriptor) \
-	likely(descriptor.flags & _DPRINTK_FLAGS_PRINT)
+	likely(READ_ONCE(descriptor.flags) & _DPRINTK_FLAGS_PRINT)
 #else
 #define DYNAMIC_DEBUG_BRANCH(descriptor) \
-	unlikely(descriptor.flags & _DPRINTK_FLAGS_PRINT)
+	unlikely(READ_ONCE(descriptor.flags) & _DPRINTK_FLAGS_PRINT)
 #endif
 
 #endif /* CONFIG_JUMP_LABEL */
