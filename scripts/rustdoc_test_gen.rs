@@ -224,7 +224,7 @@ fn {kunit_name}() {{
         BufWriter::new(File::create("rust/doctests_kernel_generated.rs").unwrap()),
         r#"//! `kernel` crate documentation tests.
 
-const __LOG_PREFIX: &[u8] = b"rust_doctests_kernel\0";
+const __LOG_PREFIX: &kernel::str::CStr = c"rust_doctests_kernel";
 
 /// Dummy module type for doctest context.
 struct LocalModule;
@@ -237,7 +237,7 @@ use kernel::{{
 use core::ptr::null_mut;
 
 impl ModuleMetadata for LocalModule {{
-    const NAME: &'static CStr = c"rust_doctests_kernel";
+    const NAME: &'static CStr = __LOG_PREFIX;
     const THIS_MODULE: ThisModule = {{
         // SAFETY: `try_module_get`/`module_put` handle null module pointers gracefully.
         unsafe {{ ThisModule::from_ptr(null_mut()) }}
