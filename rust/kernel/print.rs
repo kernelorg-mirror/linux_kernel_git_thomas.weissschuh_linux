@@ -373,8 +373,7 @@ macro_rules! pr_info (
 ///
 /// Use this level for debug messages.
 ///
-/// Equivalent to the kernel's [`pr_debug`] macro, except that it doesn't support dynamic debug
-/// yet.
+/// Equivalent to the kernel's [`pr_debug`] macro.
 ///
 /// Mimics the interface of [`std::print!`]. See [`core::fmt`] and
 /// [`std::format!`] for information about the formatting syntax.
@@ -392,6 +391,13 @@ macro_rules! pr_info (
 #[doc(alias = "print")]
 macro_rules! pr_debug (
     ($($arg:tt)*) => (
+        // TODO: Switch to cfg_select!() when that is usable.
+        #[cfg(any(CONFIG_DYNAMIC_DEBUG, all(CONFIG_DYNAMIC_DEBUG_CORE, debug_assertions)))]
+        $crate::dynamic_func_call!($crate::__format_string!($($arg)+), || {
+            $crate::print_macro!($crate::print::format_strings::DEBUG, false, $($arg)*)
+        });
+
+        #[cfg(not(any(CONFIG_DYNAMIC_DEBUG, all(CONFIG_DYNAMIC_DEBUG_CORE, debug_assertions))))]
         if cfg!(debug_assertions) {
             $crate::print_macro!($crate::print::format_strings::DEBUG, false, $($arg)*)
         }
