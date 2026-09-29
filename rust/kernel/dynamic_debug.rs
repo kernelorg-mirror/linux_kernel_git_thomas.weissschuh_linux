@@ -199,6 +199,15 @@ macro_rules! __format_string {
     };
 }
 
+#[macro_export]
+macro_rules! dynamic_pr_debug {
+    ($($arg:tt)+) => {{
+        $crate::dynamic_func_call!($crate::__format_string!($($arg)+), || {
+            $crate::print_macro!($crate::print::format_strings::DEBUG, false, $($arg)+);
+        });
+    }};
+}
+
 #[macros::kunit_tests(rust_dynamic_debug)]
 mod tests {
     use super::*;
