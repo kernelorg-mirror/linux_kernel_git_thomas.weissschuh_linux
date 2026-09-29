@@ -208,6 +208,19 @@ macro_rules! dynamic_pr_debug {
     }};
 }
 
+#[macro_export]
+macro_rules! dynamic_dev_debug {
+    ($dev:expr, $($arg:tt)+) => {{
+        match (&$dev, $crate::prelude::fmt!($($arg)+)) {
+            (dev, args) => {
+                $crate::dynamic_func_call!($crate::__format_string!($($arg)+), || {
+                    unsafe { $crate::dev_printk!($crate::bindings::KERN_DEBUG, dev, args); }
+                });
+            }
+        }
+    }};
+}
+
 #[macros::kunit_tests(rust_dynamic_debug)]
 mod tests {
     use super::*;

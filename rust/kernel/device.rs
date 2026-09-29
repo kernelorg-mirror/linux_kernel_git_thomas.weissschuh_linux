@@ -896,7 +896,7 @@ macro_rules! dev_info {
 ///
 /// This level should be used for debug messages.
 ///
-/// Equivalent to the kernel's `dev_dbg` macro, except that it doesn't support dynamic debug yet.
+/// Equivalent to the kernel's `dev_dbg` macro.
 ///
 /// Mimics the interface of [`std::print!`]. More information about the syntax is available from
 /// [`core::fmt`] and [`std::format!`].
@@ -916,6 +916,10 @@ macro_rules! dev_info {
 #[macro_export]
 macro_rules! dev_dbg {
     ($dev:expr, $($f:tt)*) => {
+        #[cfg(any(CONFIG_DYNAMIC_DEBUG, all(CONFIG_DYNAMIC_DEBUG_CORE, debug_assertions)))]
+        $crate::dynamic_dev_debug!($dev, $($f)*);
+
+        #[cfg(not(any(CONFIG_DYNAMIC_DEBUG, all(CONFIG_DYNAMIC_DEBUG_CORE, debug_assertions))))]
         match (&$dev, $crate::prelude::fmt!($($f)*)) {
             (dev, args) => {
                 if cfg!(debug_assertions) {
