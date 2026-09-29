@@ -159,7 +159,7 @@ pub use module::{
 pub use uapi;
 
 /// Prefix to appear before log messages printed from within the `kernel` crate.
-const __LOG_PREFIX: &[u8] = b"rust_kernel\0";
+const __LOG_PREFIX: &str::CStr = c"rust_kernel";
 
 /// Dummy module type for `#[vtable]` `impl` blocks within the `kernel` crate (e.g. KUnit tests).
 // The `allow` is needed since it may be unused (e.g. KUnit tests may be disabled).
@@ -167,7 +167,7 @@ const __LOG_PREFIX: &[u8] = b"rust_kernel\0";
 struct LocalModule;
 
 impl ModuleMetadata for LocalModule {
-    const NAME: &'static str::CStr = c"rust_kernel";
+    const NAME: &'static str::CStr = __LOG_PREFIX;
 
     const THIS_MODULE: ThisModule = {
         // SAFETY: `try_module_get`/`module_put` handle null module pointers gracefully.

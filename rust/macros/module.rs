@@ -496,14 +496,14 @@ pub(crate) fn module(info: ModuleInfo) -> Result<TokenStream> {
         /// The module name.
         ///
         /// Used by the printing macros, e.g. [`info!`].
-        const __LOG_PREFIX: &[u8] = #name_cstr.to_bytes_with_nul();
+        const __LOG_PREFIX: &::kernel::str::CStr = #name_cstr;
 
         /// The `LocalModule` type is the type of the module created by `module!`,
         /// `module_pci_driver!`, `module_platform_driver!`, etc.
         type LocalModule = #type_;
 
         impl ::kernel::ModuleMetadata for #type_ {
-            const NAME: &'static ::kernel::str::CStr = #name_cstr;
+            const NAME: &'static ::kernel::str::CStr = __LOG_PREFIX;
 
             #[cfg(MODULE)]
             const THIS_MODULE: ::kernel::ThisModule = {
