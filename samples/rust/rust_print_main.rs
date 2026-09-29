@@ -2,6 +2,7 @@
 
 //! Rust printing macros sample.
 
+use kernel::fmt;
 use kernel::pr_cont;
 use kernel::prelude::*;
 
@@ -86,6 +87,8 @@ impl kernel::Module for RustPrint {
         pr_cont!(" is {}", "continued");
         pr_cont!(" with {}\n", "args");
 
+        pr_debug!("Debug with kernel::fmt {}", FormatTest);
+
         arc_print()?;
 
         trace::trace_rust_sample_loaded(42);
@@ -97,6 +100,14 @@ impl kernel::Module for RustPrint {
 impl Drop for RustPrint {
     fn drop(&mut self) {
         pr_info!("Rust printing macros sample (exit)\n");
+    }
+}
+
+struct FormatTest;
+
+impl fmt::Display for FormatTest {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "FormatTest")
     }
 }
 
