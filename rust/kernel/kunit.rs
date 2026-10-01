@@ -51,6 +51,20 @@ pub fn info(args: fmt::Arguments<'_>) {
     }
 }
 
+fn string_stream_add(stream: &mut bindings::string_stream, args: &fmt::Arguments<'_>) {
+    unsafe {
+        // SAFETY: FIXME
+        bindings::kunit_string_stream_add(stream, c"%pA".as_char_ptr(), args);
+    }
+}
+
+fn kunit_assert_print_msg(message: &bindings::va_format, stream: &mut bindings::string_stream) {
+    unsafe {
+        // SAFETY: FIXME
+        bindings::kunit_assert_print_msg(message, stream)
+    }
+}
+
 /// FIXME
 pub struct Location<'a>(bindings::kunit_loc, PhantomData<&'a ()>);
 
@@ -74,7 +88,7 @@ impl AsRef<bindings::kunit_loc> for Location<'_> {
 }
 
 /// FIXME
-pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32, passed: bool) {
+pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32, passed: bool, args: Option<fmt::Arguments<'_>>) {
     // Do nothing if the test passed.
     if passed {
         return;
@@ -100,6 +114,7 @@ pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32, p
     let assertion = KUnitRustAssert {
         assert: bindings::kunit_assert {},
         condition,
+        args,
     };
 
     // SAFETY:
@@ -147,6 +162,9 @@ pub struct KUnitRustAssert<'a> {
 
     /// FIXME
     pub condition: &'a str::CStr,
+
+    /// FIXME
+    pub args: Option<fmt::Arguments<'a>>,
 }
 
 /// FIXME
@@ -175,16 +193,13 @@ unsafe extern "C" fn kunit_rust_assert_format(
         message.as_ref_unchecked()
     };
 
-    let unary_assert = bindings::kunit_unary_assert {
-        assert: assert.assert,
-        condition: assert.condition.as_char_ptr(),
-        expected_true: true,
-    };
+    string_stream_add(stream, &fmt!("condition: {}\n", assert.condition));
 
-    unsafe {
-        // SAFETY: FIXME
-        bindings::kunit_unary_assert_format(&unary_assert.assert, message, stream);
+    if let Some(args) = assert.args {
+        string_stream_add(stream, &fmt!("actual:    {}\n", &args));
     }
+
+    kunit_assert_print_msg(message, stream);
 }
 
 /// Asserts that a boolean expression is `true` at runtime.
@@ -197,6 +212,11 @@ unsafe extern "C" fn kunit_rust_assert_format(
 #[macro_export]
 macro_rules! kunit_assert {
     ($name:literal, $condition:expr $(,)?) => {
+        $crate::kunit_assert!($name, $condition, None,)
+    };
+
+    ($name:literal, $condition:expr, $args:expr $(,)?) => {
+
         {
             let passed: bool = $condition;
 
@@ -206,7 +226,7 @@ macro_rules! kunit_assert {
             const LINE: i32 = line!() as i32;
             const CONDITION: &'static $crate::str::CStr = $crate::c_str!(stringify!($condition));
 
-            $crate::kunit::do_test($name, CONDITION, FILE, LINE, passed);
+            $crate::kunit::do_test($name, CONDITION, FILE, LINE, passed, $args);
         }
     };
 }
@@ -223,7 +243,14 @@ macro_rules! kunit_assert_eq {
     ($name:literal, $left:expr, $right:expr $(,)?) => {{
         // For the moment, we just forward to the expression assert because, for binary asserts,
         // KUnit supports only a few types (e.g. integers).
-        $crate::kunit_assert!($name, $left == $right);
+        match (&$left, &$right) {
+            (l, r) => match $crate::prelude::fmt!("{:?} == {:?}", l, r) {
+                fmt => {
+                    let _ = l == r;
+                    $crate::kunit_assert!($name, $left == $right, Some(fmt),)
+                }
+            },
+        }
     }};
 }
 
@@ -235,9 +262,11 @@ macro_rules! kunit_assert_matches {
         // KUnit supports only a few types (e.g. integers).
         match $left {
             $right => {}
-            _ => {
-                $crate::kunit_assert!($name, false);
-            }
+            _ => match $crate::prelude::fmt!("{:?} ?? {:?}", $left, ::core::stringify!($right)) {
+                fmt => {
+                    $crate::kunit_assert!($name, false, Some(fmt))
+                }
+            },
         };
     }};
 }
@@ -425,7 +454,8 @@ mod tests {
 
     #[test]
     fn foo() {
-        assert_eq!(1, 2);
+        let x = 1;
+        assert_eq!(x, 2);
         assert_matches!(Some(2), Some(_));
     }
 }
