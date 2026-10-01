@@ -229,4 +229,6 @@ void kunit_assert_hexdump(struct string_stream *stream,
 			  const size_t len);
 #endif
 
+int kunit_string_stream_add(struct string_stream *stream, const char *fmt, ...);
+
 #endif /*  _KUNIT_ASSERT_H */
