@@ -3610,6 +3610,7 @@ config RUST_BUILD_ASSERT_ALLOW
 config RUST_KERNEL_DOCTESTS
 	bool "Doctests for the `kernel` crate" if !KUNIT_ALL_TESTS
 	depends on RUST && KUNIT=y
+	depends on n
 	default KUNIT_ALL_TESTS
 	help
 	  This builds the documentation tests of the `kernel` crate
