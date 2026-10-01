@@ -378,4 +378,10 @@ mod tests {
         // This test should never run because of the `cfg`.
         assert!(false);
     }
+
+    #[test]
+    fn foo() {
+        assert_eq!(1, 2);
+        assert_matches!(Some(2), Some(_));
+    }
 }
