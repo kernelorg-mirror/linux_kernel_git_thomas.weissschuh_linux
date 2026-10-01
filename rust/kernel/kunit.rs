@@ -183,6 +183,21 @@ macro_rules! kunit_assert_eq {
     }};
 }
 
+#[doc(hidden)]
+#[macro_export]
+macro_rules! kunit_assert_matches {
+    ($name:literal, $left:expr, $right:pat_param $(,)?) => {{
+        // For the moment, we just forward to the expression assert because, for binary asserts,
+        // KUnit supports only a few types (e.g. integers).
+        match $left {
+            $right => {}
+            _ => {
+                $crate::kunit_assert!($name, false);
+            }
+        };
+    }};
+}
+
 trait TestResult {
     fn is_test_result_ok(&self) -> bool;
 }

@@ -125,6 +125,14 @@ pub(crate) fn kunit_tests(test_suite: Ident, mut module: ItemMod) -> Result<Toke
                 }}
             }
         });
+        processed_items.push(parse_quote! {
+            #[allow(unused)]
+            macro_rules! assert_matches {
+                ($left:expr, $right:pat_param $(,)?) => {{
+                    kernel::kunit_assert_matches!(#test_str, $left, $right);
+                }}
+            }
+        });
 
         // Add back the test item.
         processed_items.push(Item::Fn(f));
