@@ -51,6 +51,20 @@ pub fn info(args: fmt::Arguments<'_>) {
     }
 }
 
+fn string_stream_add(stream: &mut bindings::string_stream, args: &fmt::Arguments<'_>) {
+    unsafe {
+        // SAFETY: FIXME
+        bindings::kunit_string_stream_add(stream, c"%pA".as_char_ptr(), args);
+    }
+}
+
+fn kunit_assert_print_msg(message: &bindings::va_format, stream: &mut bindings::string_stream) {
+    unsafe {
+        // SAFETY: FIXME
+        bindings::kunit_assert_print_msg(message, stream)
+    }
+}
+
 /// FIXME
 pub struct Location<'a>(bindings::kunit_loc, PhantomData<&'a ()>);
 
@@ -80,7 +94,7 @@ pub fn do_test(
     file: &str::CStr,
     line: i32,
     passed: bool,
-    type_: KUnitRustAssertType,
+    type_: KUnitRustAssertType<'_>,
 ) {
     // Do nothing if the test passed.
     if passed {
@@ -151,9 +165,12 @@ pub fn do_test(
 }
 
 /// FIXME
-pub enum KUnitRustAssertType {
+pub enum KUnitRustAssertType<'a> {
     /// FIXME
     UnaryAssert(bool),
+
+    /// FIXME
+    CustomRust(fmt::Arguments<'a>),
 }
 
 ///FIXME
@@ -165,7 +182,7 @@ pub struct KUnitRustAssert<'a> {
     pub condition: &'a str::CStr,
 
     /// FIXME
-    pub type_: KUnitRustAssertType,
+    pub type_: KUnitRustAssertType<'a>,
 }
 
 /// FIXME
@@ -206,6 +223,13 @@ unsafe extern "C" fn kunit_rust_assert_format(
                 // SAFETY: FIXME
                 bindings::kunit_unary_assert_format(&unary_assert.assert, message, stream);
             }
+        }
+
+        KUnitRustAssertType::CustomRust(args) => {
+            string_stream_add(stream, &fmt!("condition: {}\n", assert.condition));
+            string_stream_add(stream, &fmt!("actual:    {}\n", &args));
+
+            kunit_assert_print_msg(message, stream);
         }
     }
 }
@@ -254,9 +278,18 @@ macro_rules! kunit_assert {
 #[macro_export]
 macro_rules! kunit_assert_eq {
     ($name:literal, $left:expr, $right:expr $(,)?) => {{
-        // For the moment, we just forward to the expression assert because, for binary asserts,
-        // KUnit supports only a few types (e.g. integers).
-        $crate::kunit_assert!($name, $left == $right);
+        match (&$left, &$right) {
+            (l, r) => match $crate::prelude::fmt!("{:?} == {:?}", l, r) {
+                fmt => {
+                    let _ = l == r; // Force type inference.
+                    $crate::kunit_assert_impl!(
+                        $name,
+                        $left == $right,
+                        $crate::kunit::KUnitRustAssertType::CustomRust(fmt),
+                    );
+                }
+            },
+        }
     }};
 }
 
@@ -268,9 +301,15 @@ macro_rules! kunit_assert_matches {
         // KUnit supports only a few types (e.g. integers).
         match $left {
             $right => {}
-            _ => {
-                $crate::kunit_assert!($name, false);
-            }
+            _ => match $crate::prelude::fmt!("{:?} ?? {:?}", $left, ::core::stringify!($right)) {
+                fmt => {
+                    $crate::kunit_assert_impl!(
+                        $name,
+                        matches!($left, $right),
+                        $crate::kunit::KUnitRustAssertType::CustomRust(fmt),
+                    );
+                }
+            },
         };
     }};
 }
@@ -458,7 +497,8 @@ mod tests {
 
     #[test]
     fn foo() {
-        assert_eq!(1, 2);
+        let x = 1;
+        assert_eq!(x, 2);
         assert_matches!(Some(2), Some(_));
     }
 }
