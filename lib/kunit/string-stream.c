@@ -101,6 +101,20 @@ int string_stream_add(struct string_stream *stream, const char *fmt, ...)
 	return result;
 }
 
+#if IS_ENABLED(CONFIG_RUST)
+int kunit_string_stream_add(struct string_stream *stream, const char *fmt, ...)
+{
+	va_list args;
+	int result;
+
+	va_start(args, fmt);
+	result = string_stream_vadd(stream, fmt, args);
+	va_end(args);
+
+	return result;
+}
+#endif
+
 void string_stream_clear(struct string_stream *stream)
 {
 	struct string_stream_fragment *frag_container, *frag_container_safe;
