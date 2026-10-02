@@ -509,7 +509,8 @@ export rust_common_flags := --edition=2021 \
 			    -Wclippy::unnecessary_safety_doc \
 			    -Aclippy::unwrap_or_default \
 			    -Wrustdoc::missing_crate_level_docs \
-			    -Wrustdoc::unescaped_backticks
+			    -Wrustdoc::unescaped_backticks \
+			    -Zmacro-backtrace
 
 KBUILD_HOSTCFLAGS   := $(KBUILD_USERHOSTCFLAGS) $(HOST_LFS_CFLAGS) \
 		       $(HOSTCFLAGS) -I $(srctree)/scripts/include
