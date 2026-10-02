@@ -66,10 +66,10 @@ macro_rules! kunit_assert {
             }
 
             // Use `file!()` instead of `::core::file!()` here so it can be overridden.
-            static FILE: &'static $crate::str::CStr = $crate::c_str!(file!());
+            const FILE: &'static $crate::str::CStr = $crate::c_str!(file!());
             // Use `line!()` instead of `::core::line!()` here so it can be overridden.
-            static LINE: i32 = line!() as i32;
-            static CONDITION: &'static $crate::str::CStr = $crate::c_str!(stringify!($condition));
+            const LINE: i32 = line!() as i32;
+            const CONDITION: &'static $crate::str::CStr = $crate::c_str!(stringify!($condition));
 
             // SAFETY: FFI call without safety requirements.
             let kunit_test = unsafe { $crate::bindings::kunit_get_current_test() };
@@ -97,22 +97,17 @@ macro_rules! kunit_assert {
             #[repr(transparent)]
             struct Location($crate::bindings::kunit_loc);
 
-            #[repr(transparent)]
             struct UnaryAssert($crate::bindings::kunit_unary_assert);
 
             // SAFETY: There is only a static instance and in that one the pointer field points to
             // an immutable C string.
             unsafe impl Sync for Location {}
 
-            // SAFETY: There is only a static instance and in that one the pointer field points to
-            // an immutable C string.
-            unsafe impl Sync for UnaryAssert {}
-
             static LOCATION: Location = Location($crate::bindings::kunit_loc {
                 file: $crate::str::as_char_ptr_in_const_context(FILE),
                 line: LINE,
             });
-            static ASSERTION: UnaryAssert = UnaryAssert($crate::bindings::kunit_unary_assert {
+            const ASSERTION: UnaryAssert = UnaryAssert($crate::bindings::kunit_unary_assert {
                 assert: $crate::bindings::kunit_assert {},
                 condition: $crate::str::as_char_ptr_in_const_context(CONDITION),
                 expected_true: true,
@@ -126,6 +121,7 @@ macro_rules! kunit_assert {
             //   - The string pointers (`file` and `condition` above) point to null-terminated
             //     strings since they are `CStr`s.
             //   - The function pointer (`format`) points to the proper function.
+            //   - The assertion pointer points to a valid assertion.
             //   - The pointers passed will remain valid since they point to `static`s.
             //   - The format string is allowed to be null.
             //   - There are, however, problems with this: first of all, this will end up stopping
@@ -141,7 +137,7 @@ macro_rules! kunit_assert {
                     kunit_test,
                     ::core::ptr::addr_of!(LOCATION.0),
                     $crate::bindings::kunit_assert_type_KUNIT_ASSERTION,
-                    ::core::ptr::addr_of!(ASSERTION.0.assert),
+                    &ASSERTION.0.assert,
                     Some($crate::bindings::kunit_unary_assert_format),
                     ::core::ptr::null(),
                 );
