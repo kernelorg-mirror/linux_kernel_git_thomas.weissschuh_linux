@@ -96,14 +96,11 @@ pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32, p
         return;
     }
 
-    struct UnaryAssert(bindings::kunit_unary_assert);
-
     let location = Location::new(file, line);
-    let assertion = UnaryAssert(bindings::kunit_unary_assert {
+    let assertion = KUnitRustAssert {
         assert: bindings::kunit_assert {},
-        condition: condition.as_char_ptr(),
-        expected_true: true,
-    });
+        condition,
+    };
 
     // SAFETY:
     //   - FFI call.
@@ -129,8 +126,8 @@ pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32, p
             kunit_test,
             &location.0,
             bindings::kunit_assert_type_KUNIT_ASSERTION,
-            &assertion.0.assert,
-            Some(bindings::kunit_unary_assert_format),
+            &assertion.assert,
+            Some(kunit_rust_assert_format),
             ::core::ptr::null(),
         );
     }
@@ -140,6 +137,53 @@ pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32, p
     // by KUnit.
     unsafe {
         bindings::__kunit_abort(kunit_test);
+    }
+}
+
+///FIXME
+pub struct KUnitRustAssert<'a> {
+    /// FIXME
+    pub assert: bindings::kunit_assert,
+
+    /// FIXME
+    pub condition: &'a str::CStr,
+}
+
+/// FIXME
+/// # Safety
+///
+/// FIXME
+unsafe extern "C" fn kunit_rust_assert_format(
+    assert: *const bindings::kunit_assert,
+    message: *const bindings::va_format,
+    stream: *mut bindings::string_stream,
+) {
+    let assert = unsafe {
+        // SAFETY: FIXME
+        crate::container_of!(assert, KUnitRustAssert<'_>, assert)
+    };
+    let assert = unsafe {
+        // SAFETY: FIXME
+        assert.as_ref_unchecked()
+    };
+    let stream = unsafe {
+        // SAFETY: FIXME
+        stream.as_mut_unchecked()
+    };
+    let message = unsafe {
+        // SAFETY: FIXME
+        message.as_ref_unchecked()
+    };
+
+    let unary_assert = bindings::kunit_unary_assert {
+        assert: assert.assert,
+        condition: assert.condition.as_char_ptr(),
+        expected_true: true,
+    };
+
+    unsafe {
+        // SAFETY: FIXME
+        bindings::kunit_unary_assert_format(&unary_assert.assert, message, stream);
     }
 }
 
