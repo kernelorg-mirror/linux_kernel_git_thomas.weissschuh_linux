@@ -74,7 +74,12 @@ impl AsRef<bindings::kunit_loc> for Location<'_> {
 }
 
 /// FIXME
-pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32) {
+pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32, passed: bool) {
+    // Do nothing if the test passed.
+    if passed {
+        return;
+    }
+
     // SAFETY: FFI call without safety requirements.
     let kunit_test = unsafe { bindings::kunit_get_current_test() };
     if kunit_test.is_null() {
@@ -148,11 +153,8 @@ pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32) {
 #[macro_export]
 macro_rules! kunit_assert {
     ($name:literal, $condition:expr $(,)?) => {
-        'out: {
-            // Do nothing if the condition is `true`.
-            if $condition {
-                break 'out;
-            }
+        {
+            let passed: bool = $condition;
 
             // Use `file!()` instead of `::core::file!()` here so it can be overridden.
             const FILE: &'static $crate::str::CStr = $crate::c_str!(file!());
@@ -160,7 +162,7 @@ macro_rules! kunit_assert {
             const LINE: i32 = line!() as i32;
             const CONDITION: &'static $crate::str::CStr = $crate::c_str!(stringify!($condition));
 
-            $crate::kunit::do_test($name, CONDITION, FILE, LINE);
+            $crate::kunit::do_test($name, CONDITION, FILE, LINE, passed);
         }
     };
 }
