@@ -285,6 +285,9 @@ impl<T, const N: u32> Bounded<T, N>
 where
     T: Integer,
 {
+    /// Number of usable bits in this [`Bounded`] type.
+    pub const USABLE_BITS: u32 = N;
+
     /// Private constructor enforcing the type invariants.
     ///
     /// All instances of [`Bounded`] must be created through this method as it enforces most of the
