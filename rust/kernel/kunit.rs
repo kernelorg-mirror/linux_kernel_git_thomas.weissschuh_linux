@@ -210,6 +210,22 @@ unsafe extern "C" fn kunit_rust_assert_format(
     }
 }
 
+/// FIXME
+#[macro_export]
+macro_rules! kunit_assert_impl {
+    ($name:literal, $condition:expr, $type:expr, $(,)?) => {{
+        let passed: bool = $condition;
+
+        // Use `file!()` instead of `::core::file!()` here so it can be overridden.
+        const FILE: &'static $crate::str::CStr = $crate::c_str!(file!());
+        // Use `line!()` instead of `::core::line!()` here so it can be overridden.
+        const LINE: i32 = line!() as i32;
+        const CONDITION: &'static $crate::str::CStr = $crate::c_str!(stringify!($condition));
+
+        $crate::kunit::do_test($name, CONDITION, FILE, LINE, passed, $type);
+    }};
+}
+
 /// Asserts that a boolean expression is `true` at runtime.
 ///
 /// Public but hidden since it should only be used from generated tests.
@@ -220,20 +236,9 @@ unsafe extern "C" fn kunit_rust_assert_format(
 #[macro_export]
 macro_rules! kunit_assert {
     ($name:literal, $condition:expr $(,)?) => {{
-        let passed: bool = $condition;
-
-        // Use `file!()` instead of `::core::file!()` here so it can be overridden.
-        const FILE: &'static $crate::str::CStr = $crate::c_str!(file!());
-        // Use `line!()` instead of `::core::line!()` here so it can be overridden.
-        const LINE: i32 = line!() as i32;
-        const CONDITION: &'static $crate::str::CStr = $crate::c_str!(stringify!($condition));
-
-        $crate::kunit::do_test(
+        $crate::kunit_assert_impl!(
             $name,
-            CONDITION,
-            FILE,
-            LINE,
-            passed,
+            $condition,
             $crate::kunit::KUnitRustAssertType::UnaryAssert(true),
         );
     }};
