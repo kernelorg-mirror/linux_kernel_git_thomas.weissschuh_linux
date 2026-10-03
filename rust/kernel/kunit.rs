@@ -74,7 +74,14 @@ impl AsRef<bindings::kunit_loc> for Location<'_> {
 }
 
 /// FIXME
-pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32, passed: bool) {
+pub fn do_test(
+    name: &str,
+    condition: &str::CStr,
+    file: &str::CStr,
+    line: i32,
+    passed: bool,
+    type_: KUnitRustAssertType,
+) {
     // Do nothing if the test passed.
     if passed {
         return;
@@ -92,7 +99,9 @@ pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32, p
         // This mimics KUnit's failed assertion format.
         err(fmt!("    # {}: ASSERTION FAILED at {file}:{line}\n", name));
         err(fmt!("    Expected {condition} to be true, but is false\n"));
-        err(fmt!("    Failure not reported to KUnit since this is a non-KUnit task\n"));
+        err(fmt!(
+            "    Failure not reported to KUnit since this is a non-KUnit task\n"
+        ));
         return;
     }
 
@@ -100,6 +109,7 @@ pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32, p
     let assertion = KUnitRustAssert {
         assert: bindings::kunit_assert {},
         condition,
+        type_,
     };
 
     // SAFETY:
@@ -140,6 +150,12 @@ pub fn do_test(name: &str, condition: &str::CStr, file: &str::CStr, line: i32, p
     }
 }
 
+/// FIXME
+pub enum KUnitRustAssertType {
+    /// FIXME
+    UnaryAssert(bool),
+}
+
 ///FIXME
 pub struct KUnitRustAssert<'a> {
     /// FIXME
@@ -147,6 +163,9 @@ pub struct KUnitRustAssert<'a> {
 
     /// FIXME
     pub condition: &'a str::CStr,
+
+    /// FIXME
+    pub type_: KUnitRustAssertType,
 }
 
 /// FIXME
@@ -175,15 +194,19 @@ unsafe extern "C" fn kunit_rust_assert_format(
         message.as_ref_unchecked()
     };
 
-    let unary_assert = bindings::kunit_unary_assert {
-        assert: assert.assert,
-        condition: assert.condition.as_char_ptr(),
-        expected_true: true,
-    };
+    match assert.type_ {
+        KUnitRustAssertType::UnaryAssert(expected_true) => {
+            let unary_assert = bindings::kunit_unary_assert {
+                assert: assert.assert,
+                condition: assert.condition.as_char_ptr(),
+                expected_true,
+            };
 
-    unsafe {
-        // SAFETY: FIXME
-        bindings::kunit_unary_assert_format(&unary_assert.assert, message, stream);
+            unsafe {
+                // SAFETY: FIXME
+                bindings::kunit_unary_assert_format(&unary_assert.assert, message, stream);
+            }
+        }
     }
 }
 
@@ -196,19 +219,24 @@ unsafe extern "C" fn kunit_rust_assert_format(
 #[doc(hidden)]
 #[macro_export]
 macro_rules! kunit_assert {
-    ($name:literal, $condition:expr $(,)?) => {
-        {
-            let passed: bool = $condition;
+    ($name:literal, $condition:expr $(,)?) => {{
+        let passed: bool = $condition;
 
-            // Use `file!()` instead of `::core::file!()` here so it can be overridden.
-            const FILE: &'static $crate::str::CStr = $crate::c_str!(file!());
-            // Use `line!()` instead of `::core::line!()` here so it can be overridden.
-            const LINE: i32 = line!() as i32;
-            const CONDITION: &'static $crate::str::CStr = $crate::c_str!(stringify!($condition));
+        // Use `file!()` instead of `::core::file!()` here so it can be overridden.
+        const FILE: &'static $crate::str::CStr = $crate::c_str!(file!());
+        // Use `line!()` instead of `::core::line!()` here so it can be overridden.
+        const LINE: i32 = line!() as i32;
+        const CONDITION: &'static $crate::str::CStr = $crate::c_str!(stringify!($condition));
 
-            $crate::kunit::do_test($name, CONDITION, FILE, LINE, passed);
-        }
-    };
+        $crate::kunit::do_test(
+            $name,
+            CONDITION,
+            FILE,
+            LINE,
+            passed,
+            $crate::kunit::KUnitRustAssertType::UnaryAssert(true),
+        );
+    }};
 }
 
 /// Asserts that two expressions are equal to each other (using [`PartialEq`]).
