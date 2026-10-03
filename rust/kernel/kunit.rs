@@ -8,6 +8,8 @@
 
 use crate::fmt;
 use crate::prelude::*;
+use crate::str;
+use core::marker::PhantomData;
 
 /// Prints a KUnit error-level message.
 ///
@@ -46,6 +48,28 @@ pub fn info(args: fmt::Arguments<'_>) {
             c"\x016%pA".as_char_ptr(),
             core::ptr::from_ref(&args).cast::<c_void>(),
         );
+    }
+}
+
+/// FIXME
+pub struct Location<'a>(bindings::kunit_loc, PhantomData<&'a ()>);
+
+impl<'a> Location<'a> {
+    /// FIXME
+    pub const fn new(file: &'a str::CStr, line: i32) -> Self {
+        Self(
+            bindings::kunit_loc {
+                file: str::as_char_ptr_in_const_context(file),
+                line,
+            },
+            PhantomData,
+        )
+    }
+}
+
+impl AsRef<bindings::kunit_loc> for Location<'_> {
+    fn as_ref(&self) -> &bindings::kunit_loc {
+        &self.0
     }
 }
 
@@ -94,19 +118,10 @@ macro_rules! kunit_assert {
                 break 'out;
             }
 
-            #[repr(transparent)]
-            struct Location($crate::bindings::kunit_loc);
-
             struct UnaryAssert($crate::bindings::kunit_unary_assert);
 
-            // SAFETY: There is only a static instance and in that one the pointer field points to
-            // an immutable C string.
-            unsafe impl Sync for Location {}
-
-            static LOCATION: Location = Location($crate::bindings::kunit_loc {
-                file: $crate::str::as_char_ptr_in_const_context(FILE),
-                line: LINE,
-            });
+            const LOCATION: $crate::kunit::Location<'static> =
+                $crate::kunit::Location::new(FILE, LINE);
             const ASSERTION: UnaryAssert = UnaryAssert($crate::bindings::kunit_unary_assert {
                 assert: $crate::bindings::kunit_assert {},
                 condition: $crate::str::as_char_ptr_in_const_context(CONDITION),
@@ -135,7 +150,7 @@ macro_rules! kunit_assert {
             unsafe {
                 $crate::bindings::__kunit_do_failed_assertion(
                     kunit_test,
-                    ::core::ptr::addr_of!(LOCATION.0),
+                    LOCATION.as_ref(),
                     $crate::bindings::kunit_assert_type_KUNIT_ASSERTION,
                     &ASSERTION.0.assert,
                     Some($crate::bindings::kunit_unary_assert_format),
