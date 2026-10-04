@@ -226,8 +226,10 @@ unsafe extern "C" fn kunit_rust_assert_format(
         }
 
         KUnitRustAssertType::CustomRust(args) => {
-            string_stream_add(stream, &fmt!("condition: {}\n", assert.condition));
-            string_stream_add(stream, &fmt!("actual:    {}\n", &args));
+            string_stream_add(
+                stream,
+                &fmt!("Expected {}, but\n    {}\n", &args, assert.condition),
+            );
 
             kunit_assert_print_msg(message, stream);
         }
@@ -279,7 +281,7 @@ macro_rules! kunit_assert {
 macro_rules! kunit_assert_eq {
     ($name:literal, $left:expr, $right:expr $(,)?) => {{
         match (&$left, &$right) {
-            (l, r) => match $crate::prelude::fmt!("{:?} == {:?}", l, r) {
+            (l, r) => match $crate::prelude::fmt!("{} == {:?}", ::core::stringify!($left), r) {
                 fmt => {
                     let _ = l == r; // Force type inference.
                     $crate::kunit_assert_impl!(
@@ -498,6 +500,7 @@ mod tests {
     #[test]
     fn foo() {
         let x = 1;
+        assert_eq!(1 + 1, 4);
         assert_eq!(x, 2);
         assert_matches!(Some(2), Some(_));
     }

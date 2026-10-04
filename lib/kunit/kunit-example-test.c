@@ -27,7 +27,7 @@ static void example_simple_test(struct kunit *test)
 	 * code should do. KUnit then runs the test and verifies that the code's
 	 * behavior matched what was expected.
 	 */
-	KUNIT_EXPECT_EQ(test, 1 + 1, 2);
+	KUNIT_EXPECT_EQ(test, 1 + 1, 4);
 }
 
 /*
