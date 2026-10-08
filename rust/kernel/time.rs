@@ -85,6 +85,20 @@ pub unsafe trait InfallibleClock: ClockId {
     fn ktime_get() -> bindings::ktime_t;
 }
 
+/// FIXME
+///
+/// # Safety
+///
+/// Implementers must ensure that `ktime_get()` returns a value in the inclusive range
+/// `0..=KTIME_MAX` (i.e., greater than or equal to 0 and less than or equal to
+/// `KTIME_MAX`, where `KTIME_MAX` equals `i64::MAX`).
+pub unsafe trait FallibleClock: ClockId {
+    /// Get the current time from the clock.
+    ///
+    /// The function must return a value in the range `0..=KTIME_MAX`.
+    fn ktime_get() -> Option<bindings::ktime_t>;
+}
+
 /// A monotonically increasing clock.
 ///
 /// A nonsettable system-wide clock that represents monotonic time since as
@@ -185,6 +199,43 @@ unsafe impl InfallibleClock for Tai {
     fn ktime_get() -> bindings::ktime_t {
         // SAFETY: It is always safe to call `ktime_get_tai()` outside of NMI context.
         unsafe { bindings::ktime_get_clocktai() }
+    }
+}
+
+fn ktime_get_aux(id: bindings::clockid_t) -> Option<bindings::ktime_t> {
+    #[cfg(not(CONFIG_POSIX_AUX_CLOCKS))]
+    {
+        let _ = id;
+
+        None
+    }
+
+    #[cfg(CONFIG_POSIX_AUX_CLOCKS)]
+    {
+        let mut t = core::mem::MaybeUninit::uninit();
+
+        // SAFETY: It is always safe to call `ktime_get_aux()` outside of NMI context.
+        if unsafe { bindings::ktime_get_aux(id, t.as_mut_ptr()) } {
+            // SAFETY: ktime_get_aux() has initialized the variable.
+            Some(unsafe { t.assume_init() })
+        } else {
+            None
+        }
+    }
+}
+
+/// Auxiliary clock.
+pub struct Aux<const N: bindings::clockid_t>;
+
+impl<const N: bindings::clockid_t> ClockId for Aux<N> {
+    const ID: bindings::clockid_t = (bindings::CLOCK_AUX + (N as u32)) as bindings::clockid_t;
+}
+
+// SAFETY: The kernel's `ktime_get_aux()` is guaranteed to return a value
+// in `0..=KTIME_MAX`.
+unsafe impl<const N: bindings::clockid_t> FallibleClock for Aux<N> {
+    fn ktime_get() -> Option<bindings::ktime_t> {
+        ktime_get_aux(Self::ID)
     }
 }
 
