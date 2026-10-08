@@ -414,15 +414,18 @@
 //
 // By using a handle, we can make the handle own the callback target and avoid these problems.
 
-use super::{ClockId, Delta, Instant};
+use super::{ClockId, Delta, InfallibleClock, Instant};
 use crate::{prelude::*, types::Opaque};
 use core::{marker::PhantomData, ptr::NonNull};
 use pin_init::PinInit;
 
+/// A type-alias to refer to the [`ClockId`] for a given `T` from [`HrTimer<T>`].
+pub type HrTimerClock<T> = <<T as HasHrTimer<T>>::TimerMode as HrTimerMode>::Clock;
+
 /// A type-alias to refer to the [`Instant<C>`] for a given `T` from [`HrTimer<T>`].
 ///
 /// Where `C` is the [`ClockId`] of the [`HrTimer`].
-pub type HrTimerInstant<T> = Instant<<<T as HasHrTimer<T>>::TimerMode as HrTimerMode>::Clock>;
+pub type HrTimerInstant<T> = Instant<HrTimerClock<T>>;
 
 /// A timer backed by a C `struct hrtimer`.
 ///
@@ -567,6 +570,7 @@ impl<T> HrTimer<T> {
     pub fn forward_now(self: Pin<&mut Self>, interval: Delta) -> u64
     where
         T: HasHrTimer<T>,
+        HrTimerClock<T>: InfallibleClock,
     {
         self.forward(HrTimerInstant::<T>::now(), interval)
     }
@@ -1073,7 +1077,10 @@ impl<'a, T: HasHrTimer<T>> HrTimerCallbackContext<'a, T> {
     ///
     /// This is a variant of [`HrTimerCallbackContext::forward()`] that uses an interval after the
     /// current time of the base clock for the [`HrTimer`].
-    pub fn forward_now(&mut self, duration: Delta) -> u64 {
+    pub fn forward_now(&mut self, duration: Delta) -> u64
+    where
+        HrTimerClock<T>: InfallibleClock,
+    {
         self.forward(HrTimerInstant::<T>::now(), duration)
     }
 }
