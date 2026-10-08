@@ -64,18 +64,21 @@ pub fn msecs_to_jiffies(msecs: Msecs) -> Jiffies {
 /// cases the user of the clock has to decide which clock is best suited for the
 /// purpose. In most scenarios clock [`Monotonic`] is the best choice as it
 /// provides a accurate monotonic notion of time (leap second smearing ignored).
+pub trait ClockId {
+    /// The kernel clock ID associated with this clock.
+    ///
+    /// This constant corresponds to the C side `clockid_t` value.
+    const ID: bindings::clockid_t;
+}
+
+/// FIXME
 ///
 /// # Safety
 ///
 /// Implementers must ensure that `ktime_get()` returns a value in the inclusive range
 /// `0..=KTIME_MAX` (i.e., greater than or equal to 0 and less than or equal to
 /// `KTIME_MAX`, where `KTIME_MAX` equals `i64::MAX`).
-pub unsafe trait ClockId {
-    /// The kernel clock ID associated with this clock.
-    ///
-    /// This constant corresponds to the C side `clockid_t` value.
-    const ID: bindings::clockid_t;
-
+pub unsafe trait InfallibleClock: ClockId {
     /// Get the current time from the clock.
     ///
     /// The function must return a value in the range `0..=KTIME_MAX`.
@@ -95,11 +98,13 @@ pub unsafe trait ClockId {
 /// count time that the system is suspended.
 pub struct Monotonic;
 
+impl ClockId for Monotonic {
+    const ID: bindings::clockid_t = bindings::CLOCK_MONOTONIC as bindings::clockid_t;
+}
+
 // SAFETY: The kernel's `ktime_get()` is guaranteed to return a value
 // in `0..=KTIME_MAX`.
-unsafe impl ClockId for Monotonic {
-    const ID: bindings::clockid_t = bindings::CLOCK_MONOTONIC as bindings::clockid_t;
-
+unsafe impl InfallibleClock for Monotonic {
     fn ktime_get() -> bindings::ktime_t {
         // SAFETY: It is always safe to call `ktime_get()` outside of NMI context.
         unsafe { bindings::ktime_get() }
@@ -122,11 +127,13 @@ unsafe impl ClockId for Monotonic {
 /// the clock will experience discontinuity around leap second adjustment.
 pub struct RealTime;
 
+impl ClockId for RealTime {
+    const ID: bindings::clockid_t = bindings::CLOCK_REALTIME as bindings::clockid_t;
+}
+
 // SAFETY: The kernel's `ktime_get_real()` is guaranteed to return a value
 // in `0..=KTIME_MAX`.
-unsafe impl ClockId for RealTime {
-    const ID: bindings::clockid_t = bindings::CLOCK_REALTIME as bindings::clockid_t;
-
+unsafe impl InfallibleClock for RealTime {
     fn ktime_get() -> bindings::ktime_t {
         // SAFETY: It is always safe to call `ktime_get_real()` outside of NMI context.
         unsafe { bindings::ktime_get_real() }
@@ -142,11 +149,13 @@ unsafe impl ClockId for RealTime {
 /// discontinuities if the time is changed using settimeofday(2) or similar.
 pub struct BootTime;
 
+impl ClockId for BootTime {
+    const ID: bindings::clockid_t = bindings::CLOCK_BOOTTIME as bindings::clockid_t;
+}
+
 // SAFETY: The kernel's `ktime_get_boottime()` is guaranteed to return a value
 // in `0..=KTIME_MAX`.
-unsafe impl ClockId for BootTime {
-    const ID: bindings::clockid_t = bindings::CLOCK_BOOTTIME as bindings::clockid_t;
-
+unsafe impl InfallibleClock for BootTime {
     fn ktime_get() -> bindings::ktime_t {
         // SAFETY: It is always safe to call `ktime_get_boottime()` outside of NMI context.
         unsafe { bindings::ktime_get_boottime() }
@@ -166,11 +175,13 @@ unsafe impl ClockId for BootTime {
 /// The acronym TAI refers to International Atomic Time.
 pub struct Tai;
 
+impl ClockId for Tai {
+    const ID: bindings::clockid_t = bindings::CLOCK_TAI as bindings::clockid_t;
+}
+
 // SAFETY: The kernel's `ktime_get_clocktai()` is guaranteed to return a value
 // in `0..=KTIME_MAX`.
-unsafe impl ClockId for Tai {
-    const ID: bindings::clockid_t = bindings::CLOCK_TAI as bindings::clockid_t;
-
+unsafe impl InfallibleClock for Tai {
     fn ktime_get() -> bindings::ktime_t {
         // SAFETY: It is always safe to call `ktime_get_tai()` outside of NMI context.
         unsafe { bindings::ktime_get_clocktai() }
@@ -197,7 +208,7 @@ impl<C: ClockId> Clone for Instant<C> {
 
 impl<C: ClockId> Copy for Instant<C> {}
 
-impl<C: ClockId> Instant<C> {
+impl<C: InfallibleClock> Instant<C> {
     /// Get the current time from the clock source.
     #[inline]
     pub fn now() -> Self {
@@ -214,7 +225,9 @@ impl<C: ClockId> Instant<C> {
     pub fn elapsed(&self) -> Delta {
         Self::now() - *self
     }
+}
 
+impl<C: ClockId> Instant<C> {
     #[inline]
     pub(crate) fn as_nanos(&self) -> i64 {
         self.inner
