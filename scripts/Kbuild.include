@@ -253,6 +253,9 @@ _why =                                                                        \
 why = $(space)$(strip $(_why))
 endif
 
+# Try to enable pipefail.
+pipefail = set -o pipefail 2>/dev/null || true
+
 ###############################################################################
 
 # delete partially updated (i.e. corrupted) files on error
