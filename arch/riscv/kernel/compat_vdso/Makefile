@@ -63,8 +63,8 @@ include/generated/compat_vdso-offsets.h: $(obj)/compat_vdso.so.dbg FORCE
 # The DSO images are built using a special linker script
 # Make sure only to export the intended __compat_vdso_xxx symbol offsets.
 quiet_cmd_compat_vdsold = VDSOLD  $@
-      cmd_compat_vdsold = $(COMPAT_LD) $(ld_flags) $(COMPAT_LD_FLAGS) -T $(filter-out FORCE,$^) -o $@.tmp && \
-                   $(OBJCOPY) $(patsubst %, -G __compat_vdso_%, $(compat_vdso-syms)) $@.tmp $@ && \
+      cmd_compat_vdsold = $(COMPAT_LD) $(ld_flags) $(COMPAT_LD_FLAGS) -T $(filter-out FORCE,$^) -o $@.tmp; \
+                   $(OBJCOPY) $(patsubst %, -G __compat_vdso_%, $(compat_vdso-syms)) $@.tmp $@; \
                    rm $@.tmp
 
 # actual build commands
