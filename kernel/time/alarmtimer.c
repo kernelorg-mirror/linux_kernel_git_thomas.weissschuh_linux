@@ -29,6 +29,7 @@
 #include <linux/time_namespace.h>
 
 #include "posix-timers.h"
+#include "timekeeping_internal.h"
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/alarmtimer.h>
@@ -101,6 +102,7 @@ static int alarmtimer_rtc_add_device(struct device *dev)
 	scoped_guard(spinlock_irqsave, &rtcdev_lock) {
 		if (!IS_ERR(pdev) && !rtcdev && try_module_get(rtc->owner)) {
 			rtcdev = rtc;
+			vdso_time_enable_alarmclock();
 			/* hold a reference so it doesn't go away */
 			get_device(dev);
 			pdev = NULL;
