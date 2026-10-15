@@ -82,9 +82,9 @@ static int alarmtimer_rtc_add_device(struct device *dev)
 		return -EBUSY;
 
 	if (!test_bit(RTC_FEATURE_ALARM, rtc->features))
-		return -1;
+		return -EOPNOTSUPP;
 	if (!device_may_wakeup(rtc->dev.parent))
-		return -1;
+		return -EOPNOTSUPP;
 
 	pdev = platform_device_register_data(dev, "alarmtimer",
 					     PLATFORM_DEVID_AUTO, NULL, 0);
@@ -95,7 +95,8 @@ static int alarmtimer_rtc_add_device(struct device *dev)
 
 	if (!try_module_get(rtc->owner)) {
 		platform_device_unregister(pdev);
-		return -1;
+		/* Let somebody else try */
+		return 0;
 	}
 
 	WRITE_ONCE(rtcdev, rtc);
