@@ -103,6 +103,14 @@ static __always_inline bool vdso_clockid_valid(clockid_t clock)
 	return likely((u32) clock <= CLOCK_AUX_LAST);
 }
 
+static __always_inline u32 vdso_alarmclock_mask(const struct vdso_time_data *vd)
+{
+	if (!IS_ENABLED(CONFIG_RTC_CLASS))
+		return 0;
+
+	return READ_ONCE(vd->alarmclock_mask);
+}
+
 /*
  * Must not be invoked within the sequence read section as a race inside
  * that loop could result in __iter_div_u64_rem() being extremely slow.
@@ -299,6 +307,8 @@ __cvdso_clock_gettime_common(const struct vdso_time_data *vd, clockid_t clock,
 		vc = &vc[CS_RAW];
 	else if (msk & VDSO_AUX)
 		return do_aux(vd, clock, ts);
+	else if (msk & vdso_alarmclock_mask(vd))
+		vc = &vc[CS_HRES_COARSE];
 	else
 		return false;
 
@@ -456,6 +466,8 @@ bool __cvdso_clock_getres_common(const struct vdso_time_data *vd, clockid_t cloc
 		ns = LOW_RES_NSEC;
 	} else if (msk & VDSO_AUX) {
 		ns = aux_clock_resolution_ns();
+	} else if (msk & vdso_alarmclock_mask(vd)) {
+		ns = READ_ONCE(vd->hrtimer_res);
 	} else {
 		return false;
 	}

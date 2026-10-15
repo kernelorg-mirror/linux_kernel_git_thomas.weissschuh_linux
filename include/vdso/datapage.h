@@ -40,6 +40,7 @@ struct vdso_arch_data {
 			 BIT(CLOCK_MONOTONIC_COARSE))
 #define VDSO_RAW	(BIT(CLOCK_MONOTONIC_RAW))
 #define VDSO_AUX	__GENMASK(CLOCK_AUX_LAST, CLOCK_AUX)
+#define VDSO_ALARM	0
 
 #define CS_HRES_COARSE	0
 #define CS_RAW		1
@@ -134,7 +135,7 @@ struct vdso_time_data {
 	s32				tz_minuteswest;
 	s32				tz_dsttime;
 	u32				hrtimer_res;
-	u32				__unused;
+	u32				alarmclock_mask;
 } ____cacheline_aligned;
 
 /**

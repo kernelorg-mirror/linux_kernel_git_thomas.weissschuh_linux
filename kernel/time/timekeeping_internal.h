@@ -55,6 +55,7 @@ long ktime_get_ntp_seconds(unsigned int id);
 extern void update_vsyscall(struct timekeeper *tk);
 extern void update_vsyscall_tz(void);
 extern void vdso_time_update_aux(struct timekeeper *tk);
+extern void vdso_time_enable_alarmclock(void);
 
 #else
 
@@ -65,6 +66,9 @@ static inline void update_vsyscall_tz(void)
 {
 }
 static inline void vdso_time_update_aux(struct timekeeper *tk)
+{
+}
+static inline void vdso_time_enable_alarmclock(void)
 {
 }
 #endif

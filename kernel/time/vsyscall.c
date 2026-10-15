@@ -143,6 +143,17 @@ void update_vsyscall_tz(void)
 	__arch_sync_vdso_time_data(vdata);
 }
 
+#ifdef CONFIG_RTC_CLASS
+void vdso_time_enable_alarmclock(void)
+{
+	struct vdso_time_data *vdata = vdso_k_time_data;
+
+	WRITE_ONCE(vdata->alarmclock_mask, VDSO_ALARM);
+
+	__arch_sync_vdso_time_data(vdata);
+}
+#endif
+
 #ifdef CONFIG_POSIX_AUX_CLOCKS
 void vdso_time_update_aux(struct timekeeper *tk)
 {
