@@ -54,7 +54,7 @@ $(obj)/%.so: $(obj)/%.so.dbg FORCE
 # Generate VDSO offsets using helper script
 gen-compat_vdsosym := $(src)/gen_compat_vdso_offsets.sh
 quiet_cmd_compat_vdsosym = VDSOSYM $@
-	cmd_compat_vdsosym = $(NM) $< | $(gen-compat_vdsosym) | LC_ALL=C sort > $@
+      cmd_compat_vdsosym = $(pipefail); $(NM) $< | $(gen-compat_vdsosym) | LC_ALL=C sort > $@
 
 include/generated/compat_vdso-offsets.h: $(obj)/compat_vdso.so.dbg FORCE
 	$(call if_changed,compat_vdsosym)
