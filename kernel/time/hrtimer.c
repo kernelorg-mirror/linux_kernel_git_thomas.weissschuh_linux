@@ -210,14 +210,14 @@ static struct hrtimer_clock_base *lock_hrtimer_base(const struct hrtimer *timer,
  * preferred target, unless it is offline.
  *
  * High and low resolution modes are handled the same way for simplicity.
- *
- * Called with cpu_base->lock of target cpu held.
  */
 static bool hrtimer_suitable_target(struct hrtimer *timer, struct hrtimer_clock_base *new_base,
 				    struct hrtimer_cpu_base *new_cpu_base,
 				    struct hrtimer_cpu_base *this_cpu_base)
 {
 	ktime_t expires;
+
+	lockdep_assert_held(&new_cpu_base->lock);
 
 	/*
 	 * The local CPU clockevent can be reprogrammed. Also get_target_base()
@@ -842,14 +842,15 @@ static void retrigger_next_event(void *arg)
  * When a timer is enqueued and expires earlier than the already enqueued
  * timers, we have to check, whether it expires earlier than the timer for
  * which the clock event device was armed.
- *
- * Called with interrupts disabled and base->cpu_base.lock held
  */
 static void hrtimer_reprogram(struct hrtimer *timer, bool reprogram)
 {
 	struct hrtimer_cpu_base *cpu_base = this_cpu_ptr(&hrtimer_bases);
 	struct hrtimer_clock_base *base = timer->base;
 	ktime_t expires = hrtimer_get_expires(timer);
+
+	lockdep_assert_irqs_disabled();
+	lockdep_assert_held(&cpu_base->lock);
 
 	WARN_ON_ONCE(expires < 0);
 
@@ -2216,7 +2217,6 @@ hrtimer_interrupt_rearm(struct hrtimer_cpu_base *cpu_base, ktime_t expires_next)
 
 /*
  * High resolution timer interrupt
- * Called with interrupts disabled
  */
 void hrtimer_interrupt(struct clock_event_device *dev)
 {
@@ -2225,6 +2225,7 @@ void hrtimer_interrupt(struct clock_event_device *dev)
 	unsigned long flags;
 	int retries = 0;
 
+	lockdep_assert_irqs_disabled();
 	BUG_ON(!cpu_base->hres_active);
 	cpu_base->nr_events++;
 	dev->next_event = KTIME_MAX;
