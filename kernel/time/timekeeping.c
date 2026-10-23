@@ -3130,6 +3130,18 @@ void do_timer(unsigned long ticks)
 	calc_global_load();
 }
 
+static void tk_copy_clock_offsets(struct tk_clock_offsets *dst, const struct tk_clock_offsets *src)
+{
+	/* Always copy system clocks and auxiliary clock validity flags. */
+	memcpy(dst, src, offsetof(struct tk_clock_offsets, conv_aux));
+
+	/* Auxiliary clock conversion parameters are only copied as needed. */
+	for (size_t i = 0; i < ARRAY_SIZE(src->conv_aux_valid); i++) {
+		if (unlikely(src->conv_aux_valid[i]))
+			dst->conv_aux[i] = src->conv_aux[i];
+	}
+}
+
 /**
  * ktime_get_update_offsets_now - hrtimer helper
  * @tko:	Pointer to a timekeeper offset struct to store the offsets
@@ -3156,7 +3168,7 @@ ktime_t ktime_get_update_offsets_now(struct tk_clock_offsets *tko)
 		base = ktime_add_ns(base, nsecs);
 
 		if (clock_seq != tk_offsets.clock_seq)
-			*tko = tk_offsets;
+			tk_copy_clock_offsets(tko, &tk_offsets);
 
 		/* Handle leapsecond insertion adjustments */
 		if (unlikely(base >= tk->next_leap_ktime))
