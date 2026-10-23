@@ -2,6 +2,9 @@
 #ifndef _LINUX_TIMEKEEPING_TYPES_H
 #define _LINUX_TIMEKEEPING_TYPES_H
 
+#include <linux/build_bug.h>
+#include <linux/cache.h>
+#include <linux/compiler_attributes.h>
 #include <linux/types.h>
 #include <uapi/linux/time.h>
 
@@ -51,7 +54,12 @@ struct tk_clock_offsets {
 	ktime_t			offs_boot;
 	ktime_t			offs_tai;
 	DECLARE_BITMAP(conv_aux_valid, TK_POSSIBLE_AUX_CLOCKS);
-	struct tk_aux_mono_conv	conv_aux[TK_POSSIBLE_AUX_CLOCKS];
+	struct tk_aux_mono_conv	conv_aux[TK_POSSIBLE_AUX_CLOCKS]
+		__aligned(IS_ENABLED(CONFIG_POSIX_AUX_CLOCKS) ? SMP_CACHE_BYTES : 1);
 };
+
+/* Avoid cache-line straddling of the array members. */
+static_assert(IS_ALIGNED(SMP_CACHE_BYTES, sizeof(struct tk_aux_mono_conv)) ||
+	      IS_ALIGNED(sizeof(struct tk_aux_mono_conv), SMP_CACHE_BYTES));
 
 #endif /* _LINUX_TIMEKEEPING_TYPES_H */
