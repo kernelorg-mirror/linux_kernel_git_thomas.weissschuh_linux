@@ -50,6 +50,7 @@ struct tk_data {
 	seqcount_raw_spinlock_t	seq;
 	struct timekeeper	timekeeper;
 	struct timekeeper	shadow_timekeeper;
+	struct lock_class_key	seq_class;
 } ____cacheline_aligned;
 
 static struct tk_data timekeeper_data[TIMEKEEPERS_MAX];
@@ -2018,6 +2019,7 @@ read_persistent_wall_and_boot_offset(struct timespec64 *wall_time,
 static __init void tkd_basic_setup(struct tk_data *tkd, enum timekeeper_ids tk_id, bool valid)
 {
 	seqcount_raw_spinlock_init(&tkd->seq, &tk_core_lock);
+	lockdep_set_class(&tkd->seq.seqcount, &tkd->seq_class);
 	tkd->timekeeper.id = tkd->shadow_timekeeper.id = tk_id;
 	tkd->timekeeper.clock_valid = tkd->shadow_timekeeper.clock_valid = valid;
 }
