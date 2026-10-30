@@ -147,7 +147,6 @@ config KUNIT_UAPI
 	depends on KUNIT
 	depends on ARCH_HAS_NOLIBC
 	depends on !STATIC_USERMODEHELPER
-	depends on !LTO_CLANG # https://github.com/llvm/llvm-project/issues/112920
 	select HEADERS_INSTALL
 	select DEVTMPFS
 	default KUNIT

@@ -40,7 +40,7 @@ struct kunit_uapi_blob {
 	"	.pushsection .rodata, \"a\"				\n"	\
 	"	.global " __stringify(CONCATENATE(_name, _data)) "	\n"	\
 	__stringify(CONCATENATE(_name, _data)) ":			\n"	\
-	"	.incbin " __stringify(_path) "				\n"	\
+	"	.incbin \"" KBUILD_DIRNAME _path "\"			\n"	\
 	"	.size " __stringify(CONCATENATE(_name, _data)) ", "		\
 			". - " __stringify(CONCATENATE(_name, _data)) "	\n"	\
 	"	.global " __stringify(CONCATENATE(_name, _end)) "	\n"	\
