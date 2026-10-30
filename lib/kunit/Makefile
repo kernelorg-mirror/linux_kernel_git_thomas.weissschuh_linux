@@ -21,7 +21,6 @@ uapi-preinit-userccflags +=		-static $(NOLIBC_USERCFLAGS)
 uapi-preinit-userldlibs  +=		$(NOLIBC_USERLDLIBS)
 obj-$(CONFIG_KUNIT_UAPI) +=		kunit-uapi.o
 
-CFLAGS_kunit-uapi.o :=			-Wa,-I$(obj)
 $(obj)/kunit-uapi.o: $(obj)/uapi-preinit
 
 ifeq ($(CONFIG_KUNIT_DEBUGFS),y)
@@ -38,7 +37,6 @@ kunit-test-uapi-userccflags :=		-static $(NOLIBC_USERCFLAGS)
 kunit-test-uapi-userldlibs :=		$(NOLIBC_USERLDLIBS)
 
 ifdef CONFIG_KUNIT_UAPI
-CFLAGS_kunit-test.o :=			-Wa,-I$(obj)
 $(obj)/kunit-test.o: $(obj)/kunit-test-uapi
 endif
 
@@ -58,6 +56,5 @@ kunit-example-uapi-userccflags :=	-static $(NOLIBC_USERCFLAGS)
 kunit-example-uapi-userldlibs :=	$(NOLIBC_USERLDLIBS)
 
 ifdef CONFIG_KUNIT_UAPI
-CFLAGS_kunit-example-test.o :=		-Wa,-I$(obj)
 $(obj)/kunit-example-test.o: $(obj)/kunit-example-uapi
 endif
