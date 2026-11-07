@@ -46,7 +46,7 @@ all: $(BINARY)
 prepare: $(BPFOBJ) $(SUBCMDOBJ)
 
 $(OUTPUT) $(OUTPUT)/libsubcmd $(LIBBPF_OUT):
-	$(call msg,MKDIR,,$@)
+	$(call msg,MKDIR,,$(quiet_@))
 	$(Q)mkdir -p $(@)
 
 $(SUBCMDOBJ): fixdep FORCE | $(OUTPUT)/libsubcmd

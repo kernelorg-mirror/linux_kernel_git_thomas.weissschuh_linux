@@ -212,34 +212,39 @@ descend = \
 QUIET_SUBDIR0  = +$(MAKE) $(COMMAND_O) -C # space to separate -C and subdir
 QUIET_SUBDIR1  =
 
+quiet_@ = $@
+quiet_1 = $1
+
 ifneq ($(silent),1)
   ifneq ($(V),1)
-	QUIET_CC       = @echo '  CC      '$@;
-	QUIET_CC_FPIC  = @echo '  CC FPIC '$@;
-	QUIET_CLANG    = @echo '  CLANG   '$@;
-	QUIET_AR       = @echo '  AR      '$@;
-	QUIET_LINK     = @echo '  LINK    '$@;
-	QUIET_MKDIR    = @echo '  MKDIR   '$@;
-	QUIET_GEN      = @echo '  GEN     '$@;
+	QUIET_CC       = @echo '  CC      '$(quiet_@);
+	QUIET_CC_FPIC  = @echo '  CC FPIC '$(quiet_@);
+	QUIET_CLANG    = @echo '  CLANG   '$(quiet_@);
+	QUIET_AR       = @echo '  AR      '$(quiet_@);
+	QUIET_LINK     = @echo '  LINK    '$(quiet_@);
+	QUIET_MKDIR    = @echo '  MKDIR   '$(quiet_@);
+	QUIET_GEN      = @echo '  GEN     '$(quiet_@);
 	QUIET_SUBDIR0  = +@subdir=
 	QUIET_SUBDIR1  = ;$(NO_SUBDIR) \
 			  echo '  SUBDIR  '$$subdir; \
 			 $(MAKE) $(PRINT_DIR) -C $$subdir
-	QUIET_FLEX     = @echo '  FLEX    '$@;
-	QUIET_BISON    = @echo '  BISON   '$@;
-	QUIET_GENSKEL  = @echo '  GENSKEL '$@;
+	QUIET_FLEX     = @echo '  FLEX    '$(quiet_@);
+	QUIET_BISON    = @echo '  BISON   '$(quiet_@);
+	QUIET_GENSKEL  = @echo '  GENSKEL '$(quiet_@);
 
-	QUIET_DESCEND  = @echo '  DESCEND '$(1);
+	QUIET_DESCEND  = @echo '  DESCEND '$(quiet_1);
 
-	QUIET_CLEAN    = @printf '  CLEAN   %s\n' $1;
-	QUIET_INSTALL  = @printf '  INSTALL %s\n' $1;
-	QUIET_UNINST   = @printf '  UNINST  %s\n' $1;
+	QUIET_CLEAN    = @printf '  CLEAN   %s\n' $(quiet_1);
+	QUIET_INSTALL  = @printf '  INSTALL %s\n' $(quiet_1);
+	QUIET_UNINST   = @printf '  UNINST  %s\n' $(quiet_1);
   endif
 endif
 
 # Don't print DESCEND messages when executed from kbuild
 ifneq ($(origin KBUILD_VERBOSE),undefined)
 	QUIET_DESCEND = $(Q)
+	quiet_@ = $(@:$(KBUILD_OUTPUT)/%=%)
+	quiet_1 = $(1:$(KBUILD_OUTPUT)/%=%)
 endif
 
 pound := \#
