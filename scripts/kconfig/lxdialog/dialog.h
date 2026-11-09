@@ -172,8 +172,8 @@ int on_key_resize(void);
 #define TEXTBOX_WIDTH_MIN 8
 #define YESNO_HEIGHT_MIN 4	/* For dialog_yesno() */
 #define YESNO_WIDTH_MIN 4
-#define WINDOW_HEIGHT_MIN 19	/* For init_dialog() */
-#define WINDOW_WIDTH_MIN 80
+#define WINDOW_HEIGHT_MIN 15	/* For init_dialog() */
+#define WINDOW_WIDTH_MIN 65
 
 int init_dialog(const char *backtitle);
 void set_dialog_backtitle(const char *backtitle);
