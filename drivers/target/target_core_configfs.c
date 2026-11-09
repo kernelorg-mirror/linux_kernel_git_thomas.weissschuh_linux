@@ -515,7 +515,7 @@ void target_unregister_template(const struct target_core_fabric_ops *fo)
 			 * fabric driver unload of TFO->module to proceed.
 			 */
 			rcu_barrier();
-			kfree(t->tf_tpg_base_cit.ct_attrs);
+			kfree(t->tf_tpg_base_cit.ct_attrs_const);
 			kfree(t->tf_ops);
 			kfree(t);
 			return;
