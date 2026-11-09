@@ -339,7 +339,7 @@ static ssize_t symlink_child_nlinks_show(struct config_item *item, char *page)
 
 CONFIGFS_ATTR_RO(symlink_child_, nlinks);
 
-static struct configfs_attribute *symlink_child_attrs[] = {
+static const struct configfs_attribute *const symlink_child_attrs[] = {
 	&symlink_child_attr_nlinks,
 	NULL,
 };
@@ -375,7 +375,7 @@ static const struct configfs_item_operations symlink_child_item_ops = {
 
 static const struct config_item_type symlink_child_type = {
 	.ct_item_ops	= &symlink_child_item_ops,
-	.ct_attrs	= symlink_child_attrs,
+	.ct_attrs_const	= symlink_child_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
@@ -407,7 +407,7 @@ static ssize_t symlink_children_description_show(struct config_item *item,
 
 CONFIGFS_ATTR_RO(symlink_children_, description);
 
-static struct configfs_attribute *symlink_children_attrs[] = {
+static const struct configfs_attribute *const symlink_children_attrs[] = {
 	&symlink_children_attr_description,
 	NULL,
 };
@@ -418,7 +418,7 @@ static const struct configfs_group_operations symlink_children_group_ops = {
 
 static const struct config_item_type symlink_children_type = {
 	.ct_group_ops	= &symlink_children_group_ops,
-	.ct_attrs	= symlink_children_attrs,
+	.ct_attrs_const	= symlink_children_attrs,
 	.ct_owner	= THIS_MODULE,
 };
 
