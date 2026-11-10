@@ -43,12 +43,6 @@ static __always_inline int do_syscall_2(const unsigned long _r0, const unsigned 
 	return ret;
 }
 
-static __always_inline
-int gettimeofday_fallback(struct __kernel_old_timeval *_tv, struct timezone *_tz)
-{
-	return do_syscall_2(__NR_gettimeofday, (unsigned long)_tv, (unsigned long)_tz);
-}
-
 #ifdef __powerpc64__
 
 static __always_inline

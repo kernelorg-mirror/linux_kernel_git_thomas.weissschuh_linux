@@ -19,7 +19,6 @@
  * provides:
  * - __arch_get_hw_counter(): to get the hw counter based on the
  *   clock_mode.
- * - gettimeofday_fallback(): fallback for gettimeofday.
  * - clock_gettime_fallback(): fallback for clock_gettime.
  * - clock_getres_fallback(): fallback for clock_getres.
  */
@@ -384,8 +383,11 @@ __cvdso_gettimeofday_data(const struct vdso_time_data *vd,
 	if (likely(tv != NULL)) {
 		struct __kernel_timespec ts;
 
-		if (!do_hres(vd, vc, CLOCK_REALTIME, &ts))
-			return gettimeofday_fallback(tv, tz);
+		if (!do_hres(vd, vc, CLOCK_REALTIME, &ts)) {
+			int ret = clock_gettime_fallback(CLOCK_REALTIME, &ts);
+			if (ret)
+				return ret;
+		}
 
 		tv->tv_sec = ts.tv_sec;
 		tv->tv_usec = (u32)ts.tv_nsec / NSEC_PER_USEC;

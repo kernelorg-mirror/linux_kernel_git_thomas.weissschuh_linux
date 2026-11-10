@@ -142,19 +142,6 @@ long clock_gettime32_fallback(clockid_t clock, struct old_timespec32 *ts)
 }
 
 #endif /* CONFIG_SPARC64 */
-
-static __always_inline
-long gettimeofday_fallback(struct __kernel_old_timeval *tv, struct timezone *tz)
-{
-	register long num __asm__("g1") = __NR_gettimeofday;
-	register long o0 __asm__("o0") = (long) tv;
-	register long o1 __asm__("o1") = (long) tz;
-
-	__asm__ __volatile__(SYSCALL_STRING : "=r" (o0) : "r" (num),
-			     "0" (o0), "r" (o1) : SYSCALL_CLOBBERS);
-	return o0;
-}
-
 static __always_inline const struct vdso_time_data *__arch_get_vdso_u_time_data(void)
 {
 	unsigned long ret;

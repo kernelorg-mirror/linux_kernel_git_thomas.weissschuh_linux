@@ -26,28 +26,6 @@
 #define VDSO_SYSCALL_CLOBBERS
 #endif
 
-static __always_inline long gettimeofday_fallback(
-				struct __kernel_old_timeval *_tv,
-				struct timezone *_tz)
-{
-	register struct timezone *tz asm("a1") = _tz;
-	register struct __kernel_old_timeval *tv asm("a0") = _tv;
-	register long ret asm("v0");
-	register long nr asm("v0") = __NR_gettimeofday;
-	register long error asm("a3");
-
-	asm volatile(
-	"       syscall\n"
-	: "=r" (ret), "=r" (error)
-	: "r" (tv), "r" (tz), "r" (nr)
-	: "$1", "$3", "$8", "$9", "$10", "$11", "$12", "$13",
-	  "$14", "$15", "$24", "$25",
-	  VDSO_SYSCALL_CLOBBERS
-	  "memory");
-
-	return error ? -ret : ret;
-}
-
 static __always_inline long clock_gettime_fallback(
 					clockid_t _clkid,
 					struct __kernel_timespec *_ts)

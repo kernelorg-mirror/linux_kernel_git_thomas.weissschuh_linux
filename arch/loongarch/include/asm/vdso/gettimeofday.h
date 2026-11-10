@@ -16,25 +16,6 @@
 
 #define VDSO_HAS_CLOCK_GETRES		1
 
-static __always_inline long gettimeofday_fallback(
-				struct __kernel_old_timeval *_tv,
-				struct timezone *_tz)
-{
-	register struct __kernel_old_timeval *tv asm("a0") = _tv;
-	register struct timezone *tz asm("a1") = _tz;
-	register long nr asm("a7") = __NR_gettimeofday;
-	register long ret asm("a0");
-
-	asm volatile(
-	"       syscall 0\n"
-	: "=r" (ret)
-	: "r" (nr), "r" (tv), "r" (tz)
-	: "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7",
-	  "$t8", "memory");
-
-	return ret;
-}
-
 static __always_inline long clock_gettime_fallback(
 					clockid_t _clkid,
 					struct __kernel_timespec *_ts)

@@ -59,13 +59,6 @@ long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 }
 
 static __always_inline
-long gettimeofday_fallback(struct __kernel_old_timeval *_tv,
-			   struct timezone *_tz)
-{
-	return VDSO_SYSCALL2(gettimeofday,,_tv,_tz);
-}
-
-static __always_inline
 long clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
 	return VDSO_SYSCALL2(clock_getres,_time64,_clkid,_ts);
