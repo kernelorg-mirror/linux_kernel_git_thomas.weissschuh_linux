@@ -339,7 +339,6 @@ __cvdso_clock_gettime(clockid_t clock, struct __kernel_timespec *ts)
 	return __cvdso_clock_gettime_data(__arch_get_vdso_u_time_data(), clock, ts);
 }
 
-#ifdef BUILD_VDSO32
 static int
 __cvdso_clock_gettime32_data(const struct vdso_time_data *vd, clockid_t clock,
 			     struct old_timespec32 *res)
@@ -351,8 +350,11 @@ __cvdso_clock_gettime32_data(const struct vdso_time_data *vd, clockid_t clock,
 
 	ok = __cvdso_clock_gettime_common(vd, clock, &ts);
 
-	if (unlikely(!ok))
-		return clock_gettime32_fallback(clock, res);
+	if (unlikely(!ok)) {
+		int ret = clock_gettime_fallback(clock, &ts);
+		if (ret)
+			return ret;
+	}
 
 	/* For ok == true */
 	res->tv_sec = ts.tv_sec;
@@ -366,7 +368,6 @@ __cvdso_clock_gettime32(clockid_t clock, struct old_timespec32 *res)
 {
 	return __cvdso_clock_gettime32_data(__arch_get_vdso_u_time_data(), clock, res);
 }
-#endif /* BUILD_VDSO32 */
 
 static int
 __cvdso_gettimeofday_data(const struct vdso_time_data *vd,

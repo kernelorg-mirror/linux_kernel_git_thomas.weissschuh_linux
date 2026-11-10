@@ -66,12 +66,6 @@ long clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 
 #ifndef CONFIG_X86_64
 
-static __always_inline
-long clock_gettime32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
-{
-	return VDSO_SYSCALL2(clock_gettime,,_clkid,_ts);
-}
-
 static __always_inline long
 clock_getres32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
 {

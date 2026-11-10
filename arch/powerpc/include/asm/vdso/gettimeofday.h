@@ -74,12 +74,6 @@ int clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 }
 
 static __always_inline
-int clock_gettime32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
-{
-	return do_syscall_2(__NR_clock_gettime, _clkid, (unsigned long)_ts);
-}
-
-static __always_inline
 int clock_getres32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
 {
 	return do_syscall_2(__NR_clock_getres, _clkid, (unsigned long)_ts);
