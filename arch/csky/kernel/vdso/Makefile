@@ -13,7 +13,7 @@ ifneq ($(c-gettimeofday-y),)
 	CFLAGS_vgettimeofday.o += -include $(c-gettimeofday-y)
 endif
 
-ccflags-y := -fno-stack-protector -DBUILD_VDSO32
+ccflags-y := -fno-stack-protector
 
 # Build rules
 targets := $(obj-vdso) vdso.so vdso.so.dbg vdso.lds vdso-dummy.o

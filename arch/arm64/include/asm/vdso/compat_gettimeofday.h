@@ -16,8 +16,6 @@
 
 #include <asm/vdso/compat_barrier.h>
 
-#define BUILD_VDSO32			1
-
 static __always_inline
 long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
