@@ -10,8 +10,6 @@
 #include <uapi/linux/time.h>
 #include <vdso/time32.h>
 
-#define VDSO_HAS_CLOCK_GETRES		1
-
 /*
  * powerpc specific delta calculation.
  *
@@ -51,12 +49,6 @@ int clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 	return do_syscall_2(__NR_clock_gettime, _clkid, (unsigned long)_ts);
 }
 
-static __always_inline
-int clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
-{
-	return do_syscall_2(__NR_clock_getres, _clkid, (unsigned long)_ts);
-}
-
 #else
 
 #define BUILD_VDSO32		1
@@ -67,17 +59,6 @@ int clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 	return do_syscall_2(__NR_clock_gettime64, _clkid, (unsigned long)_ts);
 }
 
-static __always_inline
-int clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
-{
-	return do_syscall_2(__NR_clock_getres_time64, _clkid, (unsigned long)_ts);
-}
-
-static __always_inline
-int clock_getres32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
-{
-	return do_syscall_2(__NR_clock_getres, _clkid, (unsigned long)_ts);
-}
 #endif
 
 static __always_inline u64 __arch_get_hw_counter(s32 clock_mode,

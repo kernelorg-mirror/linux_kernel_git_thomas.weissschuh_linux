@@ -1,9 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ASM_VDSO_GETTIMEOFDAY_H
 #define ASM_VDSO_GETTIMEOFDAY_H
-
-#define VDSO_HAS_CLOCK_GETRES 1
-
 #define VDSO_DELTA_NOMASK 1
 
 #include <asm/syscall.h>
@@ -21,12 +18,6 @@ static __always_inline
 long clock_gettime_fallback(clockid_t clkid, struct __kernel_timespec *ts)
 {
 	return syscall2(__NR_clock_gettime, (long)clkid, (long)ts);
-}
-
-static __always_inline
-long clock_getres_fallback(clockid_t clkid, struct __kernel_timespec *ts)
-{
-	return syscall2(__NR_clock_getres, (long)clkid, (long)ts);
 }
 
 #endif

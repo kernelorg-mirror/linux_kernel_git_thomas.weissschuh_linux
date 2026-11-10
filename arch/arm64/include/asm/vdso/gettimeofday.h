@@ -17,8 +17,6 @@
 #include <asm/unistd.h>
 #include <asm/sysreg.h>
 
-#define VDSO_HAS_CLOCK_GETRES		1
-
 static __always_inline
 long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
@@ -26,23 +24,6 @@ long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 	register clockid_t clkid asm("x0") = _clkid;
 	register long ret asm ("x0");
 	register long nr asm("x8") = __NR_clock_gettime;
-
-	asm volatile(
-	"       svc #0\n"
-	: "=r" (ret)
-	: "r" (clkid), "r" (ts), "r" (nr)
-	: "memory");
-
-	return ret;
-}
-
-static __always_inline
-int clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
-{
-	register struct __kernel_timespec *ts asm("x1") = _ts;
-	register clockid_t clkid asm("x0") = _clkid;
-	register long ret asm ("x0");
-	register long nr asm("x8") = __NR_clock_getres;
 
 	asm volatile(
 	"       svc #0\n"

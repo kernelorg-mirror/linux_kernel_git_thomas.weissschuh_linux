@@ -14,8 +14,6 @@
 
 #ifdef CONFIG_GENERIC_GETTIMEOFDAY
 
-#define VDSO_HAS_CLOCK_GETRES		1
-
 static __always_inline long clock_gettime_fallback(
 					clockid_t _clkid,
 					struct __kernel_timespec *_ts)
@@ -23,25 +21,6 @@ static __always_inline long clock_gettime_fallback(
 	register clockid_t clkid asm("a0") = _clkid;
 	register struct __kernel_timespec *ts asm("a1") = _ts;
 	register long nr asm("a7") = __NR_clock_gettime;
-	register long ret asm("a0");
-
-	asm volatile(
-	"       syscall 0\n"
-	: "=r" (ret)
-	: "r" (nr), "r" (clkid), "r" (ts)
-	: "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7",
-	  "$t8", "memory");
-
-	return ret;
-}
-
-static __always_inline int clock_getres_fallback(
-					clockid_t _clkid,
-					struct __kernel_timespec *_ts)
-{
-	register clockid_t clkid asm("a0") = _clkid;
-	register struct __kernel_timespec *ts asm("a1") = _ts;
-	register long nr asm("a7") = __NR_clock_getres;
 	register long ret asm("a0");
 
 	asm volatile(

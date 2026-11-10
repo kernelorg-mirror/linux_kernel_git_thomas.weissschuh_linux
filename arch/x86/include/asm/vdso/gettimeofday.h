@@ -20,8 +20,6 @@
 #include <clocksource/hyperv_timer.h>
 #include <asm/vdso/sys_call.h>
 
-#define VDSO_HAS_CLOCK_GETRES 1
-
 /*
  * Declare the memory-mapped vclock data pages.  These come from hypervisors.
  * If we ever reintroduce something like direct access to an MMIO clock like
@@ -57,22 +55,6 @@ long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
 	return VDSO_SYSCALL2(clock_gettime,64,_clkid,_ts);
 }
-
-static __always_inline
-long clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
-{
-	return VDSO_SYSCALL2(clock_getres,_time64,_clkid,_ts);
-}
-
-#ifndef CONFIG_X86_64
-
-static __always_inline long
-clock_getres32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
-{
-	return VDSO_SYSCALL2(clock_getres,,_clkid,_ts);
-}
-
-#endif
 
 #ifdef CONFIG_PARAVIRT_CLOCK
 static u64 vread_pvclock(void)

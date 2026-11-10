@@ -9,8 +9,6 @@
 #include <asm/csr.h>
 #include <uapi/linux/time.h>
 
-#define VDSO_HAS_CLOCK_GETRES	1
-
 static __always_inline
 long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 {
@@ -18,22 +16,6 @@ long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 	register struct __kernel_timespec *ts asm("a1") = _ts;
 	register long ret asm("a0");
 	register long nr asm("a7") = __NR_clock_gettime;
-
-	asm volatile ("ecall\n"
-		      : "=r" (ret)
-		      : "r"(clkid), "r"(ts), "r"(nr)
-		      : "memory");
-
-	return ret;
-}
-
-static __always_inline
-int clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
-{
-	register clockid_t clkid asm("a0") = _clkid;
-	register struct __kernel_timespec *ts asm("a1") = _ts;
-	register long ret asm("a0");
-	register long nr asm("a7") = __NR_clock_getres;
 
 	asm volatile ("ecall\n"
 		      : "=r" (ret)

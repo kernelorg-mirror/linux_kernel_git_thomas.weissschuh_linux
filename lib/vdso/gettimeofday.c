@@ -12,6 +12,7 @@
 #include <vdso/time32.h>
 #include <vdso/time64.h>
 
+#include <uapi/linux/errno.h>
 #include <uapi/linux/unistd.h>
 
 /*
@@ -20,7 +21,6 @@
  * - __arch_get_hw_counter(): to get the hw counter based on the
  *   clock_mode.
  * - clock_gettime_fallback(): fallback for clock_gettime.
- * - clock_getres_fallback(): fallback for clock_getres.
  */
 #include <asm/vdso/gettimeofday.h>
 
@@ -441,16 +441,15 @@ static __maybe_unused __kernel_old_time_t __cvdso_time(__kernel_old_time_t *time
 	return __cvdso_time_data(__arch_get_vdso_u_time_data(), time);
 }
 
-#ifdef VDSO_HAS_CLOCK_GETRES
 static __always_inline
-bool __cvdso_clock_getres_common(const struct vdso_time_data *vd, clockid_t clock,
-				 struct __kernel_timespec *res)
+int __cvdso_clock_getres_common(const struct vdso_time_data *vd, clockid_t clock,
+				struct __kernel_timespec *res)
 {
 	u32 msk;
 	u64 ns;
 
 	if (!vdso_clockid_valid(clock))
-		return false;
+		return -EINVAL;
 
 	if (vdso_is_timens_clock(&vd->hres_coarse))
 		vd = vdso_timens_data(vd);
@@ -475,27 +474,21 @@ bool __cvdso_clock_getres_common(const struct vdso_time_data *vd, clockid_t cloc
 	} else if (msk & vdso_alarmclock_mask(vd)) {
 		ns = READ_ONCE(vd->hrtimer_res);
 	} else {
-		return false;
+		return -EINVAL;
 	}
 
 	if (likely(res)) {
 		res->tv_sec = 0;
 		res->tv_nsec = ns;
 	}
-	return true;
+	return 0;
 }
 
 static
 int __cvdso_clock_getres_data(const struct vdso_time_data *vd, clockid_t clock,
 			      struct __kernel_timespec *res)
 {
-	bool ok;
-
-	ok =  __cvdso_clock_getres_common(vd, clock, res);
-
-	if (unlikely(!ok))
-		return clock_getres_fallback(clock, res);
-	return 0;
+	return __cvdso_clock_getres_common(vd, clock, res);
 }
 
 static __maybe_unused
@@ -504,20 +497,18 @@ int __cvdso_clock_getres(clockid_t clock, struct __kernel_timespec *res)
 	return __cvdso_clock_getres_data(__arch_get_vdso_u_time_data(), clock, res);
 }
 
-#ifdef BUILD_VDSO32
 static int
 __cvdso_clock_getres_time32_data(const struct vdso_time_data *vd, clockid_t clock,
 				 struct old_timespec32 *res)
 {
 	struct __kernel_timespec ts;
-	bool ok;
+	int ret;
 
 	BUILD_BUG_ON(!IS_ENABLED(CONFIG_COMPAT_32BIT_TIME));
 
-	ok = __cvdso_clock_getres_common(vd, clock, &ts);
-
-	if (unlikely(!ok))
-		return clock_getres32_fallback(clock, res);
+	ret = __cvdso_clock_getres_common(vd, clock, &ts);
+	if (unlikely(ret))
+		return ret;
 
 	if (likely(res)) {
 		res->tv_sec = ts.tv_sec;
@@ -532,5 +523,3 @@ __cvdso_clock_getres_time32(clockid_t clock, struct old_timespec32 *res)
 	return __cvdso_clock_getres_time32_data(__arch_get_vdso_u_time_data(),
 						clock, res);
 }
-#endif /* BUILD_VDSO32 */
-#endif /* VDSO_HAS_CLOCK_GETRES */
